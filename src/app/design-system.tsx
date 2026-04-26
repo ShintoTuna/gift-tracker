@@ -10,6 +10,7 @@ import {
   Card,
   Label,
   NavBar,
+  PersonRow,
   Pill,
   ScreenTitle,
 } from "@/components";
@@ -161,11 +162,39 @@ export default function DesignSystemScreen() {
         </Section>
 
         <Section title="ScreenTitle">
-          <Card>
-            <ScreenTitle sub="this is the subtitle slot">
-              Title goes here
-            </ScreenTitle>
-          </Card>
+          <Text style={styles.captionText}>
+            Renders flush against the screen edge — its own spacing.xl
+            (22px) horizontal padding aligns titles with section bodies.
+          </Text>
+        </Section>
+        <ScreenTitle sub="this is the subtitle slot">
+          Title goes here
+        </ScreenTitle>
+
+        <Section title="PersonRow">
+          <PersonRow
+            initial="A"
+            name="Alex"
+            relation="best friend"
+            dateLine="Birthday · in 4 days"
+            ideas={3}
+            urgent
+          />
+          <PersonRow
+            initial="J"
+            name="Jordan"
+            relation="partner"
+            dateLine="Anniversary · Sep 5"
+            ideas={2}
+          />
+          <PersonRow
+            initial="P"
+            name="Priya"
+            relation="colleague"
+            dateLine="Birthday · Oct 18"
+            ideas={0}
+            hideBorder
+          />
         </Section>
 
         <View style={{ height: spacing.xxl }} />
@@ -229,5 +258,11 @@ const styles = StyleSheet.create({
     fontFamily: fonts.mono,
     fontSize: 13,
     color: colors.text,
+  },
+  captionText: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.text3,
+    lineHeight: 18,
   },
 });

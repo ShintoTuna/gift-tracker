@@ -13,7 +13,9 @@ import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
+import { View } from "react-native";
 
+import { DevDock } from "@/components";
 import { convex } from "@/lib/convex";
 
 // Hold the splash up until fonts are ready. Without this, the app
@@ -45,19 +47,22 @@ export default function RootLayout() {
 
   return (
     <ConvexProvider client={convex}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="people/[id]" />
-        <Stack.Screen
-          name="capture"
-          options={{ presentation: "modal" }}
-        />
-        <Stack.Screen
-          name="brainstorm/[personId]"
-          options={{ presentation: "modal" }}
-        />
-        <Stack.Screen name="design-system" />
-      </Stack>
+      <View style={{ flex: 1 }}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="people/[id]" />
+          <Stack.Screen
+            name="capture"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="brainstorm/[personId]"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen name="design-system" />
+        </Stack>
+        <DevDock />
+      </View>
     </ConvexProvider>
   );
 }

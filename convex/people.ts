@@ -1,7 +1,9 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
 import { getCurrentUserId } from "./lib/auth";
+import { getNextOccurrence } from "./lib/dates";
 
 // Returns the current user's people. No userId scoping argument —
 // that's resolved server-side via getCurrentUserId so callers can't
@@ -18,6 +20,78 @@ export const list = query({
       .query("people")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .take(500);
+  },
+});
+
+// Enriched query for the People list screen: every person plus the
+// computed next upcoming occasion (or null) plus the count of open
+// gift ideas tagged to them ("open" = status !== "given"). Sorted
+// ascending by next-occurrence date; people with no upcoming
+// occasion sink to the bottom.
+//
+// N+1 caveat: we fan out one occasions query per person plus one
+// giftIdeas query for the user. For 50 people this is fine; if it
+// becomes a hotspot, denormalize a `nextOccasionDate` field onto
+// `people` and update it from occasion mutations.
+export const listWithNextOccasion = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getCurrentUserId(ctx);
+    const people = await ctx.db
+      .query("people")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(500);
+
+    const allIdeas = await ctx.db
+      .query("giftIdeas")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(1000);
+
+    const now = Date.now();
+    const enriched = await Promise.all(
+      people.map(async (person) => {
+        const occasions = await ctx.db
+          .query("occasions")
+          .withIndex("by_person", (q) => q.eq("personId", person._id))
+          .take(100);
+
+        let nextOccasion: Doc<"occasions"> | null = null;
+        let nextOccasionDate: number | null = null;
+        for (const occ of occasions) {
+          const candidate = getNextOccurrence(occ, now);
+          if (
+            candidate !== null &&
+            (nextOccasionDate === null || candidate < nextOccasionDate)
+          ) {
+            nextOccasion = occ;
+            nextOccasionDate = candidate;
+          }
+        }
+
+        const ideaCount = allIdeas.filter(
+          (idea) =>
+            idea.taggedPeople.includes(person._id) && idea.status !== "given",
+        ).length;
+
+        return {
+          ...person,
+          nextOccasion,
+          nextOccasionDate,
+          ideaCount,
+        };
+      }),
+    );
+
+    enriched.sort((a, b) => {
+      if (a.nextOccasionDate === null && b.nextOccasionDate === null) {
+        return a.name.localeCompare(b.name);
+      }
+      if (a.nextOccasionDate === null) return 1;
+      if (b.nextOccasionDate === null) return -1;
+      return a.nextOccasionDate - b.nextOccasionDate;
+    });
+
+    return enriched;
   },
 });
 

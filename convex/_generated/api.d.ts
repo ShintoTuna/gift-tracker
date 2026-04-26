@@ -10,6 +10,7 @@
 
 import type * as giftIdeas from "../giftIdeas.js";
 import type * as lib_auth from "../lib/auth.js";
+import type * as lib_dates from "../lib/dates.js";
 import type * as lib_seedData from "../lib/seedData.js";
 import type * as occasions from "../occasions.js";
 import type * as people from "../people.js";
@@ -24,6 +25,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   giftIdeas: typeof giftIdeas;
   "lib/auth": typeof lib_auth;
+  "lib/dates": typeof lib_dates;
   "lib/seedData": typeof lib_seedData;
   occasions: typeof occasions;
   people: typeof people;
