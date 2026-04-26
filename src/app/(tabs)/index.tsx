@@ -23,6 +23,9 @@ export default function PeopleScreen() {
       <Link href="/capture" style={styles.link}>
         capture (modal)
       </Link>
+      <Link href="/design-system" style={styles.link}>
+        design system (atoms)
+      </Link>
     </View>
   );
 }

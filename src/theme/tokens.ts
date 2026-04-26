@@ -20,6 +20,16 @@ export const colors = {
   fern: "#5A8A6A",
 } as const;
 
+// Subtle tints used for Pill / chip backgrounds.
+export const tints = {
+  brassFill: "rgba(200, 164, 90, 0.14)",
+  brassEdge: "rgba(200, 164, 90, 0.4)",
+  claretFill: "rgba(160, 69, 69, 0.14)",
+  claretEdge: "rgba(160, 69, 69, 0.35)",
+  fernFill: "rgba(90, 138, 106, 0.14)",
+  fernEdge: "rgba(90, 138, 106, 0.3)",
+} as const;
+
 export const spacing = {
   xs: 4,
   sm: 8,
@@ -37,14 +47,20 @@ export const radii = {
   pill: 999,
 } as const;
 
-// Placeholder. Real Google Fonts (DM Serif Display, Work Sans,
-// IBM Plex Mono) get wired in the design-system step via expo-font.
-export const fontFamilies = {
-  display: "serif",
-  body: "sans-serif",
-  mono: "monospace",
+// Each weight is a separately registered font in expo-font, so the
+// fontFamily string is the unique key (RN ignores fontWeight unless
+// the weight is loaded under a name). Components reference these
+// instead of asking for { fontFamily, fontWeight } pairs.
+export const fonts = {
+  serif: "DMSerifDisplay_400Regular",
+  body: "WorkSans_400Regular",
+  bodyMedium: "WorkSans_500Medium",
+  bodySemiBold: "WorkSans_600SemiBold",
+  mono: "IBMPlexMono_400Regular",
+  monoMedium: "IBMPlexMono_500Medium",
 } as const;
 
 export type Colors = typeof colors;
 export type Spacing = typeof spacing;
 export type Radii = typeof radii;
+export type Fonts = typeof fonts;
