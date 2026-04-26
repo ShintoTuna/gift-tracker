@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gift Planner — Palette Directions</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Cormorant+Garamond:wght@400;500;600;700&family=Work+Sans:wght@400;500;600&family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&family=Caveat:wght@500;600&family=Space+Grotesk:wght@400;500;600&family=Spectral:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { font-family: 'Inter', system-ui, sans-serif; }
+  .stage { background: #ececea; }
+
+  /* ───── Direction 1 — Ember & Linen ───── */
+  .d1 { background: #f3ede2; color: #2a1f17; font-family: 'Fraunces', serif; }
+  .d1-card { background: #fbf6ec; border: 1px solid #e3d6c0; }
+  .d1-chip { background: #efe3cf; color: #5a3a1f; }
+  .d1-accent { color: #b8512c; }
+  .d1-sub { color: #7a6a55; }
+  .d1-body { font-family: 'Inter', sans-serif; }
+  .d1-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; font-variation-settings: "opsz" 144, "SOFT" 50; }
+
+  /* ───── Direction 2 — Midnight Garden ───── */
+  .d2 { background: #0f1a16; color: #e8e1cf; font-family: 'Spectral', serif; }
+  .d2-card { background: #16241e; border: 1px solid #213830; }
+  .d2-chip { background: #213830; color: #c8b27a; }
+  .d2-accent { color: #c8a45a; }
+  .d2-sub { color: #8a9a8f; }
+  .d2-body { font-family: 'Work Sans', sans-serif; }
+  .d2-display { font-family: 'DM Serif Display', serif; }
+
+  /* ───── Direction 3 — Postcard ───── */
+  .d3 { background: #ecdfca; color: #3a2e22; font-family: 'Cormorant Garamond', serif; }
+  .d3-card { background: #f6ecd8; border: 1px solid #c9b48b; box-shadow: 4px 4px 0 #d6c19a; }
+  .d3-chip { background: #d8b88a; color: #3a2e22; }
+  .d3-accent { color: #a23a2a; }
+  .d3-sub { color: #7d6a52; }
+  .d3-body { font-family: 'IBM Plex Mono', monospace; }
+  .d3-script { font-family: 'Caveat', cursive; }
+  .d3-display { font-family: 'Cormorant Garamond', serif; font-style: italic; }
+
+  /* ───── Direction 4 — Bloom ───── */
+  .d4 { background: #f5eff2; color: #3b2f3a; font-family: 'DM Sans', sans-serif; }
+  .d4-card { background: #ffffff; border: 1px solid #ead7df; }
+  .d4-chip { background: #f3e3eb; color: #7c4f6b; }
+  .d4-accent { color: #c46b8a; }
+  .d4-sub { color: #8a7884; }
+  .d4-body { font-family: 'DM Sans', sans-serif; }
+  .d4-display { font-family: 'Fraunces', serif; font-variation-settings: "opsz" 144, "SOFT" 100; }
+
+  .swatch { width: 100%; aspect-ratio: 1.1 / 1; border-radius: 10px; }
+  .swatch-lg { aspect-ratio: 1 / 1; }
+  .ring-line { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  .avatar { background-image:
+      repeating-linear-gradient(135deg, rgba(0,0,0,0.05) 0 6px, transparent 6px 12px);
+  }
+  .placeholder-stripes {
+    background-image: repeating-linear-gradient(135deg, rgba(0,0,0,0.045) 0 6px, transparent 6px 12px);
+  }
+</style>
+</head>
+<body class="stage">
+
+<header class="max-w-[1200px] mx-auto px-10 pt-14 pb-10">
+  <div class="mono text-[11px] tracking-[0.18em] uppercase text-stone-500">Phase 01 · Visual direction</div>
+  <h1 class="mt-3 text-[44px] leading-[1.05] tracking-tight text-stone-900" style="font-family:'Fraunces',serif;font-variation-settings:'opsz' 144;">Four moods for a gift app.</h1>
+  <p class="mt-3 max-w-[640px] text-[15px] leading-relaxed text-stone-600">
+    Each direction below is its own world — different temperature, different type voice, different feeling when you open the app and see someone you love. Pick one to validate, or ask me to hybridize two.
+  </p>
+  <div class="mt-6 flex gap-2 mono text-[11px] tracking-[0.12em] uppercase text-stone-500">
+    <span class="px-2 py-1 bg-white rounded ring-line">01 Ember &amp; Linen</span>
+    <span class="px-2 py-1 bg-white rounded ring-line">02 Midnight Garden</span>
+    <span class="px-2 py-1 bg-white rounded ring-line">03 Postcard</span>
+    <span class="px-2 py-1 bg-white rounded ring-line">04 Bloom</span>
+  </div>
+</header>
+
+<!-- ═══════════ DIRECTION 1 — EMBER & LINEN ═══════════ -->
+<section class="d1">
+  <div class="max-w-[1200px] mx-auto px-10 py-20">
+    <div class="grid grid-cols-12 gap-10">
+      <div class="col-span-12 lg:col-span-5">
+        <div class="mono text-[11px] tracking-[0.18em] uppercase d1-sub">Direction 01</div>
+        <h2 class="mt-3 text-[68px] leading-[0.95] tracking-tight d1-display">Ember<br/>&amp; Linen.</h2>
+        <p class="mt-6 text-[18px] leading-relaxed max-w-md d1-body" style="color:#5a4a39">
+          Warm sunlight on unbleached paper. For someone who sends real cards, remembers anniversaries, and wants the app to feel like a notebook on the kitchen table — not software.
+        </p>
+        <div class="mt-8 grid grid-cols-2 gap-x-8 gap-y-3 text-[14px] d1-body" style="color:#5a4a39">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d1-sub">Headings</div>
+            <div class="text-[22px] mt-1 d1-display">Fraunces</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d1-sub">Body</div>
+            <div class="text-[18px] mt-1">Inter</div>
+          </div>
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed max-w-md d1-body italic" style="color:#7a6a55">
+          Fraunces' soft optical curves carry warmth without feeling antique; Inter keeps the running UI legible and modern.
+        </p>
+      </div>
+
+      <div class="col-span-12 lg:col-span-7">
+        <!-- Palette -->
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch ring-line" style="background:#f3ede2"></div><div class="mt-2 mono text-[10px] tracking-wide d1-sub">BG / LINEN</div><div class="mono text-[11px]">#F3EDE2</div></div>
+          <div><div class="swatch ring-line" style="background:#fbf6ec"></div><div class="mt-2 mono text-[10px] tracking-wide d1-sub">SURFACE</div><div class="mono text-[11px]">#FBF6EC</div></div>
+          <div><div class="swatch" style="background:#2a1f17"></div><div class="mt-2 mono text-[10px] tracking-wide d1-sub">TEXT</div><div class="mono text-[11px]">#2A1F17</div></div>
+          <div><div class="swatch" style="background:#7a6a55"></div><div class="mt-2 mono text-[10px] tracking-wide d1-sub">TEXT 2</div><div class="mono text-[11px]">#7A6A55</div></div>
+          <div><div class="swatch" style="background:#b8512c"></div><div class="mt-2 mono text-[10px] tracking-wide d1-sub">EMBER</div><div class="mono text-[11px]">#B8512C</div></div>
+          <div><div class="swatch" style="background:#6b7a3a"></div><div class="mt-2 mono text-[10px] tracking-wide d1-sub">OLIVE</div><div class="mono text-[11px]">#6B7A3A</div></div>
+        </div>
+
+        <!-- Dark mode strip -->
+        <div class="mt-6 rounded-xl p-4 flex items-center gap-3" style="background:#1c1410">
+          <span class="mono text-[10px] tracking-[0.18em] uppercase" style="color:#b89e7a">Dark</span>
+          <div class="flex gap-2">
+            <span class="w-7 h-7 rounded-md" style="background:#1c1410"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#2a1f17"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#f3ede2"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#d68554"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#a3b06a"></span>
+          </div>
+        </div>
+
+        <!-- Person card -->
+        <div class="mt-8 d1-card rounded-2xl p-6 max-w-md">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-full avatar flex items-center justify-center text-[20px] d1-display" style="background:#e8d5b8;color:#7a3a1f">M</div>
+            <div class="flex-1">
+              <div class="text-[22px] leading-tight d1-display">Mom</div>
+              <div class="text-[13px] mt-0.5 d1-body d1-sub">Eleanor · 67 · Portland</div>
+            </div>
+            <div class="text-right">
+              <div class="mono text-[10px] tracking-[0.16em] uppercase d1-accent">Birthday</div>
+              <div class="text-[15px] mt-0.5 d1-body" style="color:#2a1f17">in 12 days</div>
+            </div>
+          </div>
+          <div class="mt-5 pt-5 border-t" style="border-color:#e3d6c0">
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d1-sub mb-3">Saved ideas</div>
+            <ul class="space-y-2.5 d1-body text-[14.5px]" style="color:#3a2a1f">
+              <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full" style="background:#b8512c"></span>Hand-thrown ceramic mug, cobalt</li>
+              <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full" style="background:#b8512c"></span>Cookbook — Tartine Bread</li>
+              <li class="flex items-center gap-3"><span class="w-1.5 h-1.5 rounded-full" style="background:#b8512c"></span>Linen napkins, set of 4</li>
+            </ul>
+          </div>
+          <div class="mt-5 flex gap-2">
+            <span class="d1-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded">Cooking</span>
+            <span class="d1-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded">Pottery</span>
+            <span class="d1-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded">Garden</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ DIRECTION 2 — MIDNIGHT GARDEN ═══════════ -->
+<section class="d2">
+  <div class="max-w-[1200px] mx-auto px-10 py-20">
+    <div class="grid grid-cols-12 gap-10">
+      <div class="col-span-12 lg:col-span-5">
+        <div class="mono text-[11px] tracking-[0.18em] uppercase d2-sub">Direction 02</div>
+        <h2 class="mt-3 text-[68px] leading-[0.95] tracking-tight d2-display">Midnight<br/>Garden.</h2>
+        <p class="mt-6 text-[18px] leading-relaxed max-w-md d2-body" style="color:#b8c4ba">
+          Late evening. Brass lamp on a desk, leather-bound address book. A quieter, more deliberate register — for people who treat gift-giving like a craft.
+        </p>
+        <div class="mt-8 grid grid-cols-2 gap-x-8 gap-y-3 text-[14px] d2-body" style="color:#b8c4ba">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d2-sub">Headings</div>
+            <div class="text-[22px] mt-1 d2-display">DM Serif Display</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d2-sub">Body</div>
+            <div class="text-[18px] mt-1">Work Sans</div>
+          </div>
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed max-w-md d2-body italic d2-sub">
+          DM Serif's high contrast feels editorial and intentional against the deep green; Work Sans gives quiet, neutral support.
+        </p>
+      </div>
+
+      <div class="col-span-12 lg:col-span-7">
+        <!-- Palette -->
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch" style="background:#0f1a16"></div><div class="mt-2 mono text-[10px] tracking-wide d2-sub">BG</div><div class="mono text-[11px]">#0F1A16</div></div>
+          <div><div class="swatch" style="background:#16241e"></div><div class="mt-2 mono text-[10px] tracking-wide d2-sub">SURFACE</div><div class="mono text-[11px]">#16241E</div></div>
+          <div><div class="swatch" style="background:#e8e1cf"></div><div class="mt-2 mono text-[10px] tracking-wide d2-sub">TEXT</div><div class="mono text-[11px]">#E8E1CF</div></div>
+          <div><div class="swatch" style="background:#8a9a8f"></div><div class="mt-2 mono text-[10px] tracking-wide d2-sub">TEXT 2</div><div class="mono text-[11px]">#8A9A8F</div></div>
+          <div><div class="swatch" style="background:#c8a45a"></div><div class="mt-2 mono text-[10px] tracking-wide d2-sub">BRASS</div><div class="mono text-[11px]">#C8A45A</div></div>
+          <div><div class="swatch" style="background:#a04545"></div><div class="mt-2 mono text-[10px] tracking-wide d2-sub">CLARET</div><div class="mono text-[11px]">#A04545</div></div>
+        </div>
+
+        <!-- Light mode strip -->
+        <div class="mt-6 rounded-xl p-4 flex items-center gap-3" style="background:#f5f1e6">
+          <span class="mono text-[10px] tracking-[0.18em] uppercase" style="color:#5a6a5a">Light</span>
+          <div class="flex gap-2">
+            <span class="w-7 h-7 rounded-md" style="background:#f5f1e6"></span>
+            <span class="w-7 h-7 rounded-md ring-line" style="background:#ffffff"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#0f1a16"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#a07d35"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#5a8a6a"></span>
+          </div>
+        </div>
+
+        <!-- Person card -->
+        <div class="mt-8 d2-card rounded-2xl p-6 max-w-md">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center text-[22px] d2-display" style="background:#2a3d33;color:#c8a45a">M</div>
+            <div class="flex-1">
+              <div class="text-[24px] leading-tight d2-display" style="color:#e8e1cf">Mom</div>
+              <div class="text-[13px] mt-0.5 d2-body d2-sub">Eleanor · 67 · Portland</div>
+            </div>
+            <div class="text-right">
+              <div class="mono text-[10px] tracking-[0.16em] uppercase d2-accent">Birthday</div>
+              <div class="text-[15px] mt-0.5 d2-body" style="color:#e8e1cf">in 12 days</div>
+            </div>
+          </div>
+          <div class="mt-5 pt-5 border-t" style="border-color:#213830">
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d2-sub mb-3">Saved ideas</div>
+            <ul class="space-y-2.5 d2-body text-[14.5px]" style="color:#d8d2c0">
+              <li class="flex items-center gap-3"><span class="w-1 h-4 rounded" style="background:#c8a45a"></span>Hand-thrown ceramic mug, cobalt</li>
+              <li class="flex items-center gap-3"><span class="w-1 h-4 rounded" style="background:#c8a45a"></span>Cookbook — Tartine Bread</li>
+              <li class="flex items-center gap-3"><span class="w-1 h-4 rounded" style="background:#c8a45a"></span>Linen napkins, set of 4</li>
+            </ul>
+          </div>
+          <div class="mt-5 flex gap-2">
+            <span class="d2-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded">Cooking</span>
+            <span class="d2-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded">Pottery</span>
+            <span class="d2-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded">Garden</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ DIRECTION 3 — POSTCARD ═══════════ -->
+<section class="d3">
+  <div class="max-w-[1200px] mx-auto px-10 py-20">
+    <div class="grid grid-cols-12 gap-10">
+      <div class="col-span-12 lg:col-span-5">
+        <div class="mono text-[11px] tracking-[0.18em] uppercase d3-sub">Direction 03</div>
+        <h2 class="mt-3 text-[72px] leading-[0.92] tracking-tight d3-display">Postcard.</h2>
+        <p class="mt-6 text-[18px] leading-relaxed max-w-md d3-body" style="color:#5a4a35">
+          Sun-faded paper, hand-set type, a stamp slightly off-kilter. Nostalgic and physical — the app feels like flipping through a stack of mail you actually wanted to receive.
+        </p>
+        <div class="mt-8 grid grid-cols-2 gap-x-8 gap-y-3 text-[14px] d3-body" style="color:#5a4a35">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d3-sub">Headings</div>
+            <div class="text-[24px] mt-1 d3-display">Cormorant Italic</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d3-sub">Body</div>
+            <div class="text-[16px] mt-1">IBM Plex Mono</div>
+          </div>
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed max-w-md italic d3-display" style="color:#7d6a52">
+          Italic Cormorant + a typewriter mono evoke postmarks and personal letters; Caveat sneaks in for handwritten margin notes.
+        </p>
+      </div>
+
+      <div class="col-span-12 lg:col-span-7">
+        <!-- Palette -->
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch ring-line" style="background:#ecdfca"></div><div class="mt-2 mono text-[10px] tracking-wide d3-sub">PAPER</div><div class="mono text-[11px]">#ECDFCA</div></div>
+          <div><div class="swatch ring-line" style="background:#f6ecd8"></div><div class="mt-2 mono text-[10px] tracking-wide d3-sub">CARD</div><div class="mono text-[11px]">#F6ECD8</div></div>
+          <div><div class="swatch" style="background:#3a2e22"></div><div class="mt-2 mono text-[10px] tracking-wide d3-sub">INK</div><div class="mono text-[11px]">#3A2E22</div></div>
+          <div><div class="swatch" style="background:#7d6a52"></div><div class="mt-2 mono text-[10px] tracking-wide d3-sub">FADED</div><div class="mono text-[11px]">#7D6A52</div></div>
+          <div><div class="swatch" style="background:#a23a2a"></div><div class="mt-2 mono text-[10px] tracking-wide d3-sub">STAMP</div><div class="mono text-[11px]">#A23A2A</div></div>
+          <div><div class="swatch" style="background:#3a5a6a"></div><div class="mt-2 mono text-[10px] tracking-wide d3-sub">POSTMARK</div><div class="mono text-[11px]">#3A5A6A</div></div>
+        </div>
+
+        <!-- Notes about dark -->
+        <div class="mt-6 rounded-xl p-4 flex items-center gap-3" style="background:#241c14;color:#d8b88a">
+          <span class="mono text-[10px] tracking-[0.18em] uppercase" style="color:#a08a5a">Dark</span>
+          <div class="flex gap-2">
+            <span class="w-7 h-7 rounded-md" style="background:#241c14"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#332618"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#ecdfca"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#d8b88a"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#c45a45"></span>
+          </div>
+        </div>
+
+        <!-- Person card — postcard style -->
+        <div class="mt-8 d3-card rounded p-6 max-w-md relative">
+          <!-- stamp -->
+          <div class="absolute top-5 right-5 w-12 h-14 flex items-center justify-center text-[10px] mono" style="background:#a23a2a;color:#f6ecd8;border:2px dashed #f6ecd8;outline:1px solid #a23a2a">BIRTH<br/>DAY</div>
+
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center text-[24px] d3-display" style="background:#d8b88a;color:#3a2e22">M</div>
+            <div class="flex-1">
+              <div class="text-[28px] leading-tight d3-display">Mom,</div>
+              <div class="text-[12px] mt-0.5 d3-body" style="color:#7d6a52">ELEANOR · 67 · PORTLAND</div>
+            </div>
+          </div>
+
+          <div class="mt-4 d3-script text-[22px] leading-tight" style="color:#a23a2a;transform:rotate(-1.5deg);transform-origin:left">
+            Birthday in 12 days —
+          </div>
+
+          <div class="mt-4 pt-4 border-t border-dashed" style="border-color:#c9b48b">
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d3-sub mb-3">— Ideas —</div>
+            <ol class="space-y-2 d3-body text-[13px]" style="color:#3a2e22">
+              <li class="flex gap-3"><span class="d3-sub">01.</span>Hand-thrown ceramic mug, cobalt</li>
+              <li class="flex gap-3"><span class="d3-sub">02.</span>Cookbook — Tartine Bread</li>
+              <li class="flex gap-3"><span class="d3-sub">03.</span>Linen napkins, set of 4</li>
+            </ol>
+          </div>
+
+          <div class="mt-5 flex gap-2">
+            <span class="d3-chip mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5">cooking</span>
+            <span class="d3-chip mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5">pottery</span>
+            <span class="d3-chip mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5">garden</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ DIRECTION 4 — BLOOM ═══════════ -->
+<section class="d4">
+  <div class="max-w-[1200px] mx-auto px-10 py-20">
+    <div class="grid grid-cols-12 gap-10">
+      <div class="col-span-12 lg:col-span-5">
+        <div class="mono text-[11px] tracking-[0.18em] uppercase d4-sub">Direction 04</div>
+        <h2 class="mt-3 text-[68px] leading-[0.95] tracking-tight d4-display">Bloom.</h2>
+        <p class="mt-6 text-[18px] leading-relaxed max-w-md d4-body" style="color:#6a5a64">
+          Modern stationery — soft pinks, dusty plum, a single confident accent. Affectionate and contemporary without tipping into "feminine SaaS." For the millennial who buys good wrapping paper.
+        </p>
+        <div class="mt-8 grid grid-cols-2 gap-x-8 gap-y-3 text-[14px] d4-body" style="color:#6a5a64">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d4-sub">Headings</div>
+            <div class="text-[22px] mt-1 d4-display">Fraunces (soft)</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d4-sub">Body</div>
+            <div class="text-[18px] mt-1">DM Sans</div>
+          </div>
+        </div>
+        <p class="mt-4 text-[13px] leading-relaxed max-w-md italic d4-body d4-sub">
+          Fraunces tuned to soft optical size feels affectionate without being saccharine; DM Sans keeps the running UI airy and modern.
+        </p>
+      </div>
+
+      <div class="col-span-12 lg:col-span-7">
+        <!-- Palette -->
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch ring-line" style="background:#f5eff2"></div><div class="mt-2 mono text-[10px] tracking-wide d4-sub">BG</div><div class="mono text-[11px]">#F5EFF2</div></div>
+          <div><div class="swatch ring-line" style="background:#ffffff"></div><div class="mt-2 mono text-[10px] tracking-wide d4-sub">SURFACE</div><div class="mono text-[11px]">#FFFFFF</div></div>
+          <div><div class="swatch" style="background:#3b2f3a"></div><div class="mt-2 mono text-[10px] tracking-wide d4-sub">TEXT</div><div class="mono text-[11px]">#3B2F3A</div></div>
+          <div><div class="swatch" style="background:#8a7884"></div><div class="mt-2 mono text-[10px] tracking-wide d4-sub">TEXT 2</div><div class="mono text-[11px]">#8A7884</div></div>
+          <div><div class="swatch" style="background:#c46b8a"></div><div class="mt-2 mono text-[10px] tracking-wide d4-sub">PETAL</div><div class="mono text-[11px]">#C46B8A</div></div>
+          <div><div class="swatch" style="background:#5a7a6a"></div><div class="mt-2 mono text-[10px] tracking-wide d4-sub">SAGE</div><div class="mono text-[11px]">#5A7A6A</div></div>
+        </div>
+
+        <!-- Dark strip -->
+        <div class="mt-6 rounded-xl p-4 flex items-center gap-3" style="background:#241c22">
+          <span class="mono text-[10px] tracking-[0.18em] uppercase" style="color:#a8909c">Dark</span>
+          <div class="flex gap-2">
+            <span class="w-7 h-7 rounded-md" style="background:#241c22"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#332833"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#f5eff2"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#e08aa5"></span>
+            <span class="w-7 h-7 rounded-md" style="background:#85a895"></span>
+          </div>
+        </div>
+
+        <!-- Person card -->
+        <div class="mt-8 d4-card rounded-3xl p-6 max-w-md" style="box-shadow:0 1px 0 rgba(60,40,55,0.04), 0 12px 30px -18px rgba(60,40,55,0.18)">
+          <div class="flex items-start gap-4">
+            <div class="w-14 h-14 rounded-full flex items-center justify-center text-[20px] d4-display" style="background:#f3e3eb;color:#c46b8a">M</div>
+            <div class="flex-1">
+              <div class="text-[22px] leading-tight d4-display" style="color:#3b2f3a">Mom</div>
+              <div class="text-[13px] mt-0.5 d4-body d4-sub">Eleanor · 67 · Portland</div>
+            </div>
+            <div class="text-right">
+              <div class="mono text-[10px] tracking-[0.16em] uppercase d4-accent">Birthday</div>
+              <div class="text-[15px] mt-0.5 d4-body" style="color:#3b2f3a">in 12 days</div>
+            </div>
+          </div>
+          <div class="mt-5 pt-5 border-t" style="border-color:#ead7df">
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d4-sub mb-3">Saved ideas</div>
+            <ul class="space-y-2.5 d4-body text-[14.5px]" style="color:#3b2f3a">
+              <li class="flex items-center gap-3"><span class="w-2 h-2 rounded-full" style="background:#c46b8a"></span>Hand-thrown ceramic mug, cobalt</li>
+              <li class="flex items-center gap-3"><span class="w-2 h-2 rounded-full" style="background:#c46b8a"></span>Cookbook — Tartine Bread</li>
+              <li class="flex items-center gap-3"><span class="w-2 h-2 rounded-full" style="background:#c46b8a"></span>Linen napkins, set of 4</li>
+            </ul>
+          </div>
+          <div class="mt-5 flex gap-2">
+            <span class="d4-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded-full">Cooking</span>
+            <span class="d4-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded-full">Pottery</span>
+            <span class="d4-chip mono text-[10px] tracking-[0.14em] uppercase px-2.5 py-1 rounded-full">Garden</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER / NEXT ═══════════ -->
+<footer class="max-w-[1200px] mx-auto px-10 py-16">
+  <div class="grid grid-cols-12 gap-10 items-start">
+    <div class="col-span-12 lg:col-span-7">
+      <div class="mono text-[11px] tracking-[0.18em] uppercase text-stone-500">Next</div>
+      <h3 class="mt-3 text-[32px] leading-tight tracking-tight text-stone-900" style="font-family:'Fraunces',serif;">
+        Pick a direction — or ask me to mix two.
+      </h3>
+      <p class="mt-3 text-[15px] leading-relaxed text-stone-600 max-w-xl">
+        Once you pick, I'll design 1–2 tone-setting screens (likely <em>People list</em> + <em>Person detail</em>) to validate the choice in real layouts before we build out the rest.
+      </p>
+    </div>
+    <div class="col-span-12 lg:col-span-5">
+      <div class="rounded-2xl bg-white ring-line p-5">
+        <div class="mono text-[10px] tracking-[0.18em] uppercase text-stone-500">Common hybrids worth trying</div>
+        <ul class="mt-3 space-y-2 text-[14px] text-stone-700">
+          <li>· <strong>01 + 04</strong> — Ember warmth on Bloom's softer surfaces</li>
+          <li>· <strong>02 + 03</strong> — Midnight Garden with Postcard's typewriter detail</li>
+          <li>· <strong>03 + 04</strong> — Postcard nostalgia, modern soft palette</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

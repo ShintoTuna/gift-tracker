@@ -1,0 +1,504 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gift Planner — Light &amp; Dark</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=Work+Sans:wght@400;500;600&family=DM+Serif+Display&family=Spectral:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { font-family: 'Inter', system-ui, sans-serif; }
+  .stage { background: #ececea; }
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+  .ring-line { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); }
+  .ring-line-dk { box-shadow: inset 0 0 0 1px rgba(255,255,255,0.08); }
+  .swatch { width: 100%; aspect-ratio: 1.1 / 1; border-radius: 10px; }
+
+  /* ───── Direction 1 — Ember & Linen ───── */
+  /* Light */
+  .d1l { background: #f3ede2; color: #2a1f17; }
+  .d1l-card { background: #fbf6ec; border: 1px solid #e3d6c0; }
+  .d1l-chip { background: #efe3cf; color: #5a3a1f; }
+  .d1l-accent { color: #b8512c; }
+  .d1l-sub { color: #7a6a55; }
+  .d1l-divider { border-color:#e3d6c0; }
+  /* Dark */
+  .d1d { background: #1a130d; color: #ece2cf; }
+  .d1d-card { background: #241a11; border: 1px solid #382a1c; }
+  .d1d-chip { background: #382a1c; color: #d8b88a; }
+  .d1d-accent { color: #e08054; }
+  .d1d-sub { color: #a08a6a; }
+  .d1d-divider { border-color:#382a1c; }
+
+  .d1-display { font-family: 'Fraunces', serif; font-optical-sizing: auto; font-variation-settings: "opsz" 144, "SOFT" 50; }
+  .d1-body { font-family: 'Inter', sans-serif; }
+
+  /* ───── Direction 2 — Midnight Garden ───── */
+  /* Dark */
+  .d2d { background: #0f1a16; color: #e8e1cf; }
+  .d2d-card { background: #16241e; border: 1px solid #213830; }
+  .d2d-chip { background: #213830; color: #c8b27a; }
+  .d2d-accent { color: #c8a45a; }
+  .d2d-sub { color: #8a9a8f; }
+  .d2d-divider { border-color:#213830; }
+  /* Light — "Garden, daylight" */
+  .d2l { background: #f3efe4; color: #1a2a22; }
+  .d2l-card { background: #fbf8ee; border: 1px solid #d8d0b8; }
+  .d2l-chip { background: #e8e0c8; color: #3a4a3a; }
+  .d2l-accent { color: #8a6a25; }
+  .d2l-sub { color: #6a7a6a; }
+  .d2l-divider { border-color:#d8d0b8; }
+
+  .d2-display { font-family: 'DM Serif Display', serif; }
+  .d2-body { font-family: 'Work Sans', sans-serif; }
+
+  .theme-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .iphone {
+    width: 320px; height: 640px; border-radius: 38px; padding: 10px;
+    box-shadow: 0 30px 60px -30px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .iphone-screen {
+    width: 100%; height: 100%; border-radius: 30px; overflow: hidden;
+    position: relative;
+  }
+  .notch {
+    position: absolute; top: 8px; left: 50%; transform: translateX(-50%);
+    width: 90px; height: 22px; background: #000; border-radius: 14px; z-index: 10;
+  }
+</style>
+</head>
+<body class="stage">
+
+<header class="max-w-[1280px] mx-auto px-10 pt-14 pb-8">
+  <div class="mono text-[11px] tracking-[0.18em] uppercase text-stone-500">Phase 01 · Visual direction · v2</div>
+  <h1 class="mt-3 text-[44px] leading-[1.05] tracking-tight text-stone-900" style="font-family:'Fraunces',serif;font-variation-settings:'opsz' 144;">Light &amp; dark, side by side.</h1>
+  <p class="mt-3 max-w-[680px] text-[15px] leading-relaxed text-stone-600">
+    Two directions remaining: <strong>01 Ember &amp; Linen</strong> and <strong>02 Midnight Garden</strong>. Each is shown as a fully resolved light + dark pair — same person card, same type, recolored for the opposite environment so you can judge how the mood survives the switch.
+  </p>
+</header>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- DIRECTION 01 — EMBER & LINEN                                         -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section class="max-w-[1280px] mx-auto px-10 pt-8">
+  <div class="flex items-baseline justify-between border-b border-stone-300 pb-3">
+    <div>
+      <div class="mono text-[11px] tracking-[0.18em] uppercase text-stone-500">Direction 01</div>
+      <h2 class="text-[40px] leading-tight tracking-tight text-stone-900" style="font-family:'Fraunces',serif;font-variation-settings:'opsz' 144;">Ember &amp; Linen</h2>
+    </div>
+    <div class="text-[14px] text-stone-600 italic max-w-md text-right" style="font-family:'Fraunces',serif;">
+      Warm sunlight on unbleached paper · embers in a fireplace once the lights go down.
+    </div>
+  </div>
+</section>
+
+<!-- 01 — LIGHT -->
+<section class="d1l">
+  <div class="max-w-[1280px] mx-auto px-10 py-16">
+    <div class="flex items-center gap-3 mb-10">
+      <span class="theme-tag d1l-sub">Theme A</span>
+      <span class="d1-display text-[28px]" style="color:#2a1f17">Linen — Light</span>
+      <span class="d1l-sub text-[13px] d1-body italic">Default. Daytime, kitchen counter, midmorning.</span>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8">
+      <!-- Phone mock -->
+      <div class="col-span-12 lg:col-span-5 flex justify-center">
+        <div class="iphone" style="background:#e3d6c0">
+          <div class="iphone-screen d1l">
+            <div class="notch"></div>
+            <div class="px-5 pt-12 pb-5">
+              <div class="mono text-[10px] tracking-[0.18em] uppercase d1l-sub">UPCOMING</div>
+              <h3 class="d1-display text-[30px] leading-tight mt-1">Mom</h3>
+              <div class="text-[13px] mt-0.5 d1-body d1l-sub">Eleanor · 67 · Portland</div>
+
+              <div class="mt-5 d1l-card rounded-2xl p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center text-[16px] d1-display" style="background:#e8d5b8;color:#7a3a1f">M</div>
+                    <div>
+                      <div class="d1-display text-[18px] leading-none">Mom</div>
+                      <div class="text-[12px] d1-body d1l-sub mt-0.5">Eleanor</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="mono text-[9px] tracking-[0.16em] uppercase d1l-accent">Birthday</div>
+                    <div class="text-[13px] d1-body" style="color:#2a1f17">in 12 days</div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-4 border-t d1l-divider">
+                  <div class="mono text-[9px] tracking-[0.18em] uppercase d1l-sub mb-2">Saved ideas</div>
+                  <ul class="space-y-2 d1-body text-[13px]" style="color:#3a2a1f">
+                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:#b8512c"></span>Ceramic mug, cobalt</li>
+                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:#b8512c"></span>Tartine Bread cookbook</li>
+                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:#b8512c"></span>Linen napkins, set of 4</li>
+                  </ul>
+                </div>
+                <div class="mt-3 flex gap-1.5 flex-wrap">
+                  <span class="d1l-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Cooking</span>
+                  <span class="d1l-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Pottery</span>
+                  <span class="d1l-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Garden</span>
+                </div>
+              </div>
+
+              <button class="mt-4 w-full rounded-xl py-3 d1-body text-[14px] font-medium text-white" style="background:#b8512c">+ Add a gift idea</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette + type -->
+      <div class="col-span-12 lg:col-span-7">
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch ring-line" style="background:#f3ede2"></div><div class="mt-2 mono text-[10px] tracking-wide d1l-sub">BG</div><div class="mono text-[11px]">#F3EDE2</div></div>
+          <div><div class="swatch ring-line" style="background:#fbf6ec"></div><div class="mt-2 mono text-[10px] tracking-wide d1l-sub">SURFACE</div><div class="mono text-[11px]">#FBF6EC</div></div>
+          <div><div class="swatch" style="background:#2a1f17"></div><div class="mt-2 mono text-[10px] tracking-wide d1l-sub">TEXT</div><div class="mono text-[11px]">#2A1F17</div></div>
+          <div><div class="swatch" style="background:#7a6a55"></div><div class="mt-2 mono text-[10px] tracking-wide d1l-sub">TEXT 2</div><div class="mono text-[11px]">#7A6A55</div></div>
+          <div><div class="swatch" style="background:#b8512c"></div><div class="mt-2 mono text-[10px] tracking-wide d1l-sub">EMBER</div><div class="mono text-[11px]">#B8512C</div></div>
+          <div><div class="swatch" style="background:#6b7a3a"></div><div class="mt-2 mono text-[10px] tracking-wide d1l-sub">OLIVE</div><div class="mono text-[11px]">#6B7A3A</div></div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 gap-8 d1-body">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d1l-sub">Headings — Fraunces</div>
+            <div class="d1-display text-[44px] leading-none mt-2" style="color:#2a1f17">Mom's birthday</div>
+            <div class="d1-display text-[20px] leading-tight mt-2 italic" style="color:#7a6a55">in twelve days</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d1l-sub">Body — Inter</div>
+            <p class="text-[15px] leading-relaxed mt-2" style="color:#3a2a1f">She mentioned the cookbook in March, the cobalt mug at the farmers' market, and "anything for the garden." Three solid leads.</p>
+            <div class="mt-3 flex gap-2">
+              <span class="d1l-chip mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Tag</span>
+              <button class="px-3 py-1 rounded text-white text-[12px]" style="background:#b8512c">Primary</button>
+              <button class="px-3 py-1 rounded text-[12px]" style="background:#fbf6ec;border:1px solid #e3d6c0;color:#2a1f17">Secondary</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 01 — DARK -->
+<section class="d1d">
+  <div class="max-w-[1280px] mx-auto px-10 py-16">
+    <div class="flex items-center gap-3 mb-10">
+      <span class="theme-tag d1d-sub">Theme B</span>
+      <span class="d1-display text-[28px]" style="color:#ece2cf">Ember — Dark</span>
+      <span class="d1d-sub text-[13px] d1-body italic">Evening. Lamp on, the embers still warm.</span>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8">
+      <!-- Phone mock -->
+      <div class="col-span-12 lg:col-span-5 flex justify-center">
+        <div class="iphone" style="background:#0a0604">
+          <div class="iphone-screen d1d">
+            <div class="notch"></div>
+            <div class="px-5 pt-12 pb-5">
+              <div class="mono text-[10px] tracking-[0.18em] uppercase d1d-sub">UPCOMING</div>
+              <h3 class="d1-display text-[30px] leading-tight mt-1" style="color:#ece2cf">Mom</h3>
+              <div class="text-[13px] mt-0.5 d1-body d1d-sub">Eleanor · 67 · Portland</div>
+
+              <div class="mt-5 d1d-card rounded-2xl p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center text-[16px] d1-display" style="background:#3a2a1c;color:#e08054">M</div>
+                    <div>
+                      <div class="d1-display text-[18px] leading-none" style="color:#ece2cf">Mom</div>
+                      <div class="text-[12px] d1-body d1d-sub mt-0.5">Eleanor</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="mono text-[9px] tracking-[0.16em] uppercase d1d-accent">Birthday</div>
+                    <div class="text-[13px] d1-body" style="color:#ece2cf">in 12 days</div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-4 border-t d1d-divider">
+                  <div class="mono text-[9px] tracking-[0.18em] uppercase d1d-sub mb-2">Saved ideas</div>
+                  <ul class="space-y-2 d1-body text-[13px]" style="color:#d8cdb8">
+                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:#e08054"></span>Ceramic mug, cobalt</li>
+                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:#e08054"></span>Tartine Bread cookbook</li>
+                    <li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full" style="background:#e08054"></span>Linen napkins, set of 4</li>
+                  </ul>
+                </div>
+                <div class="mt-3 flex gap-1.5 flex-wrap">
+                  <span class="d1d-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Cooking</span>
+                  <span class="d1d-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Pottery</span>
+                  <span class="d1d-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Garden</span>
+                </div>
+              </div>
+
+              <button class="mt-4 w-full rounded-xl py-3 d1-body text-[14px] font-medium" style="background:#e08054;color:#1a130d">+ Add a gift idea</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette + type -->
+      <div class="col-span-12 lg:col-span-7">
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch ring-line-dk" style="background:#1a130d"></div><div class="mt-2 mono text-[10px] tracking-wide d1d-sub">BG</div><div class="mono text-[11px]" style="color:#ece2cf">#1A130D</div></div>
+          <div><div class="swatch ring-line-dk" style="background:#241a11"></div><div class="mt-2 mono text-[10px] tracking-wide d1d-sub">SURFACE</div><div class="mono text-[11px]" style="color:#ece2cf">#241A11</div></div>
+          <div><div class="swatch" style="background:#ece2cf"></div><div class="mt-2 mono text-[10px] tracking-wide d1d-sub">TEXT</div><div class="mono text-[11px]" style="color:#ece2cf">#ECE2CF</div></div>
+          <div><div class="swatch" style="background:#a08a6a"></div><div class="mt-2 mono text-[10px] tracking-wide d1d-sub">TEXT 2</div><div class="mono text-[11px]" style="color:#ece2cf">#A08A6A</div></div>
+          <div><div class="swatch" style="background:#e08054"></div><div class="mt-2 mono text-[10px] tracking-wide d1d-sub">EMBER</div><div class="mono text-[11px]" style="color:#ece2cf">#E08054</div></div>
+          <div><div class="swatch" style="background:#a3b06a"></div><div class="mt-2 mono text-[10px] tracking-wide d1d-sub">OLIVE</div><div class="mono text-[11px]" style="color:#ece2cf">#A3B06A</div></div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 gap-8 d1-body">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d1d-sub">Headings — Fraunces</div>
+            <div class="d1-display text-[44px] leading-none mt-2" style="color:#ece2cf">Mom's birthday</div>
+            <div class="d1-display text-[20px] leading-tight mt-2 italic" style="color:#a08a6a">in twelve days</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d1d-sub">Body — Inter</div>
+            <p class="text-[15px] leading-relaxed mt-2" style="color:#d8cdb8">She mentioned the cookbook in March, the cobalt mug at the farmers' market, and "anything for the garden." Three solid leads.</p>
+            <div class="mt-3 flex gap-2">
+              <span class="d1d-chip mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Tag</span>
+              <button class="px-3 py-1 rounded text-[12px]" style="background:#e08054;color:#1a130d">Primary</button>
+              <button class="px-3 py-1 rounded text-[12px]" style="background:#241a11;border:1px solid #382a1c;color:#ece2cf">Secondary</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="mt-8 d1d-card rounded-xl p-4 d1-body text-[13px]" style="color:#a08a6a">
+          <div class="mono text-[10px] tracking-[0.18em] uppercase mb-2" style="color:#a08a6a">Dark mode notes</div>
+          Background warms slightly toward umber (not pure black) so the linen mood survives the switch. The ember accent shifts up in lightness (B8512C → E08054) to maintain contrast on dark surfaces. Olive moves the same way for tag accents.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════════════════════════ -->
+<!-- DIRECTION 02 — MIDNIGHT GARDEN                                       -->
+<!-- ════════════════════════════════════════════════════════════════════ -->
+
+<section class="max-w-[1280px] mx-auto px-10 pt-12">
+  <div class="flex items-baseline justify-between border-b border-stone-300 pb-3">
+    <div>
+      <div class="mono text-[11px] tracking-[0.18em] uppercase text-stone-500">Direction 02</div>
+      <h2 class="text-[40px] leading-tight tracking-tight text-stone-900" style="font-family:'DM Serif Display',serif;">Midnight Garden</h2>
+    </div>
+    <div class="text-[14px] text-stone-600 italic max-w-md text-right" style="font-family:'Spectral',serif;">
+      Brass lamp at night · the same garden in morning light.
+    </div>
+  </div>
+</section>
+
+<!-- 02 — DARK (the canonical direction) -->
+<section class="d2d">
+  <div class="max-w-[1280px] mx-auto px-10 py-16">
+    <div class="flex items-center gap-3 mb-10">
+      <span class="theme-tag d2d-sub">Theme A</span>
+      <span class="d2-display text-[28px]" style="color:#e8e1cf">Midnight — Dark</span>
+      <span class="d2d-sub text-[13px] d2-body italic">Default. Late evening, brass lamp on a desk.</span>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8">
+      <!-- Phone -->
+      <div class="col-span-12 lg:col-span-5 flex justify-center">
+        <div class="iphone" style="background:#050a08">
+          <div class="iphone-screen d2d">
+            <div class="notch"></div>
+            <div class="px-5 pt-12 pb-5">
+              <div class="mono text-[10px] tracking-[0.18em] uppercase d2d-sub">UPCOMING</div>
+              <h3 class="d2-display text-[32px] leading-tight mt-1" style="color:#e8e1cf">Mom</h3>
+              <div class="text-[13px] mt-0.5 d2-body d2d-sub">Eleanor · 67 · Portland</div>
+
+              <div class="mt-5 d2d-card rounded-2xl p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center text-[18px] d2-display" style="background:#2a3d33;color:#c8a45a">M</div>
+                    <div>
+                      <div class="d2-display text-[20px] leading-none" style="color:#e8e1cf">Mom</div>
+                      <div class="text-[12px] d2-body d2d-sub mt-0.5">Eleanor</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="mono text-[9px] tracking-[0.16em] uppercase d2d-accent">Birthday</div>
+                    <div class="text-[13px] d2-body" style="color:#e8e1cf">in 12 days</div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-4 border-t d2d-divider">
+                  <div class="mono text-[9px] tracking-[0.18em] uppercase d2d-sub mb-2">Saved ideas</div>
+                  <ul class="space-y-2 d2-body text-[13px]" style="color:#d8d2c0">
+                    <li class="flex items-center gap-2"><span class="w-1 h-3.5 rounded" style="background:#c8a45a"></span>Ceramic mug, cobalt</li>
+                    <li class="flex items-center gap-2"><span class="w-1 h-3.5 rounded" style="background:#c8a45a"></span>Tartine Bread cookbook</li>
+                    <li class="flex items-center gap-2"><span class="w-1 h-3.5 rounded" style="background:#c8a45a"></span>Linen napkins, set of 4</li>
+                  </ul>
+                </div>
+                <div class="mt-3 flex gap-1.5 flex-wrap">
+                  <span class="d2d-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Cooking</span>
+                  <span class="d2d-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Pottery</span>
+                  <span class="d2d-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Garden</span>
+                </div>
+              </div>
+
+              <button class="mt-4 w-full rounded-xl py-3 d2-body text-[14px] font-medium" style="background:#c8a45a;color:#0f1a16">+ Add a gift idea</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette + type -->
+      <div class="col-span-12 lg:col-span-7">
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch ring-line-dk" style="background:#0f1a16"></div><div class="mt-2 mono text-[10px] tracking-wide d2d-sub">BG</div><div class="mono text-[11px]" style="color:#e8e1cf">#0F1A16</div></div>
+          <div><div class="swatch ring-line-dk" style="background:#16241e"></div><div class="mt-2 mono text-[10px] tracking-wide d2d-sub">SURFACE</div><div class="mono text-[11px]" style="color:#e8e1cf">#16241E</div></div>
+          <div><div class="swatch" style="background:#e8e1cf"></div><div class="mt-2 mono text-[10px] tracking-wide d2d-sub">TEXT</div><div class="mono text-[11px]" style="color:#e8e1cf">#E8E1CF</div></div>
+          <div><div class="swatch" style="background:#8a9a8f"></div><div class="mt-2 mono text-[10px] tracking-wide d2d-sub">TEXT 2</div><div class="mono text-[11px]" style="color:#e8e1cf">#8A9A8F</div></div>
+          <div><div class="swatch" style="background:#c8a45a"></div><div class="mt-2 mono text-[10px] tracking-wide d2d-sub">BRASS</div><div class="mono text-[11px]" style="color:#e8e1cf">#C8A45A</div></div>
+          <div><div class="swatch" style="background:#a04545"></div><div class="mt-2 mono text-[10px] tracking-wide d2d-sub">CLARET</div><div class="mono text-[11px]" style="color:#e8e1cf">#A04545</div></div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 gap-8 d2-body">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d2d-sub">Headings — DM Serif Display</div>
+            <div class="d2-display text-[46px] leading-none mt-2" style="color:#e8e1cf">Mom's birthday</div>
+            <div class="d2-display text-[22px] leading-tight mt-2 italic" style="color:#8a9a8f">in twelve days</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d2d-sub">Body — Work Sans</div>
+            <p class="text-[15px] leading-relaxed mt-2" style="color:#d8d2c0">She mentioned the cookbook in March, the cobalt mug at the farmers' market, and "anything for the garden." Three solid leads.</p>
+            <div class="mt-3 flex gap-2">
+              <span class="d2d-chip mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Tag</span>
+              <button class="px-3 py-1 rounded text-[12px]" style="background:#c8a45a;color:#0f1a16">Primary</button>
+              <button class="px-3 py-1 rounded text-[12px]" style="background:#16241e;border:1px solid #213830;color:#e8e1cf">Secondary</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 02 — LIGHT -->
+<section class="d2l">
+  <div class="max-w-[1280px] mx-auto px-10 py-16">
+    <div class="flex items-center gap-3 mb-10">
+      <span class="theme-tag d2l-sub">Theme B</span>
+      <span class="d2-display text-[28px]" style="color:#1a2a22">Garden — Light</span>
+      <span class="d2l-sub text-[13px] d2-body italic">The same garden in morning light. Cream, fern, brass.</span>
+    </div>
+
+    <div class="grid grid-cols-12 gap-8">
+      <!-- Phone -->
+      <div class="col-span-12 lg:col-span-5 flex justify-center">
+        <div class="iphone" style="background:#d8d0b8">
+          <div class="iphone-screen d2l">
+            <div class="notch"></div>
+            <div class="px-5 pt-12 pb-5">
+              <div class="mono text-[10px] tracking-[0.18em] uppercase d2l-sub">UPCOMING</div>
+              <h3 class="d2-display text-[32px] leading-tight mt-1" style="color:#1a2a22">Mom</h3>
+              <div class="text-[13px] mt-0.5 d2-body d2l-sub">Eleanor · 67 · Portland</div>
+
+              <div class="mt-5 d2l-card rounded-2xl p-4">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-full flex items-center justify-center text-[18px] d2-display" style="background:#dfe5d0;color:#3a4a3a">M</div>
+                    <div>
+                      <div class="d2-display text-[20px] leading-none" style="color:#1a2a22">Mom</div>
+                      <div class="text-[12px] d2-body d2l-sub mt-0.5">Eleanor</div>
+                    </div>
+                  </div>
+                  <div class="text-right">
+                    <div class="mono text-[9px] tracking-[0.16em] uppercase d2l-accent">Birthday</div>
+                    <div class="text-[13px] d2-body" style="color:#1a2a22">in 12 days</div>
+                  </div>
+                </div>
+                <div class="mt-4 pt-4 border-t d2l-divider">
+                  <div class="mono text-[9px] tracking-[0.18em] uppercase d2l-sub mb-2">Saved ideas</div>
+                  <ul class="space-y-2 d2-body text-[13px]" style="color:#2a3a32">
+                    <li class="flex items-center gap-2"><span class="w-1 h-3.5 rounded" style="background:#8a6a25"></span>Ceramic mug, cobalt</li>
+                    <li class="flex items-center gap-2"><span class="w-1 h-3.5 rounded" style="background:#8a6a25"></span>Tartine Bread cookbook</li>
+                    <li class="flex items-center gap-2"><span class="w-1 h-3.5 rounded" style="background:#8a6a25"></span>Linen napkins, set of 4</li>
+                  </ul>
+                </div>
+                <div class="mt-3 flex gap-1.5 flex-wrap">
+                  <span class="d2l-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Cooking</span>
+                  <span class="d2l-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Pottery</span>
+                  <span class="d2l-chip mono text-[9px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Garden</span>
+                </div>
+              </div>
+
+              <button class="mt-4 w-full rounded-xl py-3 d2-body text-[14px] font-medium" style="background:#1a2a22;color:#f3efe4">+ Add a gift idea</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Palette + type -->
+      <div class="col-span-12 lg:col-span-7">
+        <div class="grid grid-cols-6 gap-3">
+          <div><div class="swatch ring-line" style="background:#f3efe4"></div><div class="mt-2 mono text-[10px] tracking-wide d2l-sub">BG</div><div class="mono text-[11px]">#F3EFE4</div></div>
+          <div><div class="swatch ring-line" style="background:#fbf8ee"></div><div class="mt-2 mono text-[10px] tracking-wide d2l-sub">SURFACE</div><div class="mono text-[11px]">#FBF8EE</div></div>
+          <div><div class="swatch" style="background:#1a2a22"></div><div class="mt-2 mono text-[10px] tracking-wide d2l-sub">TEXT</div><div class="mono text-[11px]">#1A2A22</div></div>
+          <div><div class="swatch" style="background:#6a7a6a"></div><div class="mt-2 mono text-[10px] tracking-wide d2l-sub">TEXT 2</div><div class="mono text-[11px]">#6A7A6A</div></div>
+          <div><div class="swatch" style="background:#8a6a25"></div><div class="mt-2 mono text-[10px] tracking-wide d2l-sub">BRASS</div><div class="mono text-[11px]">#8A6A25</div></div>
+          <div><div class="swatch" style="background:#7a3535"></div><div class="mt-2 mono text-[10px] tracking-wide d2l-sub">CLARET</div><div class="mono text-[11px]">#7A3535</div></div>
+        </div>
+
+        <div class="mt-8 grid grid-cols-2 gap-8 d2-body">
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d2l-sub">Headings — DM Serif Display</div>
+            <div class="d2-display text-[46px] leading-none mt-2" style="color:#1a2a22">Mom's birthday</div>
+            <div class="d2-display text-[22px] leading-tight mt-2 italic" style="color:#6a7a6a">in twelve days</div>
+          </div>
+          <div>
+            <div class="mono text-[10px] tracking-[0.18em] uppercase d2l-sub">Body — Work Sans</div>
+            <p class="text-[15px] leading-relaxed mt-2" style="color:#2a3a32">She mentioned the cookbook in March, the cobalt mug at the farmers' market, and "anything for the garden." Three solid leads.</p>
+            <div class="mt-3 flex gap-2">
+              <span class="d2l-chip mono text-[10px] tracking-[0.14em] uppercase px-2 py-0.5 rounded">Tag</span>
+              <button class="px-3 py-1 rounded text-[12px]" style="background:#1a2a22;color:#f3efe4">Primary</button>
+              <button class="px-3 py-1 rounded text-[12px]" style="background:#fbf8ee;border:1px solid #d8d0b8;color:#1a2a22">Secondary</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="mt-8 d2l-card rounded-xl p-4 d2-body text-[13px]" style="color:#6a7a6a">
+          <div class="mono text-[10px] tracking-[0.18em] uppercase mb-2 d2l-sub">Light mode notes</div>
+          The dark forest green inverts to a near-black ink so headlines still feel editorial — pure black would lose the warmth. Brass darkens (C8A45A → 8A6A25) to hold contrast on cream. The cream BG pulls slightly green to keep the "garden" association alive in daylight.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ FOOTER / NEXT ═══════════ -->
+<footer class="max-w-[1280px] mx-auto px-10 py-16">
+  <div class="grid grid-cols-12 gap-10 items-start">
+    <div class="col-span-12 lg:col-span-7">
+      <div class="mono text-[11px] tracking-[0.18em] uppercase text-stone-500">Next</div>
+      <h3 class="mt-3 text-[32px] leading-tight tracking-tight text-stone-900" style="font-family:'Fraunces',serif;">
+        Pick a direction. We'll mock <em>People list</em> + <em>Person detail</em> next.
+      </h3>
+      <p class="mt-3 text-[15px] leading-relaxed text-stone-600 max-w-xl">
+        Both directions ship as a light + dark pair, with the system color (Auto) honored by default. Theme B in each is the secondary mode — it's intentionally not a literal inversion; the mood travels but the surfaces are tuned for that environment.
+      </p>
+    </div>
+    <div class="col-span-12 lg:col-span-5">
+      <div class="rounded-2xl bg-white ring-line p-5">
+        <div class="mono text-[10px] tracking-[0.18em] uppercase text-stone-500">A note on auto-switching</div>
+        <p class="mt-3 text-[14px] text-stone-700 leading-relaxed">
+          On iOS, the app should follow system appearance by default with a manual override in settings. Both directions are designed so neither theme feels like the "second-class" version — Ember works best with Linen-light as default; Midnight Garden works best with Midnight-dark as default.
+        </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

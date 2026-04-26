@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gift Planner — Screens C–F</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ececea; font-family: 'Work Sans', system-ui, sans-serif; }
+  * { -webkit-font-smoothing: antialiased; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .stage {
+    min-height: 100vh; padding: 48px 24px 64px;
+    display: flex; flex-direction: column; gap: 56px; align-items: center;
+  }
+  .header { width: 100%; max-width: 1240px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6b6358;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px; line-height: 1.05; letter-spacing: -0.5px;
+    color: #1a1410; margin: 12px 0 0;
+  }
+  .lead {
+    margin-top: 12px; max-width: 760px;
+    font-size: 15px; line-height: 1.6; color: #5a5246;
+  }
+  .frames {
+    display: grid;
+    grid-template-columns: repeat(2, max-content);
+    gap: 56px 32px;
+    justify-content: center;
+  }
+  .frame-block { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .frame-caption {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6b6358; text-align: center;
+  }
+  .frame-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: #1a1410; line-height: 1; margin-top: 6px;
+  }
+  .frame-sub {
+    font-size: 13px; color: #6b6358; max-width: 360px; text-align: center;
+    line-height: 1.5; margin-top: 6px;
+  }
+  .notes {
+    width: 100%; max-width: 1240px;
+    display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px;
+  }
+  .panel {
+    background: #fff; border-radius: 18px; padding: 22px 24px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+  }
+  .panel h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px; margin: 8px 0 12px; color: #1a1410;
+  }
+  .panel ul { padding-left: 18px; margin: 0; }
+  .panel li {
+    font-size: 13.5px; color: #3a342c; line-height: 1.55; margin-bottom: 10px;
+  }
+  .panel li strong { color: #1a1410; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <header class="header">
+    <div class="eyebrow">Phase 03 · Midnight Garden · Screens C–F</div>
+    <h1>People · Calendar · Backlog · Brainstorm.</h1>
+    <p class="lead">
+      Four screens in the locked language. People is sorted by next occasion with a "This week" urgency group above the rest. Calendar groups by month with a top stats strip. Backlog uses filter chips with one active filter shown. Brainstorm leads with a context block (interests, budget, avoiding) and lists 5 numbered suggestions, each with reasoning + price + Save action — explicitly not a chat.
+    </p>
+  </header>
+
+  <div id="root"></div>
+
+  <section class="notes">
+    <div class="panel">
+      <div class="eyebrow">Where the language strained</div>
+      <h3>Bent rules</h3>
+      <ul>
+        <li><strong>Avatar stack on Backlog cards.</strong> Two overlapping 22px circles work but get muddy at 3+. Cap at 2 + "+N" pill, or rethink for ideas tagged to many people.</li>
+        <li><strong>Filter chips horizontally scrolling.</strong> Off-screen filters are hard to discover. Might need a "Filters · 3" entry that opens a sheet once we have more than four facets.</li>
+        <li><strong>Date column on Calendar rows.</strong> The little day/weekday block is technically a fourth visual element competing with the avatar/icon vocabulary. I dropped person avatars on this screen to compensate — a tradeoff worth validating.</li>
+        <li><strong>Brainstorm "01–05" mono numerals</strong> work but the screen has no other numbered list in the system. If we use ordering elsewhere it'll feel consistent; if not, it stands out.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="eyebrow">Worth designing next</div>
+      <h3>States to validate</h3>
+      <ul>
+        <li><strong>People — empty.</strong> First-run, no people added. Crucial moment; should sell the share-sheet capture concept.</li>
+        <li><strong>Calendar — quiet stretch.</strong> What does the "next occasion is 4 months away" view feel like? The stats strip and dense rows assume a busy life.</li>
+        <li><strong>Brainstorm — generating.</strong> The 3–8 second loading state. Skeleton cards or a "thinking…" copy moment is a chance to set tone.</li>
+        <li><strong>Brainstorm — error / context too thin.</strong> "I don't have enough about Eleanor yet — add 2 interests?" — failure mode that turns into onboarding.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="eyebrow">New components → back-port</div>
+      <h3>Reuse in v2 screens</h3>
+      <ul>
+        <li><strong>Avatar atom (3 sizes).</strong> Standardize 22 / 32 / 44 / 56 for stack / row / list / hero. Apply to Profile header.</li>
+        <li><strong>Eyebrow component</strong> with optional accent color (brass for "Next occasion", claret for urgency). Already used everywhere; codify.</li>
+        <li><strong>StatPill row</strong> from Calendar could appear at the top of Profile too: "next · 18d · 4 ideas · last gift May '25".</li>
+        <li><strong>Filter chip atom</strong> (active / dashed / default) → use for Profile interests &amp; the typeahead "+ Someone else" in Quick Capture.</li>
+        <li><strong>Suggestion card pattern</strong> (mono index + italic title + reasoning + footer with price &amp; Save) → reuse for any AI moment in the app.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="screens/phase3.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  return (
+    <div className="frames">
+      <div className="frame-block" data-screen-label="C — People List">
+        <IOSDevice width={390} height={844} dark>
+          <PeopleListScreen />
+        </IOSDevice>
+        <div>
+          <div className="frame-caption">Screen C</div>
+          <div className="frame-title">People List</div>
+          <div className="frame-sub">Sorted by next occasion · "This week" urgency group</div>
+        </div>
+      </div>
+      <div className="frame-block" data-screen-label="D — Calendar">
+        <IOSDevice width={390} height={844} dark>
+          <CalendarScreen />
+        </IOSDevice>
+        <div>
+          <div className="frame-caption">Screen D</div>
+          <div className="frame-title">Upcoming</div>
+          <div className="frame-sub">Grouped by month · stats strip · need-ideas pill</div>
+        </div>
+      </div>
+      <div className="frame-block" data-screen-label="E — Ideas Backlog">
+        <IOSDevice width={390} height={844} dark>
+          <BacklogScreen />
+        </IOSDevice>
+        <div>
+          <div className="frame-caption">Screen E</div>
+          <div className="frame-title">Ideas Backlog</div>
+          <div className="frame-sub">Filtered to Mom · avatar stack on cards</div>
+        </div>
+      </div>
+      <div className="frame-block" data-screen-label="F — AI Brainstorm">
+        <IOSDevice width={390} height={844} dark>
+          <BrainstormScreen />
+        </IOSDevice>
+        <div>
+          <div className="frame-caption">Screen F</div>
+          <div className="frame-title">AI Brainstorm</div>
+          <div className="frame-sub">Structured output · numbered list · not a chat</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>

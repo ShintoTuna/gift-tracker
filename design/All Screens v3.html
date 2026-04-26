@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>All Screens v3 — System-aligned</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ececea; font-family: 'Work Sans', system-ui, sans-serif; }
+  * { -webkit-font-smoothing: antialiased; }
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  @keyframes blink { 0%,49% { opacity: 1; } 50%,100% { opacity: 0; } }
+
+  .stage { min-height: 100vh; padding: 48px 24px 64px; display: flex; flex-direction: column; gap: 56px; align-items: center; }
+  .header { width: 100%; max-width: 1320px; }
+  .eyebrow { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #6b6358; }
+  h1.lead { font-family: 'DM Serif Display', serif; font-size: 40px; line-height: 1.05; letter-spacing: -0.5px; color: #1a1410; margin: 12px 0 0; }
+  p.lead { margin-top: 12px; max-width: 760px; font-size: 15px; line-height: 1.6; color: #5a5246; }
+  .frames { display: grid; grid-template-columns: repeat(3, max-content); gap: 56px 32px; justify-content: center; }
+  .frame-block { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+  .frame-caption { font-family: 'IBM Plex Mono', ui-monospace, monospace; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: #6b6358; text-align: center; }
+  .frame-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: #1a1410; line-height: 1; margin-top: 6px; }
+  .frame-sub { font-size: 13px; color: #6b6358; max-width: 360px; text-align: center; line-height: 1.5; margin-top: 6px; }
+  .changes { width: 100%; max-width: 1320px; background: #fff; border-radius: 18px; padding: 24px 28px; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06); }
+  .changes h3 { font-family: 'DM Serif Display', serif; font-size: 22px; margin: 6px 0 16px; color: #1a1410; }
+  .changes table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .changes th, .changes td { text-align: left; padding: 10px 14px; vertical-align: top; }
+  .changes th { font-family: 'IBM Plex Mono'; font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: #6b6358; font-weight: 500; border-bottom: 1px solid #e0dcd0; }
+  .changes td { border-bottom: 1px solid #f0ecd8; color: #3a342c; line-height: 1.55; }
+  .changes td:first-child { font-family: 'DM Serif Display'; font-size: 16px; color: #1a1410; width: 200px; }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <header class="header">
+    <div class="eyebrow">All six screens · v3 · System v1.0 compliant</div>
+    <h1 class="lead">Every screen, rebuilt on the system.</h1>
+    <p class="lead">
+      Same six screens — Profile, Capture, People, Calendar, Backlog, Brainstorm — composed entirely from the v1.0 atoms (Label, Pill, Avatar, Card, Btn, PersonRow, IdeaCard, SuggestionCard). Type collapses to the 6-size scale. Brass is one job. Calendar gets its avatars back. Backlog filters move to the Pill atom.
+    </p>
+  </header>
+
+  <div id="root"></div>
+
+  <section class="changes">
+    <div class="eyebrow">What changed vs. previous versions</div>
+    <h3>Per-screen migration log</h3>
+    <table>
+      <thead>
+        <tr><th>Screen</th><th>Changes applied</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>A · Profile</td><td>Saved-ideas now use IdeaCard. "Already given" rendered inside Card with year-column rows. Hero avatar 56 + brass accent (was bespoke). Buttons go through Btn primary.</td></tr>
+        <tr><td>B · Capture</td><td>Person picker uses PersonChip (brass tone). Field labels Label tone=default. Suggestion rows reuse PersonRow shell. Save uses Btn primary. Removed bespoke 30pt headline — single 32pt screen title.</td></tr>
+        <tr><td>C · People</td><td>"This week" header → Label tone=claret. Rows are PersonRow. Idea-count column collapsed into PersonRow's `ideas` slot.</td></tr>
+        <tr><td>D · Calendar</td><td>Date block dropped. Avatars back on every row (40px, claret accent for urgent). Date formatted as inline meta line. Pills (fern / brass-dashed) replace bespoke chips. Stats strip uses Card.</td></tr>
+        <tr><td>E · Backlog</td><td>Filter chips → Pill (brass active, default neutral, dashed for "+ Filter"). Cards → IdeaCard with avatar stack (capped at 3+N). Status pill on the right.</td></tr>
+        <tr><td>F · Brainstorm</td><td>Suggestions → SuggestionCard. Context chips → neutral surface-2 chips (intentionally distinct from filter Pills). Bottom buttons → Btn (default + primary). Avoiding line now lists actual past gifts.</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="v3/system-runtime.jsx"></script>
+<script type="text/babel" src="v3/screens.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  const screens = [
+    { key: 'A', title: 'Profile',     sub: 'Eleanor · 18 days to Birthday', Comp: ScreenProfile },
+    { key: 'B', title: 'Quick Capture', sub: 'New idea · clipboard-detected', Comp: ScreenCapture },
+    { key: 'C', title: 'People List', sub: 'Sorted by next occasion',    Comp: ScreenPeople },
+    { key: 'D', title: 'Calendar',    sub: 'Avatars back · pills replace chips', Comp: ScreenCalendar },
+    { key: 'E', title: 'Backlog',     sub: 'IdeaCard everywhere',        Comp: ScreenBacklog },
+    { key: 'F', title: 'Brainstorm',  sub: 'SuggestionCard · structured AI', Comp: ScreenBrainstorm },
+  ];
+  return (
+    <div className="frames">
+      {screens.map(s => (
+        <div className="frame-block" data-screen-label={`${s.key} — ${s.title}`} key={s.key}>
+          <IOSDevice width={390} height={844} dark><s.Comp /></IOSDevice>
+          <div>
+            <div className="frame-caption">Screen {s.key}</div>
+            <div className="frame-title">{s.title}</div>
+            <div className="frame-sub">{s.sub}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Gift Planner — Screens A &amp; B v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #ececea; font-family: 'Work Sans', system-ui, sans-serif; }
+  * { -webkit-font-smoothing: antialiased; }
+  .stage {
+    min-height: 100vh; padding: 48px 24px;
+    display: flex; flex-direction: column; gap: 48px; align-items: center;
+  }
+  .header { width: 100%; max-width: 1200px; }
+  .eyebrow {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6b6358;
+  }
+  h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 40px; line-height: 1.05; letter-spacing: -0.5px;
+    color: #1a1410; margin: 12px 0 0;
+  }
+  .lead {
+    margin-top: 12px; max-width: 720px;
+    font-size: 15px; line-height: 1.6; color: #5a5246;
+  }
+  .frames {
+    display: flex; gap: 28px; flex-wrap: wrap; justify-content: center;
+    width: 100%;
+  }
+  .frame-block { display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .frame-caption {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: #6b6358; text-align: center;
+  }
+  .frame-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; color: #1a1410; line-height: 1; margin-top: 6px;
+  }
+  .frame-sub {
+    font-size: 13px; color: #6b6358; max-width: 380px; text-align: center;
+    line-height: 1.5; margin-top: 6px;
+  }
+  .changes {
+    width: 100%; max-width: 1200px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 32px;
+  }
+  .panel {
+    background: #fff; border-radius: 18px; padding: 22px 24px;
+    box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+  }
+  .panel h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 22px; margin: 8px 0 14px; color: #1a1410;
+  }
+  .panel ul { padding-left: 18px; margin: 0; }
+  .panel li {
+    font-size: 14px; color: #3a342c; line-height: 1.55; margin-bottom: 10px;
+  }
+  .panel li strong { color: #1a1410; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<div class="stage">
+
+  <header class="header">
+    <div class="eyebrow">Phase 02 · v2 · Midnight Garden</div>
+    <h1>Tighter, quieter, fewer voices.</h1>
+    <p class="lead">
+      Both screens reworked against your feedback: compact inline header on the profile, multiple dated notes that grow over time, gift items as <em>open</em> or <em>given</em> only, and a Quick Capture with one serif voice, typeahead person search, equal-height optional fields, and "Anytime" as the default occasion.
+    </p>
+  </header>
+
+  <div id="root"></div>
+
+  <section class="changes">
+    <div class="panel">
+      <div class="eyebrow">Screen A — what changed</div>
+      <h3>Person Profile</h3>
+      <ul>
+        <li><strong>Compact inline header.</strong> Avatar (56px) + name + relation on one row. Reclaimed ~120px of vertical space.</li>
+        <li><strong>Toned-down countdown.</strong> "18 days" is now 24pt brass serif, same family as the rest. No more giant editorial numeral.</li>
+        <li><strong>Notes are stacked, dated, additive.</strong> Three example entries spanning months. Each is a self-contained card; "+ Add" sits in the section header.</li>
+        <li><strong>Gift states simplified to two.</strong> Open ideas (live cards) vs Given (faded, line-through, with date and occasion). No ordered/shortlist maintenance.</li>
+        <li><strong>Less mono-eyebrow density.</strong> Section labels are spaced further apart with more whitespace between blocks.</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <div class="eyebrow">Screen B — what changed</div>
+      <h3>Quick Capture</h3>
+      <ul>
+        <li><strong>One voice, no headline.</strong> Killed "What did you think of?" as a 30pt title — it's now a small caption under the field. The field itself is the screen.</li>
+        <li><strong>Typeahead person search</strong> with an inline pill (Mom · 18d) showing the current selection. Suggestions appear as you type. Multi-select supported.</li>
+        <li><strong>Aligned heights.</strong> Price and Occasion are both 42px tall, both labeled "optional." Occasion defaults to <em>Anytime</em>.</li>
+        <li><strong>Removed ⌘+Enter hint.</strong> It's a phone.</li>
+        <li><strong>Clipboard card kept</strong> — same recipe, slightly smaller thumb to match the new density.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="screens/person-card-v2.jsx"></script>
+<script type="text/babel" src="screens/quick-capture-v2.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  return (
+    <div className="frames">
+      <div className="frame-block" data-screen-label="A — Person Profile">
+        <IOSDevice width={390} height={844} dark>
+          <PersonProfileScreenV2 />
+        </IOSDevice>
+        <div>
+          <div className="frame-caption">Screen A · v2</div>
+          <div className="frame-title">Person Profile</div>
+          <div className="frame-sub">Compact header · stacked notes · two-state gifts</div>
+        </div>
+      </div>
+      <div className="frame-block" data-screen-label="B — Quick Capture">
+        <IOSDevice width={390} height={844} dark>
+          <QuickCaptureScreenV2 />
+        </IOSDevice>
+        <div>
+          <div className="frame-caption">Screen B · v2</div>
+          <div className="frame-title">Quick Capture</div>
+          <div className="frame-sub">One voice · typeahead · aligned optionals</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+
+</body>
+</html>
