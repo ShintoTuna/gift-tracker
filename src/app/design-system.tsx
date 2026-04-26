@@ -1,4 +1,6 @@
+import { useMutation } from "convex/react";
 import { router } from "expo-router";
+import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
@@ -13,10 +15,36 @@ import {
 } from "@/components";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
+import { api } from "../../convex/_generated/api";
+
+type SeedResult = {
+  peopleCount: number;
+  occasionsCount: number;
+  giftIdeasCount: number;
+};
+
 // Visual smoke-test for every atom in every variant. Lives at
 // /design-system. Delete or hide behind a dev flag once real screens
 // are using all the atoms in production.
 export default function DesignSystemScreen() {
+  const seedDevData = useMutation(api.seed.seedDevData);
+  const [seeding, setSeeding] = useState(false);
+  const [seedResult, setSeedResult] = useState<SeedResult | null>(null);
+  const [seedError, setSeedError] = useState<string | null>(null);
+
+  const onSeed = async () => {
+    setSeeding(true);
+    setSeedError(null);
+    try {
+      const result = await seedDevData();
+      setSeedResult(result);
+    } catch (err) {
+      setSeedError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSeeding(false);
+    }
+  };
+
   return (
     <View style={styles.root}>
       <NavBar
@@ -31,6 +59,37 @@ export default function DesignSystemScreen() {
         <ScreenTitle sub="every atom, every variant">
           Midnight Garden
         </ScreenTitle>
+
+        <Section title="Dev tools">
+          <Card>
+            <Text style={styles.bodyText}>
+              Wipes and re-seeds people / occasions / gift ideas owned by{" "}
+              <Text style={styles.code}>dev-user-1</Text>.
+            </Text>
+            <View style={{ height: spacing.md }} />
+            <Btn tone="primary" full onPress={onSeed}>
+              {seeding ? "Seeding..." : "Seed dev data"}
+            </Btn>
+            {seedResult && (
+              <>
+                <View style={{ height: spacing.md }} />
+                <Text style={styles.bodyText}>
+                  Inserted {seedResult.peopleCount} people,{" "}
+                  {seedResult.occasionsCount} occasions,{" "}
+                  {seedResult.giftIdeasCount} gift ideas.
+                </Text>
+              </>
+            )}
+            {seedError && (
+              <>
+                <View style={{ height: spacing.md }} />
+                <Text style={[styles.bodyText, { color: colors.claret }]}>
+                  Error: {seedError}
+                </Text>
+              </>
+            )}
+          </Card>
+        </Section>
 
         <Section title="Label">
           <Row>
@@ -165,5 +224,10 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.text2,
     lineHeight: 22,
+  },
+  code: {
+    fontFamily: fonts.mono,
+    fontSize: 13,
+    color: colors.text,
   },
 });
