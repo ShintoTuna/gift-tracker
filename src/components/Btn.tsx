@@ -13,16 +13,19 @@ export type BtnTone = "primary" | "default";
 type Props = {
   tone?: BtnTone;
   full?: boolean;
+  disabled?: boolean;
   children: React.ReactNode;
   style?: ViewStyle;
   onPress?: PressableProps["onPress"];
 };
 
 // Brass primary or surface default. Primary = "the next thing to do"
-// — keep at most one or two per screen.
+// — keep at most one or two per screen. `disabled` dims the button
+// and blocks press; useful for forms gated on validation.
 export function Btn({
   tone = "default",
   full,
+  disabled,
   children,
   style,
   onPress,
@@ -30,12 +33,16 @@ export function Btn({
   const isPrimary = tone === "primary";
   return (
     <Pressable
-      onPress={onPress}
+      onPress={disabled ? undefined : onPress}
+      disabled={disabled}
       style={({ pressed }) => [
         styles.base,
         isPrimary ? styles.primary : styles.surface,
         full ? styles.full : styles.auto,
-        pressed && (isPrimary ? styles.primaryPressed : styles.surfacePressed),
+        !disabled &&
+          pressed &&
+          (isPrimary ? styles.primaryPressed : styles.surfacePressed),
+        disabled && styles.disabled,
         style,
       ]}
     >
@@ -64,6 +71,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   surfacePressed: { backgroundColor: colors.surface2 },
+  disabled: { opacity: 0.4 },
   text: { fontSize: 15 },
   primaryText: { fontFamily: fonts.bodySemiBold, color: colors.bg },
   surfaceText: { fontFamily: fonts.bodyMedium, color: colors.text2 },

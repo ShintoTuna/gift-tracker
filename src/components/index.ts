@@ -12,3 +12,4 @@ export { NavBar, type NavBarLeading } from "./NavBar";
 export { PersonRow } from "./PersonRow";
 export { Pill, type PillTone } from "./Pill";
 export { ScreenTitle } from "./ScreenTitle";
+export { TextField } from "./TextField";

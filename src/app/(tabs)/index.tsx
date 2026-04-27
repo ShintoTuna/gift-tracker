@@ -1,10 +1,17 @@
 import { useQuery } from "convex/react";
 import { router } from "expo-router";
 import { useMemo } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Label, PersonRow, ScreenTitle } from "@/components";
+import { Label, PersonRow, Pill, ScreenTitle } from "@/components";
 import { formatDateLine } from "@/lib/format";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
@@ -51,11 +58,23 @@ export default function PeopleScreen() {
           <ScreenTitle sub="Capture the people who matter">
             People
           </ScreenTitle>
+          <View style={styles.actionsRow}>
+            <Pressable
+              onPress={() => router.push("/people/new")}
+              hitSlop={8}
+            >
+              <Pill tone="brass" dashed>
+                + Person
+              </Pill>
+            </Pressable>
+          </View>
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
-              No one here yet. Tap the{" "}
-              <Text style={styles.emptyAccent}>dev</Text> pill in the
-              bottom-right to seed test data.
+              No one here yet. Tap{" "}
+              <Text style={styles.emptyAccent}>+ Person</Text> to add
+              someone, or use the{" "}
+              <Text style={styles.emptyAccent}>dev</Text> pill to seed
+              test data.
             </Text>
           </View>
         </ScrollView>
@@ -70,6 +89,17 @@ export default function PeopleScreen() {
         showsVerticalScrollIndicator={false}
       >
         <ScreenTitle>People</ScreenTitle>
+
+        <View style={styles.actionsRow}>
+          <Pressable
+            onPress={() => router.push("/people/new")}
+            hitSlop={8}
+          >
+            <Pill tone="brass" dashed>
+              + Person
+            </Pill>
+          </Pressable>
+        </View>
 
         {/* Search bar — visual placeholder. Wired in a later step. */}
         <View style={styles.searchWrap}>
@@ -170,6 +200,12 @@ const styles = StyleSheet.create({
   scroll: {
     paddingTop: spacing.md,
     paddingBottom: spacing.xxl,
+  },
+  actionsRow: {
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.md,
+    flexDirection: "row",
+    justifyContent: "flex-end",
   },
   searchWrap: {
     paddingHorizontal: spacing.xl,
