@@ -57,6 +57,15 @@ export default defineSchema({
     .index("by_person", ["personId"])
     .index("by_date", ["date"]),
 
+  // User-scoped preferences. Keyed by userId so the lookup pattern
+  // mirrors the rest of the app (people, giftIdeas) and the auth
+  // swap is a single-resolver change. New optional fields slot in
+  // here when features need them (notification timings, etc.).
+  userSettings: defineTable({
+    userId: v.string(),
+    defaultCurrency: v.optional(v.string()),
+  }).index("by_user", ["userId"]),
+
   giftIdeas: defineTable({
     userId: v.string(),
     title: v.string(),

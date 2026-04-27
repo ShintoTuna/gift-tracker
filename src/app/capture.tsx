@@ -17,7 +17,7 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
-import { DEFAULT_CURRENCY } from "@/lib/settings";
+import { useDefaultCurrency } from "@/lib/settings";
 import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../convex/_generated/api";
@@ -32,6 +32,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 export default function CaptureScreen() {
   const people = useQuery(api.people.list);
   const createIdea = useMutation(api.giftIdeas.create);
+  const defaultCurrency = useDefaultCurrency();
 
   const [title, setTitle] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
@@ -61,7 +62,7 @@ export default function CaptureScreen() {
         // Currency only attaches when there's actually a price; an
         // unlabelled currency on a missing amount is noise.
         currency:
-          priceEstimate !== undefined ? DEFAULT_CURRENCY : undefined,
+          priceEstimate !== undefined ? defaultCurrency : undefined,
         taggedPeople: taggedIds,
       });
       router.back();
@@ -116,7 +117,7 @@ export default function CaptureScreen() {
             />
 
             <TextField
-              label={`Price (${DEFAULT_CURRENCY})`}
+              label={`Price (${defaultCurrency})`}
               placeholder="Optional"
               value={priceText}
               onChangeText={setPriceText}

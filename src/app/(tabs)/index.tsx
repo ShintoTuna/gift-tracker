@@ -1,4 +1,5 @@
 import { useQuery } from "convex/react";
+import { SymbolView } from "expo-symbols";
 import { router } from "expo-router";
 import { useMemo } from "react";
 import {
@@ -55,19 +56,7 @@ export default function PeopleScreen() {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <ScreenTitle sub="Capture the people who matter">
-            People
-          </ScreenTitle>
-          <View style={styles.actionsRow}>
-            <Pressable
-              onPress={() => router.push("/people/new")}
-              hitSlop={8}
-            >
-              <Pill tone="brass" dashed>
-                + Person
-              </Pill>
-            </Pressable>
-          </View>
+          <PeopleHeader sub="Capture the people who matter" />
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
               No one here yet. Tap{" "}
@@ -88,18 +77,7 @@ export default function PeopleScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <ScreenTitle>People</ScreenTitle>
-
-        <View style={styles.actionsRow}>
-          <Pressable
-            onPress={() => router.push("/people/new")}
-            hitSlop={8}
-          >
-            <Pill tone="brass" dashed>
-              + Person
-            </Pill>
-          </Pressable>
-        </View>
+        <PeopleHeader />
 
         {/* Search bar — visual placeholder. Wired in a later step. */}
         <View style={styles.searchWrap}>
@@ -171,6 +149,47 @@ type EnrichedPerson = NonNullable<
   ReturnType<typeof useQuery<typeof api.people.listWithNextOccasion>>
 >[number];
 
+// Single-row header: gear icon (settings) + centered "People" title
+// + brass-dashed "+ Person" pill. Title stays true-centered via
+// ScreenTitle's absolute-positioned leading/trailing slots, so the
+// chrome doesn't bias it left or right regardless of pill width.
+function PeopleHeader({ sub }: { sub?: string }) {
+  return (
+    <ScreenTitle
+      sub={sub}
+      leading={
+        <Pressable
+          onPress={() => router.push("/settings")}
+          hitSlop={10}
+          accessibilityRole="button"
+          accessibilityLabel="Open settings"
+        >
+          <SymbolView
+            name="gearshape"
+            size={22}
+            tintColor={colors.text2}
+            resizeMode="scaleAspectFit"
+          />
+        </Pressable>
+      }
+      trailing={
+        <Pressable
+          onPress={() => router.push("/people/new")}
+          hitSlop={8}
+          accessibilityRole="button"
+          accessibilityLabel="Add person"
+        >
+          <Pill tone="brass" dashed>
+            + Person
+          </Pill>
+        </Pressable>
+      }
+    >
+      People
+    </ScreenTitle>
+  );
+}
+
 function dateLineFor(person: EnrichedPerson): string {
   if (person.nextOccasion !== null && person.nextOccasionDate !== null) {
     return formatDateLine({
@@ -200,12 +219,6 @@ const styles = StyleSheet.create({
   scroll: {
     paddingTop: spacing.md,
     paddingBottom: spacing.xxl,
-  },
-  actionsRow: {
-    paddingHorizontal: spacing.xl,
-    marginBottom: spacing.md,
-    flexDirection: "row",
-    justifyContent: "flex-end",
   },
   searchWrap: {
     paddingHorizontal: spacing.xl,

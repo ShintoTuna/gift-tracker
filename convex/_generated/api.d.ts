@@ -15,6 +15,7 @@ import type * as lib_seedData from "../lib/seedData.js";
 import type * as occasions from "../occasions.js";
 import type * as people from "../people.js";
 import type * as seed from "../seed.js";
+import type * as userSettings from "../userSettings.js";
 
 import type {
   ApiFromModules,
@@ -30,6 +31,7 @@ declare const fullApi: ApiFromModules<{
   occasions: typeof occasions;
   people: typeof people;
   seed: typeof seed;
+  userSettings: typeof userSettings;
 }>;
 
 /**

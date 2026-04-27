@@ -1,0 +1,37 @@
+import { v } from "convex/values";
+
+import { mutation, query } from "./_generated/server";
+import { getCurrentUserId } from "./lib/auth";
+
+// Returns the current user's settings row, or `null` if none exists
+// yet. Callers should fall back to defaults from src/lib/settings.ts
+// when null. We don't auto-create the row on first read so the
+// query stays reactive to actual writes only.
+export const get = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getCurrentUserId(ctx);
+    return await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+  },
+});
+
+// Upsert mutation for the default currency. Creates the row if it
+// doesn't exist, otherwise patches the existing row.
+export const setDefaultCurrency = mutation({
+  args: { currency: v.string() },
+  handler: async (ctx, { currency }) => {
+    const userId = await getCurrentUserId(ctx);
+    const existing = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+    if (existing === null) {
+      await ctx.db.insert("userSettings", { userId, defaultCurrency: currency });
+    } else {
+      await ctx.db.patch(existing._id, { defaultCurrency: currency });
+    }
+  },
+});

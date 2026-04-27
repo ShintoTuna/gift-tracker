@@ -63,7 +63,7 @@ export default function GiftsScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <ScreenTitle sub="Everything you've captured">Gifts</ScreenTitle>
+        <ScreenTitle>Gifts</ScreenTitle>
 
         <View style={styles.filtersRow}>
           {FILTERS.map((f) => (

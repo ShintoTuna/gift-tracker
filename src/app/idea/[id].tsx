@@ -22,7 +22,7 @@ import {
   TextField,
 } from "@/components";
 import type { IdeaStatus } from "@/components/IdeaCard";
-import { DEFAULT_CURRENCY } from "@/lib/settings";
+import { useDefaultCurrency } from "@/lib/settings";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
@@ -45,6 +45,7 @@ export default function EditIdeaScreen() {
   const people = useQuery(api.people.list);
   const updateIdea = useMutation(api.giftIdeas.update);
   const removeIdea = useMutation(api.giftIdeas.remove);
+  const defaultCurrency = useDefaultCurrency();
 
   const [title, setTitle] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
@@ -118,7 +119,7 @@ export default function EditIdeaScreen() {
           sourceUrl: sourceUrl.trim() || undefined,
           priceEstimate,
           currency:
-            priceEstimate !== undefined ? DEFAULT_CURRENCY : undefined,
+            priceEstimate !== undefined ? defaultCurrency : undefined,
           taggedPeople: taggedIds,
           status,
         },
@@ -194,7 +195,7 @@ export default function EditIdeaScreen() {
             />
 
             <TextField
-              label={`Price (${DEFAULT_CURRENCY})`}
+              label={`Price (${defaultCurrency})`}
               placeholder="Optional"
               value={priceText}
               onChangeText={setPriceText}

@@ -43,9 +43,7 @@ export default function CalendarScreen() {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <ScreenTitle sub="Upcoming occasions across everyone">
-            Calendar
-          </ScreenTitle>
+          <ScreenTitle>Calendar</ScreenTitle>
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
               Nothing on the horizon. Add occasions on a person&apos;s
@@ -65,9 +63,7 @@ export default function CalendarScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        <ScreenTitle sub="Upcoming occasions across everyone">
-          Calendar
-        </ScreenTitle>
+        <ScreenTitle>Calendar</ScreenTitle>
 
         {thisWeek.length > 0 && (
           <Section label="This week" tone="claret" items={thisWeek} urgent />

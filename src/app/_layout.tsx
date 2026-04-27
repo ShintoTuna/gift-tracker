@@ -79,6 +79,10 @@ export default function RootLayout() {
             name="brainstorm/[personId]"
             options={{ presentation: "modal" }}
           />
+          <Stack.Screen
+            name="settings"
+            options={{ presentation: "modal" }}
+          />
           <Stack.Screen name="design-system" />
         </Stack>
         <DevDock />
