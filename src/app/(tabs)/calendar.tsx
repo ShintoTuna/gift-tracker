@@ -1,7 +1,14 @@
 import { useQuery } from "convex/react";
 import { router } from "expo-router";
-import { useMemo } from "react";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Label, PersonRow, ScreenTitle } from "@/components";
@@ -28,13 +35,22 @@ type MonthGroup = { key: string; label: string; items: AgendaItem[] };
 // subtitle; tap → person profile.
 export default function CalendarScreen() {
   const items = useQuery(api.occasions.listUpcoming);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Convex is reactive; pull-to-refresh is a UX gesture only.
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 600);
+  }, []);
 
   const grouped = useMemo(() => groupItems(items ?? []), [items]);
 
   if (items === undefined) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <Text style={styles.loadingText}>Loading…</Text>
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="small" color={colors.brass} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -62,6 +78,13 @@ export default function CalendarScreen() {
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.brass}
+          />
+        }
       >
         <ScreenTitle>Calendar</ScreenTitle>
 
@@ -188,11 +211,9 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     textAlign: "center",
   },
-  loadingText: {
-    fontFamily: fonts.body,
-    fontSize: 15,
-    color: colors.text2,
-    textAlign: "center",
-    marginTop: spacing.xxl,
+  loadingWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

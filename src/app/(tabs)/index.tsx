@@ -1,9 +1,11 @@
 import { useQuery } from "convex/react";
 import { SymbolView } from "expo-symbols";
 import { router } from "expo-router";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import {
+  ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,14 +24,36 @@ const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export default function PeopleScreen() {
   const peopleWithNext = useQuery(api.people.listWithNextOccasion);
+  const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Convex is already reactive — pull-to-refresh is a UX gesture
+  // affordance, not a real refetch. Toggle the spinner briefly so
+  // the muscle memory works.
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 600);
+  }, []);
+
+  const filtered = useMemo(() => {
+    if (!peopleWithNext) return [];
+    const q = search.trim().toLowerCase();
+    if (q.length === 0) return peopleWithNext;
+    return peopleWithNext.filter((p) => {
+      const haystack = [p.name, p.nickname, p.relationship, ...p.interests]
+        .filter((s): s is string => typeof s === "string")
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [peopleWithNext, search]);
 
   const { thisWeek, upcoming } = useMemo(() => {
-    if (!peopleWithNext) return { thisWeek: [], upcoming: [] };
     const now = Date.now();
     const horizon = now + ONE_WEEK_MS;
-    const tw: typeof peopleWithNext = [];
-    const up: typeof peopleWithNext = [];
-    for (const person of peopleWithNext) {
+    const tw: typeof filtered = [];
+    const up: typeof filtered = [];
+    for (const person of filtered) {
       if (
         person.nextOccasionDate !== null &&
         person.nextOccasionDate <= horizon
@@ -40,13 +64,15 @@ export default function PeopleScreen() {
       }
     }
     return { thisWeek: tw, upcoming: up };
-  }, [peopleWithNext]);
+  }, [filtered]);
 
   // Loading: query subscription not yet resolved.
   if (peopleWithNext === undefined) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <Text style={styles.loadingText}>Loading…</Text>
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="small" color={colors.brass} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -76,21 +102,42 @@ export default function PeopleScreen() {
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.brass}
+          />
+        }
       >
         <PeopleHeader />
 
-        {/* Search bar — visual placeholder. Wired in a later step. */}
         <View style={styles.searchWrap}>
           <View style={styles.searchBar}>
             <Text style={styles.searchIcon}>⌕</Text>
             <TextInput
-              placeholder="Search"
+              placeholder="Search name, relationship, interests"
               placeholderTextColor={colors.text3}
               style={styles.searchInput}
-              editable={false}
+              value={search}
+              onChangeText={setSearch}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+              clearButtonMode="while-editing"
             />
           </View>
         </View>
+
+        {filtered.length === 0 && search.trim().length > 0 && (
+          <View style={styles.empty}>
+            <Text style={styles.emptyText}>
+              No matches for{" "}
+              <Text style={styles.emptyAccent}>“{search.trim()}”</Text>.
+            </Text>
+          </View>
+        )}
 
         {thisWeek.length > 0 && (
           <View style={styles.section}>
@@ -267,11 +314,9 @@ const styles = StyleSheet.create({
     color: colors.brass,
     fontFamily: fonts.bodyMedium,
   },
-  loadingText: {
-    fontFamily: fonts.body,
-    fontSize: 15,
-    color: colors.text2,
-    textAlign: "center",
-    marginTop: spacing.xxl,
+  loadingWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

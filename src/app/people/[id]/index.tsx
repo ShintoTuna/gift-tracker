@@ -1,6 +1,13 @@
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
 import {
   Avatar,
@@ -42,7 +49,9 @@ export default function ProfileScreen() {
           leading="back"
           onLeadingPress={() => router.back()}
         />
-        <Text style={styles.loadingText}>Loading…</Text>
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="small" color={colors.brass} />
+        </View>
       </View>
     );
   }
@@ -321,6 +330,11 @@ const styles = StyleSheet.create({
     color: colors.text2,
     textAlign: "center",
     marginTop: spacing.xxl,
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   hero: {
     flexDirection: "row",

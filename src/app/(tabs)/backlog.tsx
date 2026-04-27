@@ -1,12 +1,21 @@
 import { useQuery } from "convex/react";
 import { router } from "expo-router";
-import { useMemo, useState } from "react";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { useCallback, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { IdeaCard, Pill, ScreenTitle } from "@/components";
 import { formatPrice, shortenSource } from "@/lib/format";
-import { colors, fonts, spacing } from "@/theme/tokens";
+import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
@@ -28,6 +37,14 @@ export default function GiftsScreen() {
   const ideas = useQuery(api.giftIdeas.listByUser);
   const people = useQuery(api.people.list);
   const [filter, setFilter] = useState<Filter>("all");
+  const [search, setSearch] = useState("");
+  const [refreshing, setRefreshing] = useState(false);
+
+  // Convex is reactive; pull-to-refresh is a UX gesture only.
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => setRefreshing(false), 600);
+  }, []);
 
   // Lookup map: person id → first letter, for IdeaCard avatar stacks.
   // Built once per render of this component.
@@ -43,16 +60,31 @@ export default function GiftsScreen() {
 
   const filtered = useMemo(() => {
     if (!ideas) return [];
-    const sorted = [...ideas].sort((a, b) => b.updatedAt - a.updatedAt);
-    if (filter === "all") return sorted;
-    if (filter === "given") return sorted.filter((i) => i.status === "given");
-    return sorted.filter((i) => i.status !== "given");
-  }, [ideas, filter]);
+    let result = [...ideas].sort((a, b) => b.updatedAt - a.updatedAt);
+    if (filter === "given") {
+      result = result.filter((i) => i.status === "given");
+    } else if (filter === "open") {
+      result = result.filter((i) => i.status !== "given");
+    }
+    const q = search.trim().toLowerCase();
+    if (q.length > 0) {
+      result = result.filter((i) => {
+        const haystack = [i.title, i.description]
+          .filter((s): s is string => typeof s === "string")
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(q);
+      });
+    }
+    return result;
+  }, [ideas, filter, search]);
 
   if (ideas === undefined) {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
-        <Text style={styles.loadingText}>Loading…</Text>
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="small" color={colors.brass} />
+        </View>
       </SafeAreaView>
     );
   }
@@ -62,8 +94,33 @@ export default function GiftsScreen() {
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.brass}
+          />
+        }
       >
         <ScreenTitle>Gifts</ScreenTitle>
+
+        <View style={styles.searchWrap}>
+          <View style={styles.searchBar}>
+            <Text style={styles.searchIcon}>⌕</Text>
+            <TextInput
+              placeholder="Search ideas"
+              placeholderTextColor={colors.text3}
+              style={styles.searchInput}
+              value={search}
+              onChangeText={setSearch}
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="search"
+              clearButtonMode="while-editing"
+            />
+          </View>
+        </View>
 
         <View style={styles.filtersRow}>
           {FILTERS.map((f) => (
@@ -84,7 +141,9 @@ export default function GiftsScreen() {
             <Text style={styles.emptyText}>
               {ideas.length === 0
                 ? "No ideas captured yet. Tap the + button to capture your first."
-                : "No ideas match this filter."}
+                : search.trim().length > 0
+                  ? `No ideas match “${search.trim()}”.`
+                  : "No ideas match this filter."}
             </Text>
           </View>
         ) : (
@@ -126,6 +185,32 @@ const styles = StyleSheet.create({
     paddingTop: spacing.md,
     paddingBottom: spacing.xxl,
   },
+  searchWrap: {
+    paddingHorizontal: spacing.xl,
+    marginBottom: spacing.lg,
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 10,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radii.md,
+  },
+  searchIcon: {
+    fontSize: 18,
+    color: colors.text3,
+  },
+  searchInput: {
+    flex: 1,
+    fontFamily: fonts.body,
+    fontSize: 15,
+    color: colors.text,
+    padding: 0,
+  },
   filtersRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -148,11 +233,9 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     textAlign: "center",
   },
-  loadingText: {
-    fontFamily: fonts.body,
-    fontSize: 15,
-    color: colors.text2,
-    textAlign: "center",
-    marginTop: spacing.xxl,
+  loadingWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });

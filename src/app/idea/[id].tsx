@@ -2,6 +2,7 @@ import { useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
+  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
@@ -80,7 +81,9 @@ export default function EditIdeaScreen() {
           leading="close"
           onLeadingPress={() => router.back()}
         />
-        <Text style={styles.loadingText}>Loading…</Text>
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="small" color={colors.brass} />
+        </View>
       </View>
     );
   }
@@ -301,5 +304,10 @@ const styles = StyleSheet.create({
     color: colors.text2,
     textAlign: "center",
     marginTop: spacing.xxl,
+  },
+  loadingWrap: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
