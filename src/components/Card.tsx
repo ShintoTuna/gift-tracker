@@ -40,5 +40,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     borderRadius: radii.lg,
+    // Clip children to the rounded shape — without this, things like
+    // a child row's left/right border (the brass "next" strip on the
+    // Profile screen's Occasions list) extend straight past the
+    // corner curve.
+    overflow: "hidden",
   },
 });

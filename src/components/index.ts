@@ -6,6 +6,7 @@ export { AvatarStack } from "./AvatarStack";
 export { Btn, type BtnTone } from "./Btn";
 export { Card, type CardTone } from "./Card";
 export { DevDock } from "./DevDock";
+export { IdeaCard } from "./IdeaCard";
 export { Label, type LabelTone } from "./Label";
 export { NavBar, type NavBarLeading } from "./NavBar";
 export { PersonRow } from "./PersonRow";

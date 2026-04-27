@@ -106,6 +106,48 @@ export const getById = query({
   },
 });
 
+// Single-shot profile fetch: person + their occasions (sorted by
+// next-upcoming) + their gift ideas. One subscription on the client
+// instead of three. Returns null if the person doesn't exist or
+// belongs to another user.
+export const getProfile = query({
+  args: { personId: v.id("people") },
+  handler: async (ctx, { personId }) => {
+    const userId = await getCurrentUserId(ctx);
+    const person = await ctx.db.get(personId);
+    if (!person || person.userId !== userId) return null;
+
+    const occasions = await ctx.db
+      .query("occasions")
+      .withIndex("by_person", (q) => q.eq("personId", personId))
+      .take(100);
+
+    const allIdeas = await ctx.db
+      .query("giftIdeas")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(1000);
+    const ideas = allIdeas.filter((idea) =>
+      idea.taggedPeople.includes(personId),
+    );
+
+    const now = Date.now();
+    const occasionsWithNext = occasions
+      .map((o) => ({ ...o, nextDate: getNextOccurrence(o, now) }))
+      .sort((a, b) => {
+        if (a.nextDate === null && b.nextDate === null) return 0;
+        if (a.nextDate === null) return 1;
+        if (b.nextDate === null) return -1;
+        return a.nextDate - b.nextDate;
+      });
+
+    return {
+      person,
+      occasions: occasionsWithNext,
+      ideas,
+    };
+  },
+});
+
 export const create = mutation({
   args: {
     name: v.string(),

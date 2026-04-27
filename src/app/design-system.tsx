@@ -8,6 +8,7 @@ import {
   AvatarStack,
   Btn,
   Card,
+  IdeaCard,
   Label,
   NavBar,
   PersonRow,
@@ -194,6 +195,27 @@ export default function DesignSystemScreen() {
             dateLine="Birthday · Oct 18"
             ideas={0}
             hideBorder
+          />
+        </Section>
+
+        <Section title="IdeaCard">
+          <IdeaCard
+            title="Cordless gardening shears"
+            source="stihl.com"
+            price="$129"
+            status="open"
+          />
+          <IdeaCard
+            title="Knife sharpening workshop"
+            source="Half-day, BYO knives"
+            price="$95"
+            peopleInitials={["S", "J"]}
+            status="open"
+          />
+          <IdeaCard
+            title="Audiobook subscription (annual)"
+            price="$80"
+            status="given"
           />
         </Section>
 
