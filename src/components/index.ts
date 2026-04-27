@@ -10,6 +10,7 @@ export { DatePicker } from "./DatePicker";
 export { DevDock } from "./DevDock";
 export { IdeaCard } from "./IdeaCard";
 export { Label, type LabelTone } from "./Label";
+export { MonthDayPicker } from "./MonthDayPicker";
 export { NavBar, type NavBarLeading } from "./NavBar";
 export { PeoplePicker } from "./PeoplePicker";
 export { PersonChip } from "./PersonChip";

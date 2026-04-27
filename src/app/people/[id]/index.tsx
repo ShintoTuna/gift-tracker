@@ -12,6 +12,7 @@ import {
   Pill,
 } from "@/components";
 import {
+  formatBirthMonthDay,
   formatOccasionLine,
   formatPrice,
   formatRelativeDays,
@@ -19,8 +20,8 @@ import {
 } from "@/lib/format";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
-import { api } from "../../../convex/_generated/api";
-import type { Id } from "../../../convex/_generated/dataModel";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
 
 type ProfileData = NonNullable<
   ReturnType<typeof useQuery<typeof api.people.getProfile>>
@@ -69,6 +70,21 @@ export default function ProfileScreen() {
         title="Profile"
         leading="back"
         onLeadingPress={() => router.back()}
+        trailing={
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: "/people/[id]/edit",
+                params: { id: profile.person._id },
+              })
+            }
+            hitSlop={6}
+            accessibilityRole="button"
+            accessibilityLabel="Edit person"
+          >
+            <Pill>Edit</Pill>
+          </Pressable>
+        }
       />
       <ScrollView
         contentContainerStyle={styles.scroll}
@@ -92,6 +108,21 @@ export default function ProfileScreen() {
             )}
           </View>
         </View>
+
+        {/* About — birth date (month + day, no year stored) */}
+        {person.dateOfBirth != null && (
+          <View style={styles.section}>
+            <Label style={styles.sectionLabel}>About</Label>
+            <Card>
+              <View style={styles.aboutRow}>
+                <Text style={styles.aboutKey}>Born</Text>
+                <Text style={styles.aboutValue}>
+                  {formatBirthMonthDay(person.dateOfBirth)}
+                </Text>
+              </View>
+            </Card>
+          </View>
+        )}
 
         {/* Occasions — top row gets brass emphasis as "next" */}
         <View style={styles.section}>
@@ -229,6 +260,18 @@ export default function ProfileScreen() {
           </View>
         )}
 
+        {/* Notes — only renders when present. Free-form context the
+            user wrote about the person; will be field-encrypted
+            before external testing per PRD §10. */}
+        {person.notes != null && person.notes.length > 0 && (
+          <View style={styles.section}>
+            <Label style={styles.sectionLabel}>Notes</Label>
+            <Card>
+              <Text style={styles.notesText}>{person.notes}</Text>
+            </Card>
+          </View>
+        )}
+
         {/* Brainstorm CTA */}
         <View style={[styles.section, styles.ctaWrap]}>
           <Btn
@@ -331,6 +374,28 @@ const styles = StyleSheet.create({
   occasionEmptyAccent: {
     color: colors.brass,
     fontFamily: fonts.bodyMedium,
+  },
+  aboutRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: spacing.md,
+  },
+  aboutKey: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.text3,
+    minWidth: 50,
+  },
+  aboutValue: {
+    fontFamily: fonts.body,
+    fontSize: 15,
+    color: colors.text,
+  },
+  notesText: {
+    fontFamily: fonts.body,
+    fontSize: 15,
+    color: colors.text,
+    lineHeight: 22,
   },
   cardHeadline: {
     fontFamily: fonts.serif,

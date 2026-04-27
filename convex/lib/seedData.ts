@@ -8,7 +8,6 @@ export type PersonSeed = {
   relationship?: string;
   interests: string[];
   notes?: string;
-  dateMet?: number;
   dateOfBirth?: number;
 };
 
@@ -47,14 +46,12 @@ export const SEED_PEOPLE: PersonSeed[] = [
     nickname: "Al",
     relationship: "best friend",
     interests: ["climbing", "espresso", "dogs"],
-    dateMet: ms("2018-03-10"),
     dateOfBirth: ms("1991-05-03"),
   },
   {
     name: "Jordan",
     relationship: "partner",
     interests: ["cooking", "running", "travel"],
-    dateMet: ms("2022-09-05"),
     dateOfBirth: ms("1992-11-23"),
   },
   {

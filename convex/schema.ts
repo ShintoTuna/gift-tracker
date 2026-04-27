@@ -36,7 +36,11 @@ export default defineSchema({
     // `notes` will be field-level encrypted before external testing
     // (PRD §10, v0.3). For now it's plain text.
     notes: v.optional(v.string()),
-    dateMet: v.optional(v.number()),
+    // Birth date stores month + day only; year is normalized to a
+    // 2000 sentinel at save time so the actual birth year is never
+    // collected. Display logic (formatBirthMonthDay) ignores the
+    // year. The form uses a custom MonthDayPicker that doesn't
+    // expose a year selector at all.
     dateOfBirth: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),

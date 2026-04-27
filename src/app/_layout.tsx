@@ -52,6 +52,10 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="people/[id]" />
           <Stack.Screen
+            name="people/[id]/edit"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
             name="people/new"
             options={{ presentation: "modal" }}
           />

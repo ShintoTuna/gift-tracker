@@ -23,6 +23,19 @@ export function formatDateLine(opts: {
   return `${opts.title} · ${month} ${date.getUTCDate()}`;
 }
 
+// "May 15" — month + day only, year intentionally ignored. Birth
+// dates are stored with year=2000 sentinel for privacy; this helper
+// extracts only the parts we surface.
+export function formatBirthMonthDay(ms?: number): string | null {
+  if (ms == null) return null;
+  const date = new Date(ms);
+  const month = date.toLocaleString("en-US", {
+    month: "long",
+    timeZone: "UTC",
+  });
+  return `${month} ${date.getUTCDate()}`;
+}
+
 // "October 2026" / "November 2026". For Calendar agenda section
 // headers grouped by year+month. Caller passes a year-month key in
 // "YYYY-MM" format.

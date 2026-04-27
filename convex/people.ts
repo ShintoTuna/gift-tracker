@@ -160,7 +160,6 @@ export const create = mutation({
     relationship: v.optional(v.string()),
     interests: v.array(v.string()),
     notes: v.optional(v.string()),
-    dateMet: v.optional(v.number()),
     dateOfBirth: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
@@ -185,7 +184,6 @@ export const update = mutation({
       relationship: v.optional(v.string()),
       interests: v.optional(v.array(v.string())),
       notes: v.optional(v.string()),
-      dateMet: v.optional(v.number()),
       dateOfBirth: v.optional(v.number()),
     }),
   },

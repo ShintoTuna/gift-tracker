@@ -1,12 +1,13 @@
-import { useMutation } from "convex/react";
-import { router } from "expo-router";
-import { useState } from "react";
+import { useMutation, useQuery } from "convex/react";
+import { router, useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   StyleSheet,
+  Text,
   View,
 } from "react-native";
 
@@ -17,15 +18,22 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, spacing } from "@/theme/tokens";
 
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
+import type { Id } from "../../../../convex/_generated/dataModel";
 
-// Modal-presented form. NavBar X dismisses; primary brass Save runs
-// the people.create mutation and pops back. List updates reactively
-// via Convex subscription — no manual refresh needed.
-export default function NewPersonScreen() {
-  const createPerson = useMutation(api.people.create);
+// Modal-presented edit screen for a person. Mirrors the add-person
+// form, pre-populated from the loaded row, plus a Delete affordance.
+// Delete cascades to occasions and detags from gift ideas (already
+// handled in `people.remove`).
+export default function EditPersonScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const personId = id as Id<"people">;
+  const person = useQuery(api.people.getById, { id: personId });
+  const updatePerson = useMutation(api.people.update);
+  const removePerson = useMutation(api.people.remove);
+
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [relationship, setRelationship] = useState("");
@@ -33,6 +41,49 @@ export default function NewPersonScreen() {
   const [interestsText, setInterestsText] = useState("");
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
+
+  // Initialize once the row loads. Re-init only when the route id
+  // changes — not on reactive refreshes — so in-progress edits
+  // aren't clobbered.
+  useEffect(() => {
+    if (person) {
+      setName(person.name);
+      setNickname(person.nickname ?? "");
+      setRelationship(person.relationship ?? "");
+      setBirthDate(
+        person.dateOfBirth != null ? new Date(person.dateOfBirth) : null,
+      );
+      setInterestsText(person.interests.join(", "));
+      setNotes(person.notes ?? "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [person?._id]);
+
+  if (person === undefined) {
+    return (
+      <View style={styles.root}>
+        <NavBar
+          title="Edit person"
+          leading="close"
+          onLeadingPress={() => router.back()}
+        />
+        <Text style={styles.loadingText}>Loading…</Text>
+      </View>
+    );
+  }
+
+  if (person === null) {
+    return (
+      <View style={styles.root}>
+        <NavBar
+          title="Edit person"
+          leading="close"
+          onLeadingPress={() => router.back()}
+        />
+        <Text style={styles.loadingText}>Person not found.</Text>
+      </View>
+    );
+  }
 
   const canSave = name.trim().length > 0 && !saving;
 
@@ -44,20 +95,20 @@ export default function NewPersonScreen() {
         .split(",")
         .map((s) => s.trim())
         .filter((s) => s.length > 0);
-      // MonthDayPicker emits Date with year=2000 sentinel — month
-      // and day are the only meaningful parts. Re-normalize at save
-      // time as belt-and-suspenders.
       const dateOfBirth =
         birthDate != null
           ? Date.UTC(2000, birthDate.getUTCMonth(), birthDate.getUTCDate())
           : undefined;
-      await createPerson({
-        name: name.trim(),
-        nickname: nickname.trim() || undefined,
-        relationship: relationship.trim() || undefined,
-        interests,
-        notes: notes.trim() || undefined,
-        dateOfBirth,
+      await updatePerson({
+        id: personId,
+        patch: {
+          name: name.trim(),
+          nickname: nickname.trim() || undefined,
+          relationship: relationship.trim() || undefined,
+          interests,
+          notes: notes.trim() || undefined,
+          dateOfBirth,
+        },
       });
       router.back();
     } catch (err) {
@@ -69,10 +120,39 @@ export default function NewPersonScreen() {
     }
   };
 
+  const onDelete = () => {
+    Alert.alert(
+      "Delete this person?",
+      "This will also remove their occasions and untag them from any gift ideas. This can't be undone.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await removePerson({ id: personId });
+              // Dismiss any open modals (this one), then replace the
+              // stack root so we don't briefly render the now-deleted
+              // profile en route to the People tab.
+              router.dismissAll();
+              router.replace("/");
+            } catch (err) {
+              Alert.alert(
+                "Could not delete",
+                err instanceof Error ? err.message : String(err),
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
+
   return (
     <View style={styles.root}>
       <NavBar
-        title="New person"
+        title="Edit person"
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -85,19 +165,15 @@ export default function NewPersonScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle sub="Someone you want to remember">
-            Who are we adding?
-          </ScreenTitle>
+          <ScreenTitle>Edit person</ScreenTitle>
 
           <View style={styles.fields}>
             <TextField
               label="Name"
-              placeholder="Required"
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
               autoCorrect={false}
-              autoFocus
               returnKeyType="next"
             />
             <TextField
@@ -154,6 +230,15 @@ export default function NewPersonScreen() {
             >
               {saving ? "Saving…" : "Save"}
             </Btn>
+
+            <Btn
+              tone="danger"
+              full
+              onPress={onDelete}
+              style={styles.deleteBtn}
+            >
+              Delete person
+            </Btn>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -180,5 +265,15 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     marginTop: spacing.md,
+  },
+  deleteBtn: {
+    marginTop: spacing.sm,
+  },
+  loadingText: {
+    fontFamily: fonts.body,
+    fontSize: 15,
+    color: colors.text2,
+    textAlign: "center",
+    marginTop: spacing.xxl,
   },
 });

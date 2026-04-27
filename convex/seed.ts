@@ -56,7 +56,6 @@ export const seedDevData = mutation({
         relationship: seed.relationship,
         interests: seed.interests,
         notes: seed.notes,
-        dateMet: seed.dateMet,
         dateOfBirth: seed.dateOfBirth,
         createdAt: now,
         updatedAt: now,
