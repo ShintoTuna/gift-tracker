@@ -64,6 +64,14 @@ export default function RootLayout() {
             options={{ presentation: "modal" }}
           />
           <Stack.Screen
+            name="occasion/new"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
+            name="occasion/[id]"
+            options={{ presentation: "modal" }}
+          />
+          <Stack.Screen
             name="brainstorm/[personId]"
             options={{ presentation: "modal" }}
           />

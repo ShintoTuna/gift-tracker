@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import {
   Avatar,
@@ -94,19 +94,41 @@ export default function ProfileScreen() {
         </View>
 
         {/* Occasions — top row gets brass emphasis as "next" */}
-        {occasions.length > 0 && (
-          <View style={styles.section}>
-            <Label style={styles.sectionLabel}>Occasions</Label>
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Label>Occasions</Label>
+            <Pressable
+              onPress={() =>
+                router.push({
+                  pathname: "/occasion/new",
+                  params: { personId: person._id },
+                })
+              }
+              hitSlop={6}
+            >
+              <Pill tone="brass" dashed>
+                + Add
+              </Pill>
+            </Pressable>
+          </View>
+          {occasions.length > 0 ? (
             <Card padding={0}>
               {occasions.map((occ, idx) => {
                 const isNext = idx === 0 && occ.nextDate !== null;
                 return (
-                  <View
+                  <Pressable
                     key={occ._id}
-                    style={[
+                    onPress={() =>
+                      router.push({
+                        pathname: "/occasion/[id]",
+                        params: { id: occ._id },
+                      })
+                    }
+                    style={({ pressed }) => [
                       styles.occasionRow,
                       idx < occasions.length - 1 && styles.occasionRowDivider,
                       isNext && styles.occasionRowNext,
+                      pressed && styles.occasionRowPressed,
                     ]}
                   >
                     <View style={styles.occasionLeft}>
@@ -125,12 +147,18 @@ export default function ProfileScreen() {
                         date: occ.date,
                       })}
                     </Text>
-                  </View>
+                  </Pressable>
                 );
               })}
             </Card>
-          </View>
-        )}
+          ) : (
+            <Text style={styles.occasionEmpty}>
+              No occasions yet — tap{" "}
+              <Text style={styles.occasionEmptyAccent}>+ Add</Text> to create
+              one.
+            </Text>
+          )}
+        </View>
 
         {/* Interests */}
         {person.interests.length > 0 && (
@@ -284,6 +312,25 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     marginBottom: spacing.md,
+  },
+  sectionHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: spacing.md,
+  },
+  occasionRowPressed: {
+    opacity: 0.6,
+  },
+  occasionEmpty: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.text3,
+    paddingVertical: spacing.sm,
+  },
+  occasionEmptyAccent: {
+    color: colors.brass,
+    fontFamily: fonts.bodyMedium,
   },
   cardHeadline: {
     fontFamily: fonts.serif,
