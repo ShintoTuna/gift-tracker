@@ -112,8 +112,11 @@ const styles = StyleSheet.create({
   dock: {
     position: "absolute",
     bottom: 96,
-    right: 14,
-    alignItems: "flex-end",
+    // Anchored bottom-left so it doesn't collide with the brass
+    // CaptureFab at bottom-right. CaptureFab is the production
+    // primary action; DevDock is a dim dev affordance.
+    left: 14,
+    alignItems: "flex-start",
     gap: spacing.sm,
   },
   trigger: {

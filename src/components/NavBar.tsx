@@ -1,6 +1,7 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { SymbolView } from "expo-symbols";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { colors, fonts, radii, spacing } from "@/theme/tokens";
+import { colors, radii, spacing } from "@/theme/tokens";
 
 import { Label } from "./Label";
 
@@ -14,12 +15,8 @@ type Props = {
 };
 
 // 54px status-bar spacer + 40px button row with mono-label title and
-// optional trailing slot.
-//
-// Note: the design uses inline SVG for the back/close glyphs. To keep
-// this step dependency-free we render the chevron / cross as plain
-// Text characters; the migration to react-native-svg can happen when
-// the rest of the icons (search, signal, battery, etc.) land.
+// optional trailing slot. The leading glyph is an SF Symbol so iOS
+// renders it pixel-perfect-centered.
 export function NavBar({
   title,
   leading = "back",
@@ -37,10 +34,16 @@ export function NavBar({
               styles.leadingButton,
               pressed && styles.leadingPressed,
             ]}
+            accessibilityRole="button"
+            accessibilityLabel={leading === "back" ? "Back" : "Close"}
           >
-            <Text style={styles.leadingGlyph}>
-              {leading === "back" ? "‹" : "×"}
-            </Text>
+            <SymbolView
+              name={leading === "back" ? "chevron.left" : "xmark"}
+              tintColor={colors.text2}
+              weight="semibold"
+              size={leading === "back" ? 16 : 14}
+              resizeMode="scaleAspectFit"
+            />
           </Pressable>
         ) : (
           <View style={styles.leadingPlaceholder} />
@@ -79,12 +82,5 @@ const styles = StyleSheet.create({
   leadingPlaceholder: {
     width: 40,
     height: 40,
-  },
-  leadingGlyph: {
-    fontFamily: fonts.body,
-    fontSize: 22,
-    color: colors.text2,
-    lineHeight: 22,
-    marginTop: -2,
   },
 });

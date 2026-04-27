@@ -124,14 +124,18 @@ export default function NewPersonScreen() {
               style={styles.notesInput}
               returnKeyType="default"
             />
+
+            <Btn
+              tone="primary"
+              full
+              disabled={!canSave}
+              onPress={onSave}
+              style={styles.saveBtn}
+            >
+              {saving ? "Saving…" : "Save"}
+            </Btn>
           </View>
         </ScrollView>
-
-        <View style={styles.footer}>
-          <Btn tone="primary" full disabled={!canSave} onPress={onSave}>
-            {saving ? "Saving…" : "Save"}
-          </Btn>
-        </View>
       </KeyboardAvoidingView>
     </View>
   );
@@ -154,12 +158,7 @@ const styles = StyleSheet.create({
     minHeight: 96,
     textAlignVertical: "top",
   },
-  footer: {
-    paddingHorizontal: spacing.xl,
-    paddingTop: spacing.md,
-    paddingBottom: spacing.lg,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-    backgroundColor: colors.bg,
+  saveBtn: {
+    marginTop: spacing.md,
   },
 });

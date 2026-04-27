@@ -1,6 +1,6 @@
 import { v } from "convex/values";
 
-import { query } from "./_generated/server";
+import { mutation, query } from "./_generated/server";
 import { getCurrentUserId } from "./lib/auth";
 
 // All bounded at 1000 per Convex guideline. PRD models a single user
@@ -53,5 +53,32 @@ export const listByStatus = query({
         q.eq("userId", userId).eq("status", status),
       )
       .take(MAX_GIFT_IDEAS);
+  },
+});
+
+// Capture mutation. Defaults `status` to "idea" — the capture flow is
+// sub-10s so a status picker would be friction. Status transitions
+// (planned → purchased → given) happen later via the Backlog and
+// Profile screens. Empty `taggedPeople` is allowed: the user can
+// capture now and tag the right person later in Backlog.
+export const create = mutation({
+  args: {
+    title: v.string(),
+    description: v.optional(v.string()),
+    sourceUrl: v.optional(v.string()),
+    priceEstimate: v.optional(v.number()),
+    currency: v.optional(v.string()),
+    taggedPeople: v.array(v.id("people")),
+  },
+  handler: async (ctx, args) => {
+    const userId = await getCurrentUserId(ctx);
+    const now = Date.now();
+    return await ctx.db.insert("giftIdeas", {
+      userId,
+      ...args,
+      status: "idea",
+      createdAt: now,
+      updatedAt: now,
+    });
   },
 });
