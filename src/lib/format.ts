@@ -23,6 +23,23 @@ export function formatDateLine(opts: {
   return `${opts.title} · ${month} ${date.getUTCDate()}`;
 }
 
+// "October 2026" / "November 2026". For Calendar agenda section
+// headers grouped by year+month. Caller passes a year-month key in
+// "YYYY-MM" format.
+export function formatMonthLabel(yearMonthKey: string): string {
+  const [yearStr, monthStr] = yearMonthKey.split("-");
+  const year = Number(yearStr);
+  const month = Number(monthStr);
+  if (!Number.isFinite(year) || !Number.isFinite(month)) return yearMonthKey;
+  // Construct as a UTC date so it doesn't drift across timezones.
+  const date = new Date(Date.UTC(year, month - 1, 1));
+  return date.toLocaleString("en-US", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}
+
 // "Annual · May 15" / "Once · Jun 12" / "Date TBD". For the
 // Occasions section on the Profile screen.
 export function formatOccasionLine(opts: {

@@ -2,6 +2,7 @@ import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import { getCurrentUserId } from "./lib/auth";
+import { getNextOccurrence } from "./lib/dates";
 
 // Returns occasions for a single person, ordered by their stored
 // canonical date. The Calendar screen will need a separate
@@ -21,6 +22,79 @@ export const listByPerson = query({
       .query("occasions")
       .withIndex("by_person", (q) => q.eq("personId", personId))
       .take(100);
+  },
+});
+
+// Calendar query: every occasion the user owns, enriched with the
+// parent person and the computed next-occurrence date (or null for
+// truly dateless / TBD entries). Past one-offs are filtered out
+// (their nextDate is null and their date is set, so they neither
+// belong in the agenda nor in the "Pending dates" section).
+//
+// Sorted ascending by next-occurrence date; null nextDate (TBD)
+// rows sink to the bottom for the client to bucket separately.
+//
+// N+1 caveat: one occasions query per person, plus one giftIdeas
+// query for the user's idea-count rollup. Same shape as
+// listWithNextOccasion in convex/people.ts. Matters only past ~50
+// people; if it does, denormalize as suggested there.
+export const listUpcoming = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getCurrentUserId(ctx);
+
+    const people = await ctx.db
+      .query("people")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(500);
+
+    const allIdeas = await ctx.db
+      .query("giftIdeas")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(1000);
+
+    // Pre-roll the open-idea count per person so each agenda row can
+    // surface "n ideas" without a separate per-row pass.
+    const ideaCountByPerson = new Map<string, number>();
+    for (const idea of allIdeas) {
+      if (idea.status === "given") continue;
+      for (const personId of idea.taggedPeople) {
+        ideaCountByPerson.set(
+          personId,
+          (ideaCountByPerson.get(personId) ?? 0) + 1,
+        );
+      }
+    }
+
+    const now = Date.now();
+    const enriched = [];
+    for (const person of people) {
+      const occasions = await ctx.db
+        .query("occasions")
+        .withIndex("by_person", (q) => q.eq("personId", person._id))
+        .take(100);
+      const ideaCount = ideaCountByPerson.get(person._id) ?? 0;
+      for (const occ of occasions) {
+        const nextDate = getNextOccurrence(occ, now);
+        // Include if upcoming OR truly dateless (TBD). Skip past
+        // one-offs (date set, nextDate null) — they're history, not
+        // agenda items.
+        if (nextDate !== null || occ.date == null) {
+          enriched.push({ occasion: occ, person, nextDate, ideaCount });
+        }
+      }
+    }
+
+    enriched.sort((a, b) => {
+      if (a.nextDate === null && b.nextDate === null) {
+        return a.occasion.title.localeCompare(b.occasion.title);
+      }
+      if (a.nextDate === null) return 1;
+      if (b.nextDate === null) return -1;
+      return a.nextDate - b.nextDate;
+    });
+
+    return enriched;
   },
 });
 
