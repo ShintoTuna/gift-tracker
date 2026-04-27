@@ -1,4 +1,4 @@
-# Gift Planner & Personal Relationship Manager — PRD
+# Giftsmith — PRD
 
 **Status:** Draft v0.3
 **Owner:** Nikita

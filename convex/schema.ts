@@ -1,7 +1,7 @@
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-// Base schemas for Gift Tracker — see /docs/PRD.md §6.
+// Base schemas for Giftsmith — see /docs/PRD.md §6.
 //
 // `userId` is intentionally `v.string()` (not `v.id("users")`). Auth
 // is a future step; once Convex Auth or Clerk lands, the auth

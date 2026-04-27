@@ -1,4 +1,4 @@
-# Gift Tracker
+# Giftsmith
 
 Mobile app for capturing gift ideas and surfacing them around upcoming occasions. See [`docs/PRD.md`](docs/PRD.md) for the full product spec, and [`design/`](design/) for screen mockups and the Midnight Garden design system.
 
@@ -35,7 +35,7 @@ rm .env.local
 # 3. Authenticate via browser (GitHub OAuth)
 npx convex login
 
-# 4. Re-initialize — the CLI will prompt you to create a cloud project named "gift-tracker"
+# 4. Re-initialize — the CLI will prompt you to create a cloud project named "giftsmith"
 npx convex dev
 ```
 
@@ -48,7 +48,7 @@ When ready for TestFlight: `npx convex deploy --prod` creates a separate **produ
 ## Project layout
 
 ```
-gift-tracker/
+giftsmith/
 ├── convex/                    # Convex backend (schema, queries, mutations, actions)
 │   ├── schema.ts              # users, people, occasions, giftIdeas
 │   ├── people.ts              # queries/mutations for people
