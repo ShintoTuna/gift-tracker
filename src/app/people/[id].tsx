@@ -109,7 +109,9 @@ export default function ProfileScreen() {
                     ]}
                   >
                     <View style={styles.occasionLeft}>
-                      <Text style={styles.occasionTitle}>{occ.title}</Text>
+                      <Text style={styles.occasionTitle} numberOfLines={1}>
+                        {occ.title}
+                      </Text>
                       {isNext && occ.nextDate !== null && (
                         <Text style={styles.occasionNextHint}>
                           {formatRelativeDays(occ.nextDate)}

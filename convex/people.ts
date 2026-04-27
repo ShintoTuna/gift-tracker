@@ -73,12 +73,15 @@ export const listWithNextOccasion = query({
             idea.taggedPeople.includes(person._id) && idea.status !== "given",
         ).length;
 
+        const hasDatelessOccasion = occasions.some((o) => o.date == null);
+
         return {
           ...person,
           nextOccasion,
           nextOccasionDate,
           ideaCount,
           occasionCount: occasions.length,
+          hasDatelessOccasion,
         };
       }),
     );

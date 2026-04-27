@@ -78,15 +78,11 @@ export const seedDevData = mutation({
       if (!personId) continue;
       const byTitle = new Map<string, Id<"occasions">>();
       for (const occ of occasions) {
-        // Conditional spread: omit absent fields entirely so Convex
-        // stores them as missing, not as `undefined`.
         const id = await ctx.db.insert("occasions", {
           personId,
           title: occ.title,
-          ...(occ.date !== undefined ? { date: occ.date } : {}),
-          ...(occ.recurrence !== undefined
-            ? { recurrence: occ.recurrence }
-            : {}),
+          date: occ.date,
+          recurrence: occ.recurrence,
         });
         byTitle.set(occ.title, id);
         occasionsCount += 1;

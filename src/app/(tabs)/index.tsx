@@ -148,11 +148,16 @@ function dateLineFor(person: EnrichedPerson): string {
       nextDate: person.nextOccasionDate,
     });
   }
-  if (person.occasionCount > 0) {
-    // Person has occasions but none are dated yet — surface that
-    // intent so the row doesn't look like a blank "no relationship
-    // events" state.
+  if (person.hasDatelessOccasion) {
+    // The person has at least one occasion whose date isn't known yet
+    // (e.g., a friend's eventual housewarming). Surface the intent
+    // even though we can't render a countdown.
     return "Pending date";
+  }
+  if (person.occasionCount > 0) {
+    // Every occasion has a date but they've all passed — no upcoming
+    // events on the horizon.
+    return "No upcoming dates";
   }
   return "No upcoming occasions";
 }
