@@ -78,6 +78,7 @@ export const listWithNextOccasion = query({
           nextOccasion,
           nextOccasionDate,
           ideaCount,
+          occasionCount: occasions.length,
         };
       }),
     );

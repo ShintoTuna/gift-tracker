@@ -15,7 +15,6 @@ import {
   formatOccasionLine,
   formatPrice,
   formatRelativeDays,
-  occasionTypeName,
 } from "@/lib/format";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
@@ -110,9 +109,7 @@ export default function ProfileScreen() {
                     ]}
                   >
                     <View style={styles.occasionLeft}>
-                      <Text style={styles.occasionTitle}>
-                        {occasionTypeName(occ.type, occ.customLabel)}
-                      </Text>
+                      <Text style={styles.occasionTitle}>{occ.title}</Text>
                       {isNext && occ.nextDate !== null && (
                         <Text style={styles.occasionNextHint}>
                           {formatRelativeDays(occ.nextDate)}

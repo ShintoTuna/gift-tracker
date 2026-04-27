@@ -142,14 +142,19 @@ type EnrichedPerson = NonNullable<
 >[number];
 
 function dateLineFor(person: EnrichedPerson): string {
-  if (person.nextOccasion === null || person.nextOccasionDate === null) {
-    return "No upcoming occasions";
+  if (person.nextOccasion !== null && person.nextOccasionDate !== null) {
+    return formatDateLine({
+      title: person.nextOccasion.title,
+      nextDate: person.nextOccasionDate,
+    });
   }
-  return formatDateLine({
-    occasionType: person.nextOccasion.type,
-    customLabel: person.nextOccasion.customLabel,
-    nextDate: person.nextOccasionDate,
-  });
+  if (person.occasionCount > 0) {
+    // Person has occasions but none are dated yet — surface that
+    // intent so the row doesn't look like a blank "no relationship
+    // events" state.
+    return "Pending date";
+  }
+  return "No upcoming occasions";
 }
 
 const styles = StyleSheet.create({

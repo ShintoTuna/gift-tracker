@@ -44,16 +44,11 @@ export default defineSchema({
 
   occasions: defineTable({
     personId: v.id("people"),
-    type: v.union(
-      v.literal("birthday"),
-      v.literal("christmas"),
-      v.literal("anniversary"),
-      v.literal("mothers_day"),
-      v.literal("custom"),
+    title: v.string(),
+    date: v.optional(v.number()),
+    recurrence: v.optional(
+      v.union(v.literal("yearly"), v.literal("one_off")),
     ),
-    date: v.number(),
-    recurrence: v.union(v.literal("yearly"), v.literal("one_off")),
-    customLabel: v.optional(v.string()),
   })
     .index("by_person", ["personId"])
     .index("by_date", ["date"]),

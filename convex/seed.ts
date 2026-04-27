@@ -66,28 +66,32 @@ export const seedDevData = mutation({
 
     // 4. Insert occasions keyed to person ids.
     let occasionsCount = 0;
-    // Track each person's occasions so we can resolve `givenForOccasionId`
-    // for "given" gift ideas in pass 5.
-    const occasionIdByPersonAndType = new Map<
+    // Lookup map keyed by title — used in the next pass to resolve
+    // `givenForOccasionTitle` on "given" gift ideas back to a real
+    // occasion id.
+    const occasionIdByPersonAndTitle = new Map<
       string,
       Map<string, Id<"occasions">>
     >();
     for (const [personName, occasions] of Object.entries(SEED_OCCASIONS)) {
       const personId = personIdByName.get(personName);
       if (!personId) continue;
-      const byType = new Map<string, Id<"occasions">>();
+      const byTitle = new Map<string, Id<"occasions">>();
       for (const occ of occasions) {
+        // Conditional spread: omit absent fields entirely so Convex
+        // stores them as missing, not as `undefined`.
         const id = await ctx.db.insert("occasions", {
           personId,
-          type: occ.type,
-          date: occ.date,
-          recurrence: occ.recurrence,
-          customLabel: occ.customLabel,
+          title: occ.title,
+          ...(occ.date !== undefined ? { date: occ.date } : {}),
+          ...(occ.recurrence !== undefined
+            ? { recurrence: occ.recurrence }
+            : {}),
         });
-        byType.set(occ.type, id);
+        byTitle.set(occ.title, id);
         occasionsCount += 1;
       }
-      occasionIdByPersonAndType.set(personName, byType);
+      occasionIdByPersonAndTitle.set(personName, byTitle);
     }
 
     // 5. Insert gift ideas, resolving tagged-people names to ids and
@@ -102,10 +106,10 @@ export const seedDevData = mutation({
         ? personIdByName.get(seed.givenToPersonName)
         : undefined;
       const givenForOccasionId =
-        seed.givenToPersonName && seed.givenForOccasionType
-          ? occasionIdByPersonAndType
+        seed.givenToPersonName && seed.givenForOccasionTitle
+          ? occasionIdByPersonAndTitle
               .get(seed.givenToPersonName)
-              ?.get(seed.givenForOccasionType)
+              ?.get(seed.givenForOccasionTitle)
           : undefined;
       await ctx.db.insert("giftIdeas", {
         userId,

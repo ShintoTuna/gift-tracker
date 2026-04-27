@@ -13,12 +13,9 @@ export type PersonSeed = {
 };
 
 export type OccasionSeed = {
-  type: "birthday" | "christmas" | "anniversary" | "mothers_day" | "custom";
-  // Stored as the canonical date (e.g., birth date). Upcoming-occurrence
-  // logic is computed at query time once the Calendar screen lands.
-  date: number;
-  recurrence: "yearly" | "one_off";
-  customLabel?: string;
+  title: string;
+  date?: number;
+  recurrence?: "yearly" | "one_off";
 };
 
 export type GiftIdeaSeed = {
@@ -32,7 +29,7 @@ export type GiftIdeaSeed = {
   givenToPersonName?: string;
   givenAt?: number;
   // For matching against the seeded occasions when status === "given".
-  givenForOccasionType?: OccasionSeed["type"];
+  givenForOccasionTitle?: string;
 };
 
 const ms = (iso: string): number => new Date(iso).getTime();
@@ -76,31 +73,28 @@ export const SEED_PEOPLE: PersonSeed[] = [
 
 export const SEED_OCCASIONS: Record<string, OccasionSeed[]> = {
   Sarah: [
-    { type: "birthday", date: ms("1962-05-15"), recurrence: "yearly" },
-    { type: "mothers_day", date: ms("2026-05-10"), recurrence: "yearly" },
-    { type: "christmas", date: ms("2026-12-25"), recurrence: "yearly" },
+    { title: "Birthday", date: ms("1962-05-15"), recurrence: "yearly" },
+    { title: "Mother's Day", date: ms("2026-05-10"), recurrence: "yearly" },
+    { title: "Christmas", date: ms("2026-12-25"), recurrence: "yearly" },
   ],
   Alex: [
-    { type: "birthday", date: ms("1991-05-03"), recurrence: "yearly" },
-    { type: "christmas", date: ms("2026-12-25"), recurrence: "yearly" },
+    { title: "Birthday", date: ms("1991-05-03"), recurrence: "yearly" },
+    { title: "Christmas", date: ms("2026-12-25"), recurrence: "yearly" },
   ],
   Jordan: [
-    { type: "birthday", date: ms("1992-11-23"), recurrence: "yearly" },
-    { type: "anniversary", date: ms("2022-09-05"), recurrence: "yearly" },
-    { type: "christmas", date: ms("2026-12-25"), recurrence: "yearly" },
+    { title: "Birthday", date: ms("1992-11-23"), recurrence: "yearly" },
+    { title: "Anniversary", date: ms("2022-09-05"), recurrence: "yearly" },
+    { title: "Christmas", date: ms("2026-12-25"), recurrence: "yearly" },
   ],
   Tom: [
-    { type: "birthday", date: ms("1989-02-08"), recurrence: "yearly" },
-    { type: "christmas", date: ms("2026-12-25"), recurrence: "yearly" },
+    { title: "Birthday", date: ms("1989-02-08"), recurrence: "yearly" },
+    { title: "Christmas", date: ms("2026-12-25"), recurrence: "yearly" },
   ],
   Priya: [
-    { type: "birthday", date: ms("1990-10-18"), recurrence: "yearly" },
-    {
-      type: "custom",
-      date: ms("2026-06-12"),
-      recurrence: "one_off",
-      customLabel: "Housewarming",
-    },
+    { title: "Birthday", date: ms("1990-10-18"), recurrence: "yearly" },
+    // Dateless: friend bought a house, will throw a housewarming
+    // eventually but the date isn't known yet.
+    { title: "Housewarming" },
   ],
 };
 
@@ -154,7 +148,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     status: "given",
     givenToPersonName: "Sarah",
     givenAt: ms("2025-05-15"),
-    givenForOccasionType: "birthday",
+    givenForOccasionTitle: "Birthday",
   },
   {
     title: "Knife sharpening workshop",
@@ -197,7 +191,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     status: "given",
     givenToPersonName: "Sarah",
     givenAt: ms("2025-12-25"),
-    givenForOccasionType: "christmas",
+    givenForOccasionTitle: "Christmas",
   },
   {
     title: "Leather travel journal",
