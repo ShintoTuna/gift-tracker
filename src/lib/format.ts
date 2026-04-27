@@ -71,3 +71,16 @@ export function formatPrice(amount?: number, currency?: string): string {
   if (symbol) return `${symbol}${rounded}`;
   return `${currency} ${rounded}`;
 }
+
+// "stihl.com" from "https://www.stihl.com/gta-26". Falls back to the
+// raw string if it can't be parsed. Used on IdeaCards everywhere a
+// gift idea references a source URL.
+export function shortenSource(url?: string): string | undefined {
+  if (!url) return undefined;
+  try {
+    const u = new URL(url);
+    return u.hostname.replace(/^www\./, "");
+  } catch {
+    return url;
+  }
+}

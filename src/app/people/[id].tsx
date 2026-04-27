@@ -15,6 +15,7 @@ import {
   formatOccasionLine,
   formatPrice,
   formatRelativeDays,
+  shortenSource,
 } from "@/lib/format";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
@@ -161,7 +162,7 @@ export default function ProfileScreen() {
                       ? buildInitials(idea.taggedPeople, person)
                       : undefined
                   }
-                  status="open"
+                  status={idea.status}
                 />
               ))}
             </View>
@@ -181,7 +182,7 @@ export default function ProfileScreen() {
                   title={idea.title}
                   source={shortenSource(idea.sourceUrl)}
                   price={formatPrice(idea.priceEstimate, idea.currency)}
-                  status="given"
+                  status={idea.status}
                 />
               ))}
             </View>
@@ -218,17 +219,6 @@ export default function ProfileScreen() {
       </ScrollView>
     </View>
   );
-}
-
-// "stihl.com" from "https://www.stihl.com/gta-26".
-function shortenSource(url?: string): string | undefined {
-  if (!url) return undefined;
-  try {
-    const u = new URL(url);
-    return u.hostname.replace(/^www\./, "");
-  } catch {
-    return url;
-  }
 }
 
 // AvatarStack initials excluding the current profile person — show

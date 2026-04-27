@@ -38,12 +38,7 @@ export const listByPerson = query({
 
 export const listByStatus = query({
   args: {
-    status: v.union(
-      v.literal("idea"),
-      v.literal("planned"),
-      v.literal("purchased"),
-      v.literal("given"),
-    ),
+    status: v.union(v.literal("idea"), v.literal("given")),
   },
   handler: async (ctx, { status }) => {
     const userId = await getCurrentUserId(ctx);
@@ -80,5 +75,58 @@ export const create = mutation({
       createdAt: now,
       updatedAt: now,
     });
+  },
+});
+
+export const getById = query({
+  args: { id: v.id("giftIdeas") },
+  handler: async (ctx, { id }) => {
+    const userId = await getCurrentUserId(ctx);
+    const row = await ctx.db.get(id);
+    if (!row || row.userId !== userId) return null;
+    return row;
+  },
+});
+
+// Edit mutation used by the Backlog edit screen. Patch object
+// mirrors the create args (minus userId, plus status). All fields
+// optional — pass only what changed.
+export const update = mutation({
+  args: {
+    id: v.id("giftIdeas"),
+    patch: v.object({
+      title: v.optional(v.string()),
+      description: v.optional(v.string()),
+      sourceUrl: v.optional(v.string()),
+      priceEstimate: v.optional(v.number()),
+      currency: v.optional(v.string()),
+      taggedPeople: v.optional(v.array(v.id("people"))),
+      status: v.optional(
+        v.union(v.literal("idea"), v.literal("given")),
+      ),
+    }),
+  },
+  handler: async (ctx, { id, patch }) => {
+    const userId = await getCurrentUserId(ctx);
+    const existing = await ctx.db.get(id);
+    if (!existing || existing.userId !== userId) {
+      throw new Error("Not found or not authorized");
+    }
+    await ctx.db.patch(id, { ...patch, updatedAt: Date.now() });
+  },
+});
+
+// Named `remove` because `delete` is a reserved word in TypeScript
+// (matches the convention from convex/people.ts). Hard delete; no
+// soft-delete or trash UX in MVP.
+export const remove = mutation({
+  args: { id: v.id("giftIdeas") },
+  handler: async (ctx, { id }) => {
+    const userId = await getCurrentUserId(ctx);
+    const existing = await ctx.db.get(id);
+    if (!existing || existing.userId !== userId) {
+      throw new Error("Not found or not authorized");
+    }
+    await ctx.db.delete(id);
   },
 });

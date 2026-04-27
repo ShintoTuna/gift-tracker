@@ -64,12 +64,10 @@ export default defineSchema({
     // A gift idea is tagged to one or more people, not to an
     // occasion (PRD §6 design note).
     taggedPeople: v.array(v.id("people")),
-    status: v.union(
-      v.literal("idea"),
-      v.literal("planned"),
-      v.literal("purchased"),
-      v.literal("given"),
-    ),
+    // Two-state for now (open idea vs. given). The enum shape stays
+    // so a future status (e.g. "wrapped", "delivered") can land
+    // without a schema-shape change — just a new literal.
+    status: v.union(v.literal("idea"), v.literal("given")),
     givenTo: v.optional(v.id("people")),
     givenAt: v.optional(v.number()),
     givenForOccasionId: v.optional(v.id("occasions")),

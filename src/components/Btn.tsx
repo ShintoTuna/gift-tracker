@@ -6,9 +6,9 @@ import {
   type ViewStyle,
 } from "react-native";
 
-import { colors, fonts, radii } from "@/theme/tokens";
+import { colors, fonts, radii, tints } from "@/theme/tokens";
 
-export type BtnTone = "primary" | "default";
+export type BtnTone = "primary" | "default" | "danger";
 
 type Props = {
   tone?: BtnTone;
@@ -19,9 +19,13 @@ type Props = {
   onPress?: PressableProps["onPress"];
 };
 
-// Brass primary or surface default. Primary = "the next thing to do"
-// — keep at most one or two per screen. `disabled` dims the button
-// and blocks press; useful for forms gated on validation.
+// Three tones:
+// - primary: brass background, "the next thing to do" — one or two per screen max
+// - default: surface background with border — secondary actions
+// - danger:  claret-tinted background — destructive actions (delete, etc.)
+//
+// `disabled` dims the button and blocks press; useful for forms
+// gated on validation.
 export function Btn({
   tone = "default",
   full,
@@ -30,25 +34,38 @@ export function Btn({
   style,
   onPress,
 }: Props) {
-  const isPrimary = tone === "primary";
+  const toneStyle =
+    tone === "primary"
+      ? styles.primary
+      : tone === "danger"
+        ? styles.danger
+        : styles.surface;
+  const tonePressedStyle =
+    tone === "primary"
+      ? styles.primaryPressed
+      : tone === "danger"
+        ? styles.dangerPressed
+        : styles.surfacePressed;
+  const toneTextStyle =
+    tone === "primary"
+      ? styles.primaryText
+      : tone === "danger"
+        ? styles.dangerText
+        : styles.surfaceText;
   return (
     <Pressable
       onPress={disabled ? undefined : onPress}
       disabled={disabled}
       style={({ pressed }) => [
         styles.base,
-        isPrimary ? styles.primary : styles.surface,
+        toneStyle,
         full ? styles.full : styles.auto,
-        !disabled &&
-          pressed &&
-          (isPrimary ? styles.primaryPressed : styles.surfacePressed),
+        !disabled && pressed && tonePressedStyle,
         disabled && styles.disabled,
         style,
       ]}
     >
-      <Text style={[styles.text, isPrimary ? styles.primaryText : styles.surfaceText]}>
-        {children}
-      </Text>
+      <Text style={[styles.text, toneTextStyle]}>{children}</Text>
     </Pressable>
   );
 }
@@ -71,8 +88,15 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
   },
   surfacePressed: { backgroundColor: colors.surface2 },
+  danger: {
+    backgroundColor: tints.claretFill,
+    borderWidth: 1,
+    borderColor: tints.claretEdge,
+  },
+  dangerPressed: { backgroundColor: "rgba(160, 69, 69, 0.22)" },
   disabled: { opacity: 0.4 },
   text: { fontSize: 15 },
   primaryText: { fontFamily: fonts.bodySemiBold, color: colors.bg },
   surfaceText: { fontFamily: fonts.bodyMedium, color: colors.text2 },
+  dangerText: { fontFamily: fonts.bodyMedium, color: colors.claret },
 });

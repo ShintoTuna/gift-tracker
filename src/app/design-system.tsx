@@ -202,19 +202,19 @@ export default function DesignSystemScreen() {
           <IdeaCard
             title="Cordless gardening shears"
             source="stihl.com"
-            price="$129"
-            status="open"
+            price="€129"
+            status="idea"
           />
           <IdeaCard
             title="Knife sharpening workshop"
             source="Half-day, BYO knives"
-            price="$95"
+            price="€95"
             peopleInitials={["S", "J"]}
-            status="open"
+            status="idea"
           />
           <IdeaCard
             title="Audiobook subscription (annual)"
-            price="$80"
+            price="€80"
             status="given"
           />
         </Section>

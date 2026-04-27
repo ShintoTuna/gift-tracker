@@ -25,7 +25,7 @@ export type GiftIdeaSeed = {
   priceEstimate?: number;
   currency?: string;
   taggedPersonNames: string[];
-  status: "idea" | "planned" | "purchased" | "given";
+  status: "idea" | "given";
   givenToPersonName?: string;
   givenAt?: number;
   // For matching against the seeded occasions when status === "given".
@@ -114,7 +114,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 30,
     currency: "USD",
     taggedPersonNames: ["Alex"],
-    status: "planned",
+    status: "idea",
   },
   {
     title: "Pasta-making class for two",
@@ -138,7 +138,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 220,
     currency: "USD",
     taggedPersonNames: ["Tom"],
-    status: "purchased",
+    status: "idea",
   },
   {
     title: "Audiobook subscription (annual)",
@@ -173,7 +173,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 45,
     currency: "USD",
     taggedPersonNames: ["Priya"],
-    status: "planned",
+    status: "idea",
   },
   {
     title: "Acaia Pearl espresso scale",
@@ -199,6 +199,6 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 55,
     currency: "USD",
     taggedPersonNames: ["Jordan"],
-    status: "purchased",
+    status: "idea",
   },
 ];

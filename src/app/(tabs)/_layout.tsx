@@ -20,7 +20,7 @@ export default function TabsLayout() {
       >
         <Tabs.Screen name="index" options={{ title: "People" }} />
         <Tabs.Screen name="calendar" options={{ title: "Calendar" }} />
-        <Tabs.Screen name="backlog" options={{ title: "Backlog" }} />
+        <Tabs.Screen name="backlog" options={{ title: "Gifts" }} />
       </Tabs>
       <CaptureFab />
     </View>

@@ -6,6 +6,8 @@ import { AvatarStack } from "./AvatarStack";
 import { Card } from "./Card";
 import { Pill } from "./Pill";
 
+export type IdeaStatus = "idea" | "given";
+
 type Props = {
   title: string;
   source?: string;
@@ -14,10 +16,15 @@ type Props = {
   // Initials of all tagged people. Stack omitted if undefined or empty.
   peopleInitials?: string[];
   occasion?: string;
-  // "open" maps to all non-given statuses; "given" gets the fern Pill
-  // and dimmed/strikethrough title.
-  status: "open" | "given";
+  // Two states for now. "given" gets the fern Pill plus dimmed
+  // strikethrough title; "idea" uses the default tone.
+  status: IdeaStatus;
   onPress?: () => void;
+};
+
+const STATUS_LABEL: Record<IdeaStatus, string> = {
+  idea: "Open",
+  given: "Given",
 };
 
 // Composed gift-idea card. Used on the Profile screen, the Backlog
@@ -65,7 +72,7 @@ export function IdeaCard({
         <View style={styles.right}>
           {price ? <Text style={styles.price}>{price}</Text> : null}
           <Pill tone={isGiven ? "fern" : "default"}>
-            {isGiven ? "Given" : "Open"}
+            {STATUS_LABEL[status]}
           </Pill>
         </View>
       </View>
