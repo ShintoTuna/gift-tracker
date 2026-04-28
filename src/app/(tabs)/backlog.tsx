@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -21,10 +22,13 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
 type Filter = "all" | "open" | "given";
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "open", label: "Open" },
-  { value: "given", label: "Given" },
+// Filter pill values are stable IDs; the displayed label is built
+// from `t("backlog.filter*")` at render time so language switches
+// pick up immediately.
+const FILTERS: { value: Filter; key: "filterAll" | "filterOpen" | "filterGiven" }[] = [
+  { value: "all", key: "filterAll" },
+  { value: "open", key: "filterOpen" },
+  { value: "given", key: "filterGiven" },
 ];
 
 // User-facing label is "Gifts" (file stays `backlog.tsx` — internal
@@ -34,6 +38,7 @@ const FILTERS: { value: Filter; label: string }[] = [
 // Status filter pills at the top: All / Open (idea | planned |
 // purchased) / Given.
 export default function GiftsScreen() {
+  const { t } = useTranslation();
   const ideas = useQuery(api.giftIdeas.listByUser);
   const people = useQuery(api.people.list);
   const [filter, setFilter] = useState<Filter>("all");
@@ -103,13 +108,13 @@ export default function GiftsScreen() {
           />
         }
       >
-        <ScreenTitle>Gifts</ScreenTitle>
+        <ScreenTitle>{t("backlog.title")}</ScreenTitle>
 
         <View style={styles.searchWrap}>
           <View style={styles.searchBar}>
             <Text style={styles.searchIcon}>⌕</Text>
             <TextInput
-              placeholder="Search ideas"
+              placeholder={t("backlog.search")}
               placeholderTextColor={colors.text3}
               style={styles.searchInput}
               value={search}
@@ -130,7 +135,7 @@ export default function GiftsScreen() {
               hitSlop={6}
             >
               <Pill tone={filter === f.value ? "brass" : "default"}>
-                {f.label}
+                {t(`backlog.${f.key}`)}
               </Pill>
             </Pressable>
           ))}
@@ -140,10 +145,10 @@ export default function GiftsScreen() {
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
               {ideas.length === 0
-                ? "No ideas captured yet. Tap the + button to capture your first."
+                ? t("backlog.emptyNone")
                 : search.trim().length > 0
-                  ? `No ideas match “${search.trim()}”.`
-                  : "No ideas match this filter."}
+                  ? t("backlog.emptySearch", { query: search.trim() })
+                  : t("backlog.emptyFilter")}
             </Text>
           </View>
         ) : (

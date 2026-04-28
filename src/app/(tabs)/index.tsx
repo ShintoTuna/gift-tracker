@@ -2,6 +2,7 @@ import { useQuery } from "convex/react";
 import { SymbolView } from "expo-symbols";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
+import { Trans, useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -23,6 +24,7 @@ import { api } from "../../../convex/_generated/api";
 const ONE_WEEK_MS = 7 * 24 * 60 * 60 * 1000;
 
 export default function PeopleScreen() {
+  const { t } = useTranslation();
   const peopleWithNext = useQuery(api.people.listWithNextOccasion);
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
@@ -82,14 +84,13 @@ export default function PeopleScreen() {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <PeopleHeader sub="Capture the people who matter" />
+          <PeopleHeader sub={t("people.subtitle")} />
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
-              No one here yet. Tap{" "}
-              <Text style={styles.emptyAccent}>+ Person</Text> to add
-              someone, or use the{" "}
-              <Text style={styles.emptyAccent}>dev</Text> pill to seed
-              test data.
+              <Trans
+                i18nKey="people.emptyAll"
+                components={{ accent: <Text style={styles.emptyAccent} /> }}
+              />
             </Text>
           </View>
         </ScrollView>
@@ -117,7 +118,7 @@ export default function PeopleScreen() {
           <View style={styles.searchBar}>
             <Text style={styles.searchIcon}>⌕</Text>
             <TextInput
-              placeholder="Search name, relationship, interests"
+              placeholder={t("people.search")}
               placeholderTextColor={colors.text3}
               style={styles.searchInput}
               value={search}
@@ -133,8 +134,11 @@ export default function PeopleScreen() {
         {filtered.length === 0 && search.trim().length > 0 && (
           <View style={styles.empty}>
             <Text style={styles.emptyText}>
-              No matches for{" "}
-              <Text style={styles.emptyAccent}>“{search.trim()}”</Text>.
+              <Trans
+                i18nKey="people.noMatches"
+                values={{ query: search.trim() }}
+                components={{ accent: <Text style={styles.emptyAccent} /> }}
+              />
             </Text>
           </View>
         )}
@@ -142,7 +146,7 @@ export default function PeopleScreen() {
         {thisWeek.length > 0 && (
           <View style={styles.section}>
             <Label tone="claret" style={styles.sectionLabel}>
-              This week
+              {t("people.thisWeek")}
             </Label>
             {thisWeek.map((person, idx) => (
               <PersonRow
@@ -150,7 +154,7 @@ export default function PeopleScreen() {
                 initial={person.name[0]?.toUpperCase() ?? "?"}
                 name={person.name}
                 relation={person.relationship}
-                dateLine={dateLineFor(person)}
+                dateLine={dateLineFor(person, t)}
                 ideas={person.ideaCount}
                 urgent
                 hideBorder={idx === thisWeek.length - 1}
@@ -167,14 +171,14 @@ export default function PeopleScreen() {
 
         {upcoming.length > 0 && (
           <View style={styles.section}>
-            <Label style={styles.sectionLabel}>Upcoming</Label>
+            <Label style={styles.sectionLabel}>{t("people.upcoming")}</Label>
             {upcoming.map((person, idx) => (
               <PersonRow
                 key={person._id}
                 initial={person.name[0]?.toUpperCase() ?? "?"}
                 name={person.name}
                 relation={person.relationship}
-                dateLine={dateLineFor(person)}
+                dateLine={dateLineFor(person, t)}
                 ideas={person.ideaCount}
                 hideBorder={idx === upcoming.length - 1}
                 onPress={() =>
@@ -201,6 +205,7 @@ type EnrichedPerson = NonNullable<
 // ScreenTitle's absolute-positioned leading/trailing slots, so the
 // chrome doesn't bias it left or right regardless of pill width.
 function PeopleHeader({ sub }: { sub?: string }) {
+  const { t } = useTranslation();
   return (
     <ScreenTitle
       sub={sub}
@@ -209,7 +214,7 @@ function PeopleHeader({ sub }: { sub?: string }) {
           onPress={() => router.push("/settings")}
           hitSlop={10}
           accessibilityRole="button"
-          accessibilityLabel="Open settings"
+          accessibilityLabel={t("people.openSettingsA11y")}
         >
           <SymbolView
             name="gearshape"
@@ -224,20 +229,25 @@ function PeopleHeader({ sub }: { sub?: string }) {
           onPress={() => router.push("/people/new")}
           hitSlop={8}
           accessibilityRole="button"
-          accessibilityLabel="Add person"
+          accessibilityLabel={t("people.addPersonA11y")}
         >
           <Pill tone="brass" dashed>
-            + Person
+            {t("people.addPerson")}
           </Pill>
         </Pressable>
       }
     >
-      People
+      {t("people.title")}
     </ScreenTitle>
   );
 }
 
-function dateLineFor(person: EnrichedPerson): string {
+// Translator function passed in so this helper stays a pure function
+// of (person, t). The parent screen owns the `useTranslation()` hook
+// and re-runs this whenever the language changes.
+type TFunc = ReturnType<typeof useTranslation>["t"];
+
+function dateLineFor(person: EnrichedPerson, t: TFunc): string {
   if (person.nextOccasion !== null && person.nextOccasionDate !== null) {
     return formatDateLine({
       title: person.nextOccasion.title,
@@ -248,14 +258,14 @@ function dateLineFor(person: EnrichedPerson): string {
     // The person has at least one occasion whose date isn't known yet
     // (e.g., a friend's eventual housewarming). Surface the intent
     // even though we can't render a countdown.
-    return "Pending date";
+    return t("people.pendingDate");
   }
   if (person.occasionCount > 0) {
     // Every occasion has a date but they've all passed — no upcoming
     // events on the horizon.
-    return "No upcoming dates";
+    return t("people.noUpcomingDates");
   }
-  return "No upcoming occasions";
+  return t("people.noUpcomingOccasions");
 }
 
 const styles = StyleSheet.create({

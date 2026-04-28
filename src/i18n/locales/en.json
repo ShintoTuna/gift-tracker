@@ -35,5 +35,37 @@
     "saveIdea": "Save idea",
     "couldNotSave": "Could not save",
     "fabLabel": "Capture an idea"
+  },
+  "people": {
+    "title": "People",
+    "subtitle": "Capture the people who matter",
+    "addPerson": "+ Person",
+    "addPersonA11y": "Add person",
+    "openSettingsA11y": "Open settings",
+    "search": "Search name, relationship, interests",
+    "thisWeek": "This week",
+    "upcoming": "Upcoming",
+    "emptyAll": "No one here yet. Tap <accent>+ Person</accent> to add someone, or use the <accent>dev</accent> pill to seed test data.",
+    "noMatches": "No matches for <accent>“{{query}}”</accent>.",
+    "pendingDate": "Pending date",
+    "noUpcomingDates": "No upcoming dates",
+    "noUpcomingOccasions": "No upcoming occasions"
+  },
+  "calendar": {
+    "title": "Calendar",
+    "thisWeek": "This week",
+    "pendingDates": "Pending dates",
+    "dateTBD": "Date TBD",
+    "empty": "Nothing on the horizon. Add occasions on a person’s profile and they’ll show up here."
+  },
+  "backlog": {
+    "title": "Gifts",
+    "search": "Search ideas",
+    "filterAll": "All",
+    "filterOpen": "Open",
+    "filterGiven": "Given",
+    "emptyNone": "No ideas captured yet. Tap the + button to capture your first.",
+    "emptySearch": "No ideas match “{{query}}”.",
+    "emptyFilter": "No ideas match this filter."
   }
 }
