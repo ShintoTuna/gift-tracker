@@ -1,5 +1,6 @@
 import { SymbolView } from "expo-symbols";
 import { router } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet } from "react-native";
 
 import { colors } from "@/theme/tokens";
@@ -14,13 +15,14 @@ import { colors } from "@/theme/tokens";
 // (manual Text-glyph centering with line-height tweaks looks subtly
 // off — "+" character has uneven optical metrics).
 export function CaptureFab() {
+  const { t } = useTranslation();
   return (
     <Pressable
       onPress={() => router.push("/capture")}
       style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
       hitSlop={8}
       accessibilityRole="button"
-      accessibilityLabel="Capture an idea"
+      accessibilityLabel={t("capture.fabLabel")}
     >
       <SymbolView
         name="plus"

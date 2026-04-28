@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { router } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -30,6 +31,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 // The Save button lives at the end of the ScrollView (not in a fixed
 // footer) so the iOS keyboard accessory bar never collides with it.
 export default function CaptureScreen() {
+  const { t } = useTranslation();
   const people = useQuery(api.people.list);
   const createIdea = useMutation(api.giftIdeas.create);
   const defaultCurrency = useDefaultCurrency();
@@ -68,7 +70,7 @@ export default function CaptureScreen() {
       router.back();
     } catch (err) {
       Alert.alert(
-        "Could not save",
+        t("capture.couldNotSave"),
         err instanceof Error ? err.message : String(err),
       );
       setSaving(false);
@@ -78,7 +80,7 @@ export default function CaptureScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title="Quick Capture"
+        title={t("capture.title")}
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -91,12 +93,14 @@ export default function CaptureScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle sub="What did you spot?">Capture an idea</ScreenTitle>
+          <ScreenTitle sub={t("capture.subtitle")}>
+            {t("capture.screenTitle")}
+          </ScreenTitle>
 
           <View style={styles.fields}>
             <TextField
-              label="Idea"
-              placeholder="e.g., Cordless gardening shears"
+              label={t("capture.ideaLabel")}
+              placeholder={t("capture.ideaPlaceholder")}
               value={title}
               onChangeText={setTitle}
               autoFocus
@@ -106,7 +110,7 @@ export default function CaptureScreen() {
             />
 
             <TextField
-              label="Source"
+              label={t("capture.sourceLabel")}
               placeholder="https://…"
               value={sourceUrl}
               onChangeText={setSourceUrl}
@@ -117,8 +121,8 @@ export default function CaptureScreen() {
             />
 
             <TextField
-              label={`Price (${defaultCurrency})`}
-              placeholder="Optional"
+              label={t("capture.priceLabel", { currency: defaultCurrency })}
+              placeholder={t("common.optional")}
               value={priceText}
               onChangeText={setPriceText}
               keyboardType="decimal-pad"
@@ -132,8 +136,8 @@ export default function CaptureScreen() {
             />
 
             <TextField
-              label="Description"
-              placeholder="Optional"
+              label={t("capture.descriptionLabel")}
+              placeholder={t("common.optional")}
               value={description}
               onChangeText={setDescription}
               multiline
@@ -151,7 +155,7 @@ export default function CaptureScreen() {
               onPress={onSave}
               style={styles.saveBtn}
             >
-              {saving ? "Saving…" : "Save idea"}
+              {saving ? t("common.saving") : t("capture.saveIdea")}
             </Btn>
           </View>
         </ScrollView>

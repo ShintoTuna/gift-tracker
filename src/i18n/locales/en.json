@@ -1,4 +1,14 @@
 {
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "back": "Back",
+    "delete": "Delete",
+    "optional": "Optional",
+    "required": "Required",
+    "saving": "Saving…"
+  },
   "tabs": {
     "people": "People",
     "calendar": "Calendar",
@@ -12,5 +22,18 @@
     "defaultCurrencyHint": "Used when you save a price on a captured idea.",
     "language": "Language",
     "languageHint": "Used everywhere in the app."
+  },
+  "capture": {
+    "title": "Quick Capture",
+    "subtitle": "What did you spot?",
+    "screenTitle": "Capture an idea",
+    "ideaLabel": "Idea",
+    "ideaPlaceholder": "e.g., Cordless gardening shears",
+    "sourceLabel": "Source",
+    "priceLabel": "Price ({{currency}})",
+    "descriptionLabel": "Description",
+    "saveIdea": "Save idea",
+    "couldNotSave": "Could not save",
+    "fabLabel": "Capture an idea"
   }
 }

@@ -1,4 +1,14 @@
 {
+  "common": {
+    "save": "Сохранить",
+    "cancel": "Отмена",
+    "close": "Закрыть",
+    "back": "Назад",
+    "delete": "Удалить",
+    "optional": "Необязательно",
+    "required": "Обязательно",
+    "saving": "Сохранение…"
+  },
   "tabs": {
     "people": "Люди",
     "calendar": "Календарь",
@@ -12,5 +22,18 @@
     "defaultCurrencyHint": "Используется при сохранении цены у идеи.",
     "language": "Язык",
     "languageHint": "Применяется во всём приложении."
+  },
+  "capture": {
+    "title": "Быстрая запись",
+    "subtitle": "Что вы заметили?",
+    "screenTitle": "Записать идею",
+    "ideaLabel": "Идея",
+    "ideaPlaceholder": "напр., беспроводной секатор",
+    "sourceLabel": "Источник",
+    "priceLabel": "Цена ({{currency}})",
+    "descriptionLabel": "Описание",
+    "saveIdea": "Сохранить идею",
+    "couldNotSave": "Не удалось сохранить",
+    "fabLabel": "Записать идею"
   }
 }
