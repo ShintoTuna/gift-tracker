@@ -2,8 +2,26 @@
 // returns raw timestamps + occasion titles + numeric amounts; this
 // module turns those into the strings that show up on rows, chips,
 // and cards.
+//
+// These helpers import the i18n instance directly rather than going
+// through `useTranslation()` — they're pure functions called from
+// inside JSX renders, and the caller's `useTranslation()` subscription
+// already triggers re-renders on language change.
+
+import i18n from "@/i18n";
 
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+// Locale-aware short month-day formatter ("May 15" vs "15 мая"). The
+// timeZone:UTC keeps it stable when stored timestamps are
+// midnight-UTC (occasions) or sentinel-year UTC (birth dates).
+function shortMonthDay(date: Date): string {
+  return new Intl.DateTimeFormat(i18n.language, {
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  }).format(date);
+}
 
 // "Birthday · in 5 days" / "Birthday · today" / "Birthday · May 15".
 // Switches to absolute dates beyond a 14-day horizon — that's the
@@ -15,12 +33,17 @@ export function formatDateLine(opts: {
 }): string {
   const now = opts.now ?? Date.now();
   const days = Math.ceil((opts.nextDate - now) / ONE_DAY_MS);
-  if (days <= 0) return `${opts.title} · today`;
-  if (days === 1) return `${opts.title} · tomorrow`;
-  if (days <= 14) return `${opts.title} · in ${days} days`;
-  const date = new Date(opts.nextDate);
-  const month = date.toLocaleString("en-US", { month: "short" });
-  return `${opts.title} · ${month} ${date.getUTCDate()}`;
+  let suffix: string;
+  if (days <= 0) {
+    suffix = i18n.t("format.today");
+  } else if (days === 1) {
+    suffix = i18n.t("format.tomorrow");
+  } else if (days <= 14) {
+    suffix = i18n.t("format.inDays", { count: days });
+  } else {
+    suffix = shortMonthDay(new Date(opts.nextDate));
+  }
+  return i18n.t("format.dateLine", { title: opts.title, suffix });
 }
 
 // "May 15" — month + day only, year intentionally ignored. Birth
@@ -28,17 +51,16 @@ export function formatDateLine(opts: {
 // extracts only the parts we surface.
 export function formatBirthMonthDay(ms?: number): string | null {
   if (ms == null) return null;
-  const date = new Date(ms);
-  const month = date.toLocaleString("en-US", {
+  return new Intl.DateTimeFormat(i18n.language, {
     month: "long",
+    day: "numeric",
     timeZone: "UTC",
-  });
-  return `${month} ${date.getUTCDate()}`;
+  }).format(new Date(ms));
 }
 
-// "October 2026" / "November 2026". For Calendar agenda section
-// headers grouped by year+month. Caller passes a year-month key in
-// "YYYY-MM" format.
+// "October 2026" / "October 2026 г." (depending on locale). For
+// Calendar agenda section headers grouped by year+month. Caller
+// passes a year-month key in "YYYY-MM" format.
 export function formatMonthLabel(yearMonthKey: string): string {
   const [yearStr, monthStr] = yearMonthKey.split("-");
   const year = Number(yearStr);
@@ -46,11 +68,11 @@ export function formatMonthLabel(yearMonthKey: string): string {
   if (!Number.isFinite(year) || !Number.isFinite(month)) return yearMonthKey;
   // Construct as a UTC date so it doesn't drift across timezones.
   const date = new Date(Date.UTC(year, month - 1, 1));
-  return date.toLocaleString("en-US", {
+  return new Intl.DateTimeFormat(i18n.language, {
     month: "long",
     year: "numeric",
     timeZone: "UTC",
-  });
+  }).format(date);
 }
 
 // "Annual · May 15" / "Once · Jun 12" / "Date TBD". For the
@@ -59,33 +81,38 @@ export function formatOccasionLine(opts: {
   recurrence?: "yearly" | "one_off";
   date?: number;
 }): string {
-  if (opts.date == null) return "Date TBD";
-  const date = new Date(opts.date);
-  const month = date.toLocaleString("en-US", { month: "short" });
-  const day = date.getUTCDate();
+  if (opts.date == null) return i18n.t("format.dateTBD");
+  const monthDay = shortMonthDay(new Date(opts.date));
   const recurrence = opts.recurrence ?? "one_off";
-  const prefix = recurrence === "yearly" ? "Annual" : "Once";
-  return `${prefix} · ${month} ${day}`;
+  const key = recurrence === "yearly" ? "format.occasionAnnual" : "format.occasionOnce";
+  return i18n.t(key, { date: monthDay });
 }
 
 // "today" / "tomorrow" / "in 5 days" / "in 3 weeks" / "in 4 months".
 // No occasion-title prefix — the caller already shows the title
 // alongside, so this is just the relative countdown.
+//
+// Russian gets four CLDR plural forms (one / few / many / other) for
+// each unit; i18next picks the right one based on `count`.
 export function formatRelativeDays(
   nextDate: number,
   now: number = Date.now(),
 ): string {
   const days = Math.ceil((nextDate - now) / ONE_DAY_MS);
-  if (days <= 0) return "today";
-  if (days === 1) return "tomorrow";
-  if (days <= 14) return `in ${days} days`;
-  if (days <= 60) return `in ${Math.round(days / 7)} weeks`;
-  if (days <= 365) return `in ${Math.round(days / 30)} months`;
-  return "in over a year";
+  if (days <= 0) return i18n.t("format.today");
+  if (days === 1) return i18n.t("format.tomorrow");
+  if (days <= 14) return i18n.t("format.inDays", { count: days });
+  if (days <= 60) return i18n.t("format.inWeeks", { count: Math.round(days / 7) });
+  if (days <= 365) return i18n.t("format.inMonths", { count: Math.round(days / 30) });
+  return i18n.t("format.inOverAYear");
 }
 
 // "$129" for USD, "USD 129" for unknown symbols, "129" if no currency.
 // Whole numbers only — gift price estimates are inherently approximate.
+//
+// Currency formatting is keyed by ISO code (USD, EUR, …), independent
+// of UI language — a "$129" price stays "$129" whether the rest of
+// the app is in English or Russian.
 const CURRENCY_SYMBOLS: Record<string, string> = {
   USD: "$",
   EUR: "€",

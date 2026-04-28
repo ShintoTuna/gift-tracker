@@ -137,7 +137,7 @@ function Section({
           dateLine={
             item.nextDate !== null
               ? formatRelativeDays(item.nextDate)
-              : t("calendar.dateTBD")
+              : t("format.dateTBD")
           }
           ideas={item.ideaCount}
           urgent={urgent}

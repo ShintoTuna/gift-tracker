@@ -58,8 +58,22 @@
     "title": "Calendar",
     "thisWeek": "This week",
     "pendingDates": "Pending dates",
-    "dateTBD": "Date TBD",
     "empty": "Nothing on the horizon. Add occasions on a person’s profile and they’ll show up here."
+  },
+  "format": {
+    "dateLine": "{{title}} · {{suffix}}",
+    "today": "today",
+    "tomorrow": "tomorrow",
+    "inDays_one": "in {{count}} day",
+    "inDays_other": "in {{count}} days",
+    "inWeeks_one": "in {{count}} week",
+    "inWeeks_other": "in {{count}} weeks",
+    "inMonths_one": "in {{count}} month",
+    "inMonths_other": "in {{count}} months",
+    "inOverAYear": "in over a year",
+    "dateTBD": "Date TBD",
+    "occasionAnnual": "Annual · {{date}}",
+    "occasionOnce": "Once · {{date}}"
   },
   "backlog": {
     "title": "Gifts",
