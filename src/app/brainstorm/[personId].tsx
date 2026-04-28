@@ -1,13 +1,17 @@
 import { useLocalSearchParams } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, View } from "react-native";
 
 import { colors, spacing } from "@/theme/tokens";
 
 export default function BrainstormScreen() {
+  const { t } = useTranslation();
   const { personId } = useLocalSearchParams<{ personId: string }>();
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Brainstorm for {personId}</Text>
+      <Text style={styles.title}>
+        {t("brainstorm.stubTitle", { personId })}
+      </Text>
     </View>
   );
 }

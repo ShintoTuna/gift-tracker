@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, fonts, spacing } from "@/theme/tokens";
@@ -22,9 +23,9 @@ type Props = {
   onPress?: () => void;
 };
 
-const STATUS_LABEL: Record<IdeaStatus, string> = {
-  idea: "Open",
-  given: "Given",
+const STATUS_KEY: Record<IdeaStatus, "ideaCard.statusOpen" | "ideaCard.statusGiven"> = {
+  idea: "ideaCard.statusOpen",
+  given: "ideaCard.statusGiven",
 };
 
 // Composed gift-idea card. Used on the Profile screen, the Backlog
@@ -43,6 +44,7 @@ export function IdeaCard({
   status,
   onPress,
 }: Props) {
+  const { t } = useTranslation();
   const isGiven = status === "given";
   const content = (
     <Card>
@@ -72,7 +74,7 @@ export function IdeaCard({
         <View style={styles.right}>
           {price ? <Text style={styles.price}>{price}</Text> : null}
           <Pill tone={isGiven ? "fern" : "default"}>
-            {STATUS_LABEL[status]}
+            {t(STATUS_KEY[status])}
           </Pill>
         </View>
       </View>

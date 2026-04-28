@@ -1,5 +1,6 @@
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
+import { Trans, useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -36,6 +37,7 @@ type ProfileData = NonNullable<
 type PersonDoc = ProfileData["person"];
 
 export default function ProfileScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const profile = useQuery(api.people.getProfile, {
     personId: id as Id<"people">,
@@ -45,7 +47,7 @@ export default function ProfileScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Profile"
+          title={t("profile.title")}
           leading="back"
           onLeadingPress={() => router.back()}
         />
@@ -60,11 +62,11 @@ export default function ProfileScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Profile"
+          title={t("profile.title")}
           leading="back"
           onLeadingPress={() => router.back()}
         />
-        <Text style={styles.loadingText}>Person not found.</Text>
+        <Text style={styles.loadingText}>{t("profile.notFound")}</Text>
       </View>
     );
   }
@@ -76,7 +78,7 @@ export default function ProfileScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title="Profile"
+        title={t("profile.title")}
         leading="back"
         onLeadingPress={() => router.back()}
         trailing={
@@ -89,9 +91,9 @@ export default function ProfileScreen() {
             }
             hitSlop={6}
             accessibilityRole="button"
-            accessibilityLabel="Edit person"
+            accessibilityLabel={t("profile.editA11y")}
           >
-            <Pill>Edit</Pill>
+            <Pill>{t("profile.editPill")}</Pill>
           </Pressable>
         }
       />
@@ -121,10 +123,10 @@ export default function ProfileScreen() {
         {/* About — birth date (month + day, no year stored) */}
         {person.dateOfBirth != null && (
           <View style={styles.section}>
-            <Label style={styles.sectionLabel}>About</Label>
+            <Label style={styles.sectionLabel}>{t("profile.about")}</Label>
             <Card>
               <View style={styles.aboutRow}>
-                <Text style={styles.aboutKey}>Born</Text>
+                <Text style={styles.aboutKey}>{t("profile.born")}</Text>
                 <Text style={styles.aboutValue}>
                   {formatBirthMonthDay(person.dateOfBirth)}
                 </Text>
@@ -136,7 +138,7 @@ export default function ProfileScreen() {
         {/* Occasions — top row gets brass emphasis as "next" */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Label>Occasions</Label>
+            <Label>{t("profile.occasions")}</Label>
             <Pressable
               onPress={() =>
                 router.push({
@@ -147,7 +149,7 @@ export default function ProfileScreen() {
               hitSlop={6}
             >
               <Pill tone="brass" dashed>
-                + Add
+                {t("profile.addOccasion")}
               </Pill>
             </Pressable>
           </View>
@@ -193,9 +195,12 @@ export default function ProfileScreen() {
             </Card>
           ) : (
             <Text style={styles.occasionEmpty}>
-              No occasions yet — tap{" "}
-              <Text style={styles.occasionEmptyAccent}>+ Add</Text> to create
-              one.
+              <Trans
+                i18nKey="profile.occasionsEmpty"
+                components={{
+                  accent: <Text style={styles.occasionEmptyAccent} />,
+                }}
+              />
             </Text>
           )}
         </View>
@@ -203,7 +208,7 @@ export default function ProfileScreen() {
         {/* Interests */}
         {person.interests.length > 0 && (
           <View style={styles.section}>
-            <Label style={styles.sectionLabel}>Interests</Label>
+            <Label style={styles.sectionLabel}>{t("profile.interests")}</Label>
             <View style={styles.pillRow}>
               {person.interests.map((interest) => (
                 <Pill key={interest}>{interest}</Pill>
@@ -216,7 +221,7 @@ export default function ProfileScreen() {
         {openIdeas.length > 0 && (
           <View style={styles.section}>
             <Label style={styles.sectionLabel}>
-              Open ideas · {openIdeas.length}
+              {t("profile.openIdeas", { count: openIdeas.length })}
             </Label>
             <View style={styles.cardStack}>
               {openIdeas.map((idea) => (
@@ -241,7 +246,7 @@ export default function ProfileScreen() {
         {givenIdeas.length > 0 && (
           <View style={styles.section}>
             <Label style={styles.sectionLabel}>
-              Given · {givenIdeas.length}
+              {t("profile.givenIdeas", { count: givenIdeas.length })}
             </Label>
             <View style={styles.cardStack}>
               {givenIdeas.map((idea) => (
@@ -261,10 +266,7 @@ export default function ProfileScreen() {
         {openIdeas.length === 0 && givenIdeas.length === 0 && (
           <View style={styles.section}>
             <Card>
-              <Text style={styles.cardMeta}>
-                No gift ideas yet. Brainstorm some below or add one from
-                Quick Capture.
-              </Text>
+              <Text style={styles.cardMeta}>{t("profile.ideasEmpty")}</Text>
             </Card>
           </View>
         )}
@@ -274,7 +276,7 @@ export default function ProfileScreen() {
             before external testing per PRD §10. */}
         {person.notes != null && person.notes.length > 0 && (
           <View style={styles.section}>
-            <Label style={styles.sectionLabel}>Notes</Label>
+            <Label style={styles.sectionLabel}>{t("profile.notes")}</Label>
             <Card>
               <Text style={styles.notesText}>{person.notes}</Text>
             </Card>
@@ -293,7 +295,7 @@ export default function ProfileScreen() {
               })
             }
           >
-            Brainstorm a gift
+            {t("profile.brainstormCta")}
           </Btn>
         </View>
       </ScrollView>

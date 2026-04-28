@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -29,6 +30,7 @@ import type { Id } from "../../../../convex/_generated/dataModel";
 // Delete cascades to occasions and detags from gift ideas (already
 // handled in `people.remove`).
 export default function EditPersonScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const personId = id as Id<"people">;
   const person = useQuery(api.people.getById, { id: personId });
@@ -64,7 +66,7 @@ export default function EditPersonScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Edit person"
+          title={t("personForm.editTitle")}
           leading="close"
           onLeadingPress={() => router.back()}
         />
@@ -79,11 +81,11 @@ export default function EditPersonScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Edit person"
+          title={t("personForm.editTitle")}
           leading="close"
           onLeadingPress={() => router.back()}
         />
-        <Text style={styles.loadingText}>Person not found.</Text>
+        <Text style={styles.loadingText}>{t("personForm.notFound")}</Text>
       </View>
     );
   }
@@ -116,7 +118,7 @@ export default function EditPersonScreen() {
       router.back();
     } catch (err) {
       Alert.alert(
-        "Could not save",
+        t("common.couldNotSave"),
         err instanceof Error ? err.message : String(err),
       );
       setSaving(false);
@@ -125,12 +127,12 @@ export default function EditPersonScreen() {
 
   const onDelete = () => {
     Alert.alert(
-      "Delete this person?",
-      "This will also remove their occasions and untag them from any gift ideas. This can't be undone.",
+      t("personForm.deleteConfirmTitle"),
+      t("personForm.deleteConfirmBody"),
       [
-        { text: "Cancel", style: "cancel" },
+        { text: t("common.cancel"), style: "cancel" },
         {
-          text: "Delete",
+          text: t("common.delete"),
           style: "destructive",
           onPress: async () => {
             try {
@@ -142,7 +144,7 @@ export default function EditPersonScreen() {
               router.replace("/");
             } catch (err) {
               Alert.alert(
-                "Could not delete",
+                t("common.couldNotDelete"),
                 err instanceof Error ? err.message : String(err),
               );
             }
@@ -155,7 +157,7 @@ export default function EditPersonScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title="Edit person"
+        title={t("personForm.editTitle")}
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -168,11 +170,11 @@ export default function EditPersonScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle>Edit person</ScreenTitle>
+          <ScreenTitle>{t("personForm.editScreenTitle")}</ScreenTitle>
 
           <View style={styles.fields}>
             <TextField
-              label="Name"
+              label={t("personForm.name")}
               value={name}
               onChangeText={setName}
               autoCapitalize="words"
@@ -180,8 +182,8 @@ export default function EditPersonScreen() {
               returnKeyType="next"
             />
             <TextField
-              label="Nickname"
-              placeholder="Optional"
+              label={t("personForm.nickname")}
+              placeholder={t("common.optional")}
               value={nickname}
               onChangeText={setNickname}
               autoCapitalize="words"
@@ -189,9 +191,9 @@ export default function EditPersonScreen() {
               returnKeyType="next"
             />
             <TextField
-              label="Relationship"
-              hint="Free text — e.g., mom, best friend, colleague"
-              placeholder="Optional"
+              label={t("personForm.relationship")}
+              hint={t("personForm.relationshipHint")}
+              placeholder={t("common.optional")}
               value={relationship}
               onChangeText={setRelationship}
               autoCapitalize="none"
@@ -199,14 +201,14 @@ export default function EditPersonScreen() {
               returnKeyType="next"
             />
             <MonthDayPicker
-              label="Birth date"
+              label={t("personForm.birthDate")}
               value={birthDate}
               onChange={setBirthDate}
             />
             <TextField
-              label="Interests"
-              hint="Comma-separated"
-              placeholder="e.g., gardening, audiobooks, tea"
+              label={t("personForm.interests")}
+              hint={t("personForm.interestsHint")}
+              placeholder={t("personForm.interestsPlaceholder")}
               value={interestsText}
               onChangeText={setInterestsText}
               autoCapitalize="none"
@@ -214,8 +216,8 @@ export default function EditPersonScreen() {
               returnKeyType="next"
             />
             <TextField
-              label="Notes"
-              placeholder="Optional"
+              label={t("personForm.notes")}
+              placeholder={t("common.optional")}
               value={notes}
               onChangeText={setNotes}
               multiline
@@ -231,7 +233,7 @@ export default function EditPersonScreen() {
               onPress={onSave}
               style={styles.saveBtn}
             >
-              {saving ? "Saving…" : "Save"}
+              {saving ? t("common.saving") : t("common.save")}
             </Btn>
 
             <Btn
@@ -240,7 +242,7 @@ export default function EditPersonScreen() {
               onPress={onDelete}
               style={styles.deleteBtn}
             >
-              Delete person
+              {t("personForm.deleteButton")}
             </Btn>
           </View>
         </ScrollView>

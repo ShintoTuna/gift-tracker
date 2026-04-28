@@ -7,7 +7,10 @@
     "delete": "Удалить",
     "optional": "Необязательно",
     "required": "Обязательно",
-    "saving": "Сохранение…"
+    "saving": "Сохранение…",
+    "couldNotSave": "Не удалось сохранить",
+    "couldNotDelete": "Не удалось удалить",
+    "cantBeUndone": "Это нельзя отменить."
   },
   "tabs": {
     "people": "Люди",
@@ -67,5 +70,94 @@
     "emptyNone": "Пока нет идей. Нажмите кнопку +, чтобы записать первую.",
     "emptySearch": "По запросу «{{query}}» ничего не найдено.",
     "emptyFilter": "Нет идей по этому фильтру."
+  },
+  "personForm": {
+    "newTitle": "Новый человек",
+    "editTitle": "Редактировать человека",
+    "newScreenTitle": "Кого добавляем?",
+    "newSubtitle": "Тот, кого хотите запомнить",
+    "editScreenTitle": "Редактировать человека",
+    "name": "Имя",
+    "nickname": "Прозвище",
+    "relationship": "Отношения",
+    "relationshipHint": "Свободный текст — напр., мама, лучший друг, коллега",
+    "birthDate": "Дата рождения",
+    "interests": "Интересы",
+    "interestsHint": "Через запятую",
+    "interestsPlaceholder": "напр., садоводство, аудиокниги, чай",
+    "notes": "Заметки",
+    "deleteButton": "Удалить человека",
+    "deleteConfirmTitle": "Удалить этого человека?",
+    "deleteConfirmBody": "Это также удалит его события и снимет его с идей подарков. Это нельзя отменить.",
+    "notFound": "Человек не найден."
+  },
+  "ideaForm": {
+    "editTitle": "Редактировать идею",
+    "editScreenTitle": "Редактировать идею",
+    "status": "Статус",
+    "statusOpen": "Открыта",
+    "statusGiven": "Подарено",
+    "deleteButton": "Удалить идею",
+    "deleteConfirmTitle": "Удалить эту идею подарка?",
+    "notFound": "Идея не найдена."
+  },
+  "occasionForm": {
+    "newTitle": "Новое событие",
+    "editTitle": "Редактировать событие",
+    "newScreenTitle": "Добавить событие",
+    "newSubtitle": "Когда вспомнить?",
+    "editScreenTitle": "Редактировать событие",
+    "titleLabel": "Название",
+    "titlePlaceholder": "напр., День рождения, Годовщина свадьбы",
+    "recurrence": "Повтор",
+    "recurrenceYearly": "Ежегодно",
+    "recurrenceOneOff": "Один раз",
+    "deleteButton": "Удалить событие",
+    "deleteConfirmTitle": "Удалить это событие?",
+    "notFound": "Событие не найдено."
+  },
+  "profile": {
+    "title": "Профиль",
+    "editA11y": "Редактировать человека",
+    "editPill": "Изменить",
+    "about": "О человеке",
+    "born": "Род.",
+    "occasions": "События",
+    "addOccasion": "+ Добавить",
+    "occasionsEmpty": "Пока нет событий — нажмите <accent>+ Добавить</accent>, чтобы создать.",
+    "interests": "Интересы",
+    "openIdeas": "Открытые идеи · {{count}}",
+    "givenIdeas": "Подарено · {{count}}",
+    "ideasEmpty": "Пока нет идей подарков. Придумайте ниже или добавьте через быструю запись.",
+    "notes": "Заметки",
+    "brainstormCta": "Придумать подарок",
+    "notFound": "Человек не найден."
+  },
+  "brainstorm": {
+    "stubTitle": "Идеи для {{personId}}"
+  },
+  "ideaCard": {
+    "statusOpen": "Открыта",
+    "statusGiven": "Подарено"
+  },
+  "personPicker": {
+    "label": "Для",
+    "placeholder": "Поиск людей…",
+    "noPeople": "Пока нет людей — сначала добавьте кого-то на вкладке Люди.",
+    "moreOverflow": "+ ещё {{count}} — введите для фильтра",
+    "noMatches": "По запросу «{{query}}» ничего не найдено."
+  },
+  "personChip": {
+    "removeA11y": "Убрать {{name}}"
+  },
+  "datePicker": {
+    "defaultLabel": "Дата",
+    "setDate": "+ Указать дату",
+    "clearDate": "Очистить дату"
+  },
+  "monthDayPicker": {
+    "defaultLabel": "Дата",
+    "setDate": "+ Указать дату",
+    "clearDate": "Очистить дату"
   }
 }

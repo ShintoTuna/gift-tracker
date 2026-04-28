@@ -1,6 +1,7 @@
 import { useMutation } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -31,6 +32,7 @@ import type { Id } from "../../../convex/_generated/dataModel";
 // recurrence are optional (per the typing brainstorm — "TBD"
 // occasions are first-class).
 export default function NewOccasionScreen() {
+  const { t } = useTranslation();
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const createOccasion = useMutation(api.occasions.create);
 
@@ -56,7 +58,7 @@ export default function NewOccasionScreen() {
       router.back();
     } catch (err) {
       Alert.alert(
-        "Could not save",
+        t("common.couldNotSave"),
         err instanceof Error ? err.message : String(err),
       );
       setSaving(false);
@@ -66,7 +68,7 @@ export default function NewOccasionScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title="New occasion"
+        title={t("occasionForm.newTitle")}
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -79,14 +81,14 @@ export default function NewOccasionScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle sub="When should we remember this?">
-            Add an occasion
+          <ScreenTitle sub={t("occasionForm.newSubtitle")}>
+            {t("occasionForm.newScreenTitle")}
           </ScreenTitle>
 
           <View style={styles.fields}>
             <TextField
-              label="Title"
-              placeholder="e.g., Birthday, Wedding anniversary"
+              label={t("occasionForm.titleLabel")}
+              placeholder={t("occasionForm.titlePlaceholder")}
               value={title}
               onChangeText={setTitle}
               autoFocus
@@ -99,14 +101,16 @@ export default function NewOccasionScreen() {
 
             {date != null && (
               <View>
-                <Label style={styles.recurrenceLabel}>Recurrence</Label>
+                <Label style={styles.recurrenceLabel}>
+                  {t("occasionForm.recurrence")}
+                </Label>
                 <View style={styles.recurrenceRow}>
                   <Pressable
                     onPress={() => setRecurrence("yearly")}
                     hitSlop={4}
                   >
                     <Pill tone={recurrence === "yearly" ? "brass" : "default"}>
-                      Yearly
+                      {t("occasionForm.recurrenceYearly")}
                     </Pill>
                   </Pressable>
                   <Pressable
@@ -116,7 +120,7 @@ export default function NewOccasionScreen() {
                     <Pill
                       tone={recurrence === "one_off" ? "brass" : "default"}
                     >
-                      One-off
+                      {t("occasionForm.recurrenceOneOff")}
                     </Pill>
                   </Pressable>
                 </View>
@@ -130,7 +134,7 @@ export default function NewOccasionScreen() {
               onPress={onSave}
               style={styles.saveBtn}
             >
-              {saving ? "Saving…" : "Save"}
+              {saving ? t("common.saving") : t("common.save")}
             </Btn>
           </View>
         </ScrollView>

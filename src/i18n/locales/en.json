@@ -7,7 +7,10 @@
     "delete": "Delete",
     "optional": "Optional",
     "required": "Required",
-    "saving": "Saving…"
+    "saving": "Saving…",
+    "couldNotSave": "Could not save",
+    "couldNotDelete": "Could not delete",
+    "cantBeUndone": "This can't be undone."
   },
   "tabs": {
     "people": "People",
@@ -67,5 +70,94 @@
     "emptyNone": "No ideas captured yet. Tap the + button to capture your first.",
     "emptySearch": "No ideas match “{{query}}”.",
     "emptyFilter": "No ideas match this filter."
+  },
+  "personForm": {
+    "newTitle": "New person",
+    "editTitle": "Edit person",
+    "newScreenTitle": "Who are we adding?",
+    "newSubtitle": "Someone you want to remember",
+    "editScreenTitle": "Edit person",
+    "name": "Name",
+    "nickname": "Nickname",
+    "relationship": "Relationship",
+    "relationshipHint": "Free text — e.g., mom, best friend, colleague",
+    "birthDate": "Birth date",
+    "interests": "Interests",
+    "interestsHint": "Comma-separated",
+    "interestsPlaceholder": "e.g., gardening, audiobooks, tea",
+    "notes": "Notes",
+    "deleteButton": "Delete person",
+    "deleteConfirmTitle": "Delete this person?",
+    "deleteConfirmBody": "This will also remove their occasions and untag them from any gift ideas. This can't be undone.",
+    "notFound": "Person not found."
+  },
+  "ideaForm": {
+    "editTitle": "Edit idea",
+    "editScreenTitle": "Edit idea",
+    "status": "Status",
+    "statusOpen": "Open",
+    "statusGiven": "Given",
+    "deleteButton": "Delete idea",
+    "deleteConfirmTitle": "Delete this gift idea?",
+    "notFound": "Idea not found."
+  },
+  "occasionForm": {
+    "newTitle": "New occasion",
+    "editTitle": "Edit occasion",
+    "newScreenTitle": "Add an occasion",
+    "newSubtitle": "When should we remember this?",
+    "editScreenTitle": "Edit occasion",
+    "titleLabel": "Title",
+    "titlePlaceholder": "e.g., Birthday, Wedding anniversary",
+    "recurrence": "Recurrence",
+    "recurrenceYearly": "Yearly",
+    "recurrenceOneOff": "One-off",
+    "deleteButton": "Delete occasion",
+    "deleteConfirmTitle": "Delete this occasion?",
+    "notFound": "Occasion not found."
+  },
+  "profile": {
+    "title": "Profile",
+    "editA11y": "Edit person",
+    "editPill": "Edit",
+    "about": "About",
+    "born": "Born",
+    "occasions": "Occasions",
+    "addOccasion": "+ Add",
+    "occasionsEmpty": "No occasions yet — tap <accent>+ Add</accent> to create one.",
+    "interests": "Interests",
+    "openIdeas": "Open ideas · {{count}}",
+    "givenIdeas": "Given · {{count}}",
+    "ideasEmpty": "No gift ideas yet. Brainstorm some below or add one from Quick Capture.",
+    "notes": "Notes",
+    "brainstormCta": "Brainstorm a gift",
+    "notFound": "Person not found."
+  },
+  "brainstorm": {
+    "stubTitle": "Brainstorm for {{personId}}"
+  },
+  "ideaCard": {
+    "statusOpen": "Open",
+    "statusGiven": "Given"
+  },
+  "personPicker": {
+    "label": "For",
+    "placeholder": "Search people…",
+    "noPeople": "No people yet — add someone from the People tab first.",
+    "moreOverflow": "+ {{count}} more — type to filter",
+    "noMatches": "No matches for “{{query}}”."
+  },
+  "personChip": {
+    "removeA11y": "Remove {{name}}"
+  },
+  "datePicker": {
+    "defaultLabel": "Date",
+    "setDate": "+ Set a date",
+    "clearDate": "Clear date"
+  },
+  "monthDayPicker": {
+    "defaultLabel": "Date",
+    "setDate": "+ Set a date",
+    "clearDate": "Clear date"
   }
 }
