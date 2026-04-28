@@ -1,0 +1,16 @@
+{
+  "tabs": {
+    "people": "Люди",
+    "calendar": "Календарь",
+    "gifts": "Подарки"
+  },
+  "settings": {
+    "title": "Настройки",
+    "subtitle": "Что можно изменить",
+    "preferences": "Предпочтения",
+    "defaultCurrency": "Валюта по умолчанию",
+    "defaultCurrencyHint": "Используется при сохранении цены у идеи.",
+    "language": "Язык",
+    "languageHint": "Применяется во всём приложении."
+  }
+}

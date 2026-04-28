@@ -64,6 +64,10 @@ export default defineSchema({
   userSettings: defineTable({
     userId: v.string(),
     defaultCurrency: v.optional(v.string()),
+    // Two-letter language code from `SUPPORTED_LANGUAGES` in
+    // src/i18n/index.ts (e.g. "en", "ru"). Optional because new
+    // installs default to the device locale via expo-localization.
+    preferredLanguage: v.optional(v.string()),
   }).index("by_user", ["userId"]),
 
   giftIdeas: defineTable({

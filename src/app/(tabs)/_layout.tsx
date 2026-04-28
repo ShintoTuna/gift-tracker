@@ -1,5 +1,6 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { Tabs } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { View } from "react-native";
 
 import { CaptureFab } from "@/components";
@@ -32,6 +33,7 @@ function tabIcon(key: keyof typeof ICONS) {
 }
 
 export default function TabsLayout() {
+  const { t } = useTranslation();
   return (
     <View style={{ flex: 1 }}>
       <Tabs
@@ -47,15 +49,15 @@ export default function TabsLayout() {
       >
         <Tabs.Screen
           name="index"
-          options={{ title: "People", tabBarIcon: tabIcon("index") }}
+          options={{ title: t("tabs.people"), tabBarIcon: tabIcon("index") }}
         />
         <Tabs.Screen
           name="calendar"
-          options={{ title: "Calendar", tabBarIcon: tabIcon("calendar") }}
+          options={{ title: t("tabs.calendar"), tabBarIcon: tabIcon("calendar") }}
         />
         <Tabs.Screen
           name="backlog"
-          options={{ title: "Gifts", tabBarIcon: tabIcon("backlog") }}
+          options={{ title: t("tabs.gifts"), tabBarIcon: tabIcon("backlog") }}
         />
       </Tabs>
       <CaptureFab />

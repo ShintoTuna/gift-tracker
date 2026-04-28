@@ -1,0 +1,16 @@
+{
+  "tabs": {
+    "people": "People",
+    "calendar": "Calendar",
+    "gifts": "Gifts"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Things you can change",
+    "preferences": "Preferences",
+    "defaultCurrency": "Default currency",
+    "defaultCurrencyHint": "Used when you save a price on a captured idea.",
+    "language": "Language",
+    "languageHint": "Used everywhere in the app."
+  }
+}
