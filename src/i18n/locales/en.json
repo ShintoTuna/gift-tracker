@@ -24,7 +24,32 @@
     "defaultCurrency": "Default currency",
     "defaultCurrencyHint": "Used when you save a price on a captured idea.",
     "language": "Language",
-    "languageHint": "Used everywhere in the app."
+    "languageHint": "Used everywhere in the app.",
+    "notifications": {
+      "title": "Notifications",
+      "hint": "Reminders for upcoming occasions.",
+      "masterToggle": "Push notifications",
+      "permissionDenied": "Enable notifications in iOS Settings to receive reminders.",
+      "daysAhead": "Remind me",
+      "daysAheadHint": "Add any number of days before. We'll send a reminder for each.",
+      "daysAheadPill_one": "{{count}} day before",
+      "daysAheadPill_other": "{{count}} days before",
+      "daysAheadInputPlaceholder": "Days before",
+      "daysAheadAdd": "Add",
+      "daysAheadInvalid": "Enter a whole number between 1 and 365.",
+      "daysAheadDuplicate": "That value is already in the list.",
+      "daysAheadMax": "Up to 10 reminders per occasion.",
+      "daysAheadRemoveA11y": "Remove {{count}} day reminder",
+      "timeOfDay": "Time of day",
+      "timeOfDayHint": "We'll send the reminder around this time."
+    }
+  },
+  "push": {
+    "title": "{{personName}} · {{occasionTitle}}",
+    "bodyTomorrow": "{{occasionTitle}} for {{personName}} is tomorrow.",
+    "bodyToday": "{{occasionTitle}} for {{personName}} is today.",
+    "bodyInDays_one": "{{occasionTitle}} for {{personName}} is in {{count}} day.",
+    "bodyInDays_other": "{{occasionTitle}} for {{personName}} is in {{count}} days."
   },
   "capture": {
     "title": "Quick Capture",

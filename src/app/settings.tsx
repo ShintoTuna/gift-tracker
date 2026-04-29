@@ -1,13 +1,17 @@
 import { useAuthActions } from "@convex-dev/auth/react";
+import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "convex/react";
 import { router } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
+  TextInput,
   View,
 } from "react-native";
 
@@ -17,10 +21,25 @@ import {
   SUPPORTED_LANGUAGES,
   type Language,
 } from "@/i18n";
-import { DEFAULT_CURRENCY, usePreferredLanguage } from "@/lib/settings";
-import { colors, fonts, spacing } from "@/theme/tokens";
+import {
+  DEFAULT_CURRENCY,
+  DEFAULT_REMINDER_DAYS_AHEAD,
+  DEFAULT_REMINDER_TIME_OF_DAY_MINUTES,
+  useNotificationPrefs,
+  usePreferredLanguage,
+} from "@/lib/settings";
+import {
+  getDeviceTimezone,
+  getStoredPushToken,
+  requestPermissionsAndGetToken,
+} from "@/lib/notifications";
+import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
 import { api } from "../../convex/_generated/api";
+
+const MAX_DAYS_AHEAD_ENTRIES = 10;
+const MIN_DAYS_AHEAD = 1;
+const MAX_DAYS_AHEAD = 365;
 
 const CURRENCIES: { code: string; label: string }[] = [
   { code: "EUR", label: "EUR €" },
@@ -30,8 +49,9 @@ const CURRENCIES: { code: string; label: string }[] = [
 ];
 
 // Modal-presented Settings screen. Default currency + preferred
-// language + Account (signed-in email, sign out, delete account).
-// Notifications / About sections slot in here as those features land.
+// language + Notifications + Account (signed-in email, sign out,
+// delete account). About section slots in here when its content
+// (privacy/terms links, version, error-reports toggle) lands.
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const settings = useQuery(api.userSettings.get);
@@ -39,8 +59,11 @@ export default function SettingsScreen() {
   const usage = useQuery(api.users.getUsage);
   const setDefaultCurrency = useMutation(api.userSettings.setDefaultCurrency);
   const deleteAccount = useMutation(api.users.deleteAccount);
+  const unregisterToken = useMutation(api.notifications.unregisterToken);
   const { signOut } = useAuthActions();
   const { language: currentLanguage, setLanguage } = usePreferredLanguage();
+  const { prefs: notificationPrefs, setPrefs: setNotificationPrefs } =
+    useNotificationPrefs();
 
   const currentCurrency = settings?.defaultCurrency ?? DEFAULT_CURRENCY;
 
@@ -54,6 +77,15 @@ export default function SettingsScreen() {
           text: t("auth.account.signOut"),
           style: "destructive",
           onPress: async () => {
+            // Best-effort token cleanup before the auth context
+            // disappears. Silenced — the cron also prunes via Expo's
+            // DeviceNotRegistered receipt if this fails.
+            try {
+              const token = await getStoredPushToken();
+              if (token) await unregisterToken({ token });
+            } catch {
+              // ignore
+            }
             await signOut();
           },
         },
@@ -152,6 +184,11 @@ export default function SettingsScreen() {
           </Card>
         </View>
 
+        <NotificationsSection
+          prefs={notificationPrefs}
+          setPrefs={setNotificationPrefs}
+        />
+
         <View style={styles.section}>
           <Label style={styles.sectionLabel}>{t("auth.account.title")}</Label>
           <Card>
@@ -188,6 +225,244 @@ export default function SettingsScreen() {
         </View>
       </ScrollView>
     </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Notifications section (Step 18). Three cards:
+//   1. Master toggle + iOS permission flow on flip-on.
+//   2. Days-ahead manual entry — chips + numeric input + Add.
+//   3. Time-of-day picker (`@react-native-community/datetimepicker`).
+// ---------------------------------------------------------------------------
+
+type NotificationPrefsShape = ReturnType<typeof useNotificationPrefs>["prefs"];
+type SetNotificationPrefs = ReturnType<typeof useNotificationPrefs>["setPrefs"];
+
+function NotificationsSection({
+  prefs,
+  setPrefs,
+}: {
+  prefs: NotificationPrefsShape;
+  setPrefs: SetNotificationPrefs;
+}) {
+  const { t } = useTranslation();
+  const enabled = prefs?.enabled === true;
+
+  const onToggle = async (next: boolean) => {
+    if (next) {
+      const token = await requestPermissionsAndGetToken();
+      if (!token) {
+        Alert.alert(t("settings.notifications.permissionDenied"));
+        return;
+      }
+      await setPrefs({
+        enabled: true,
+        timezone: getDeviceTimezone(),
+        // Seed defaults only on first opt-in so the user has something
+        // to see immediately. They overwrite freely.
+        daysAhead:
+          prefs?.daysAhead && prefs.daysAhead.length > 0
+            ? prefs.daysAhead
+            : DEFAULT_REMINDER_DAYS_AHEAD,
+        timeOfDayMinutes:
+          prefs?.timeOfDayMinutes ?? DEFAULT_REMINDER_TIME_OF_DAY_MINUTES,
+      });
+    } else {
+      await setPrefs({ enabled: false });
+    }
+  };
+
+  return (
+    <View style={styles.section}>
+      <Label style={styles.sectionLabel}>
+        {t("settings.notifications.title")}
+      </Label>
+
+      <Card>
+        <View style={styles.toggleRow}>
+          <View style={styles.toggleText}>
+            <Text style={styles.fieldLabel}>
+              {t("settings.notifications.masterToggle")}
+            </Text>
+            <Text style={styles.fieldHint}>
+              {t("settings.notifications.hint")}
+            </Text>
+          </View>
+          <Switch
+            value={enabled}
+            onValueChange={(next) => {
+              void onToggle(next);
+            }}
+            trackColor={{ true: colors.brass, false: colors.surface2 }}
+            thumbColor={colors.bg}
+          />
+        </View>
+      </Card>
+
+      <View style={styles.cardSpacer} />
+
+      <DaysAheadCard
+        prefs={prefs}
+        setPrefs={setPrefs}
+        disabled={!enabled}
+      />
+
+      <View style={styles.cardSpacer} />
+
+      <TimeOfDayCard
+        prefs={prefs}
+        setPrefs={setPrefs}
+        disabled={!enabled}
+      />
+    </View>
+  );
+}
+
+function DaysAheadCard({
+  prefs,
+  setPrefs,
+  disabled,
+}: {
+  prefs: NotificationPrefsShape;
+  setPrefs: SetNotificationPrefs;
+  disabled: boolean;
+}) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const days = prefs?.daysAhead ?? [];
+
+  const onAdd = async () => {
+    const parsed = Number.parseInt(draft, 10);
+    if (
+      !Number.isInteger(parsed) ||
+      String(parsed) !== draft.trim() ||
+      parsed < MIN_DAYS_AHEAD ||
+      parsed > MAX_DAYS_AHEAD
+    ) {
+      setError(t("settings.notifications.daysAheadInvalid"));
+      return;
+    }
+    if (days.includes(parsed)) {
+      setError(t("settings.notifications.daysAheadDuplicate"));
+      return;
+    }
+    if (days.length >= MAX_DAYS_AHEAD_ENTRIES) {
+      setError(t("settings.notifications.daysAheadMax"));
+      return;
+    }
+    const next = [...days, parsed].sort((a, b) => a - b);
+    setError(null);
+    setDraft("");
+    await setPrefs({ daysAhead: next });
+  };
+
+  const onRemove = async (value: number) => {
+    const next = days.filter((d) => d !== value);
+    await setPrefs({ daysAhead: next });
+  };
+
+  return (
+    <Card style={disabled ? styles.cardDisabled : undefined}>
+      <Text style={styles.fieldLabel}>
+        {t("settings.notifications.daysAhead")}
+      </Text>
+      <Text style={styles.fieldHint}>
+        {t("settings.notifications.daysAheadHint")}
+      </Text>
+
+      {days.length > 0 ? (
+        <View style={styles.choiceRow}>
+          {days.map((d) => (
+            <Pressable
+              key={d}
+              onPress={() => {
+                if (!disabled) void onRemove(d);
+              }}
+              hitSlop={4}
+              accessibilityLabel={t(
+                "settings.notifications.daysAheadRemoveA11y",
+                { count: d },
+              )}
+            >
+              <Pill tone="brass">
+                {t("settings.notifications.daysAheadPill", { count: d })} ✕
+              </Pill>
+            </Pressable>
+          ))}
+        </View>
+      ) : null}
+
+      <View style={styles.inlineInputRow}>
+        <TextInput
+          value={draft}
+          onChangeText={(next) => {
+            setDraft(next);
+            if (error) setError(null);
+          }}
+          editable={!disabled}
+          keyboardType="number-pad"
+          maxLength={3}
+          placeholder={t("settings.notifications.daysAheadInputPlaceholder")}
+          placeholderTextColor={colors.text3}
+          selectionColor={colors.brass}
+          style={styles.inlineInput}
+        />
+        <Btn
+          tone="default"
+          disabled={disabled || draft.trim().length === 0}
+          onPress={() => {
+            void onAdd();
+          }}
+        >
+          {t("settings.notifications.daysAheadAdd")}
+        </Btn>
+      </View>
+      {error ? <Text style={styles.errorText}>{error}</Text> : null}
+    </Card>
+  );
+}
+
+function TimeOfDayCard({
+  prefs,
+  setPrefs,
+  disabled,
+}: {
+  prefs: NotificationPrefsShape;
+  setPrefs: SetNotificationPrefs;
+  disabled: boolean;
+}) {
+  const { t } = useTranslation();
+  const minutes =
+    prefs?.timeOfDayMinutes ?? DEFAULT_REMINDER_TIME_OF_DAY_MINUTES;
+  const date = new Date();
+  date.setHours(Math.floor(minutes / 60), minutes % 60, 0, 0);
+
+  return (
+    <Card style={disabled ? styles.cardDisabled : undefined}>
+      <Text style={styles.fieldLabel}>
+        {t("settings.notifications.timeOfDay")}
+      </Text>
+      <Text style={styles.fieldHint}>
+        {t("settings.notifications.timeOfDayHint")}
+      </Text>
+      <View style={styles.timePickerRow}>
+        <DateTimePicker
+          value={date}
+          mode="time"
+          display="spinner"
+          themeVariant="dark"
+          accentColor={colors.brass}
+          disabled={disabled}
+          onChange={(_, selected) => {
+            if (!selected || disabled) return;
+            const next = selected.getHours() * 60 + selected.getMinutes();
+            void setPrefs({ timeOfDayMinutes: next });
+          }}
+        />
+      </View>
+    </Card>
   );
 }
 
@@ -244,5 +519,44 @@ const styles = StyleSheet.create({
   },
   accountActions: {
     gap: spacing.sm,
+  },
+  toggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.md,
+  },
+  toggleText: {
+    flex: 1,
+  },
+  cardDisabled: {
+    opacity: 0.4,
+  },
+  inlineInputRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: spacing.sm,
+    marginTop: spacing.md,
+  },
+  inlineInput: {
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderColor: colors.border,
+    borderWidth: 1,
+    borderRadius: radii.md,
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.md,
+    color: colors.text,
+    fontFamily: fonts.body,
+    fontSize: 15,
+  },
+  errorText: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.claret,
+    marginTop: spacing.sm,
+  },
+  timePickerRow: {
+    alignItems: "center",
+    marginTop: spacing.sm,
   },
 });

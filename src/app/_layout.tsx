@@ -10,12 +10,12 @@ import {
 } from "@expo-google-fonts/manrope";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ConvexAuthProvider } from "@convex-dev/auth/react";
-import { useConvexAuth, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useFonts } from "expo-font";
 import { Redirect, Stack, useSegments } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, View } from "react-native";
 
@@ -28,6 +28,7 @@ import {
   isSupportedLanguage,
 } from "@/i18n";
 import { convex } from "@/lib/convex";
+import { requestPermissionsAndGetToken } from "@/lib/notifications";
 
 import { api } from "../../convex/_generated/api";
 
@@ -102,6 +103,49 @@ function LanguageGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+// NotificationsRegistrar makes sure the device's Expo push token is
+// kept current with the backend whenever the user has opted in. It's a
+// silent worker — no UI — mounted only inside the auth-gated tree so
+// `getCurrentUserId()` resolves cleanly.
+//
+// The component never prompts proactively. Permissions are requested
+// the first time the user toggles the master switch in Settings; this
+// component just covers the steady-state ("user already opted in,
+// reinstalled the app, signed back in"). If the token's missing
+// because permission was revoked, `requestPermissionsAndGetToken`
+// surfaces null and we no-op rather than re-prompting.
+function NotificationsRegistrar() {
+  const prefs = useQuery(api.notifications.getNotificationPrefs);
+  const registerToken = useMutation(api.notifications.registerToken);
+  const registeredRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (prefs === undefined || prefs === null) return;
+    if (!prefs.enabled) return;
+    if (Platform.OS !== "ios" && Platform.OS !== "android") return;
+    let cancelled = false;
+    void (async () => {
+      const token = await requestPermissionsAndGetToken();
+      if (cancelled || !token) return;
+      if (registeredRef.current === token) return;
+      try {
+        await registerToken({
+          token,
+          platform: Platform.OS === "android" ? "android" : "ios",
+        });
+        registeredRef.current = token;
+      } catch {
+        // Best-effort; the next mount or settings flip will retry.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [prefs, registerToken]);
+
+  return null;
+}
+
 // AuthGate redirects unauthenticated users to the (auth) route group,
 // and conversely keeps signed-in users out of it. `useConvexAuth()` is
 // what reads from the secure-store-backed token cache, so this is the
@@ -152,6 +196,7 @@ export default function RootLayout() {
     >
       <LanguageGate>
         <AuthGate>
+          <NotificationsRegistrar />
           <View style={{ flex: 1 }}>
             <Stack screenOptions={{ headerShown: false }}>
               <Stack.Screen name="(auth)" />
