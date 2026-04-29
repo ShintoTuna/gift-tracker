@@ -24,3 +24,33 @@ only needs `<key>_one` and `<key>_other`.
 **Adding a new language:** add the JSON file, the code to
 `SUPPORTED_LANGUAGES` and `LANGUAGE_LABELS`, and the `resources` map in
 `src/i18n/index.ts`. The Settings picker auto-renders the new option.
+
+## Pre-merge / pre-build verification
+
+EAS cloud builds are slow and metered — a failed iOS build wastes ~15
+minutes of build minutes and a round-trip to debug. Treat them as the
+last step, not a sanity check. Before merging a PR, **and** before
+triggering any `eas build`, run all three of these locally and
+require they exit 0:
+
+```bash
+npx expo-doctor       # native module / SDK version mismatches
+npm run lint          # eslint via expo lint
+npx tsc --noEmit      # strict typecheck across src/ and convex/
+```
+
+`expo-doctor` is the most important of the three for catching what
+fails on EAS but passes locally. Native module version drift (e.g. a
+package pinned to its old SDK-N major when the project is now on
+SDK-N+1) compiles fine in JS but breaks Swift/ObjC compilation in the
+cloud. If it flags mismatches, run `npx expo install --fix` to
+reconcile, re-run all three, and commit `package.json` +
+`package-lock.json` together.
+
+When adding a new dependency, prefer `npx expo install <pkg>` over
+plain `npm install <pkg>` — it picks the version pinned to the
+current Expo SDK and saves you the doctor cycle.
+
+If a new check earns its keep (e.g. running tests when they exist,
+or `npx convex dev --once` to confirm schema validates), add it to
+this list rather than relying on people remembering.
