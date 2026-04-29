@@ -4,6 +4,7 @@ import { mutation, query } from "./_generated/server";
 import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { getNextOccurrence } from "./lib/dates";
 import { capFor, limitReached } from "./lib/limits";
+import { resolveImageUrl } from "./lib/storage";
 
 // Returns occasions for a single person, ordered by their stored
 // canonical date. The Calendar screen will need a separate
@@ -75,13 +76,22 @@ export const listUpcoming = query({
         .withIndex("by_person", (q) => q.eq("personId", person._id))
         .take(100);
       const ideaCount = ideaCountByPerson.get(person._id) ?? 0;
+      // Resolve once per person so back-to-back occasion rows share
+      // the same photo URL without an extra round trip each.
+      const photoUrl = await resolveImageUrl(ctx, person.photoStorageId);
+      const personWithPhoto = { ...person, photoUrl };
       for (const occ of occasions) {
         const nextDate = getNextOccurrence(occ, now);
         // Include if upcoming OR truly dateless (TBD). Skip past
         // one-offs (date set, nextDate null) — they're history, not
         // agenda items.
         if (nextDate !== null || occ.date == null) {
-          enriched.push({ occasion: occ, person, nextDate, ideaCount });
+          enriched.push({
+            occasion: occ,
+            person: personWithPhoto,
+            nextDate,
+            ideaCount,
+          });
         }
       }
     }

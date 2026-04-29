@@ -32,12 +32,23 @@
     "screenTitle": "Capture an idea",
     "ideaLabel": "Idea",
     "ideaPlaceholder": "e.g., Cordless gardening shears",
+    "imageLabel": "Photo",
     "sourceLabel": "Source",
     "priceLabel": "Price ({{currency}})",
     "descriptionLabel": "Description",
     "saveIdea": "Save idea",
     "couldNotSave": "Could not save",
     "fabLabel": "Capture an idea"
+  },
+  "imagePicker": {
+    "add": "Add photo",
+    "addA11y": "Add photo",
+    "change": "Change photo",
+    "changeA11y": "Change photo",
+    "remove": "Remove",
+    "uploadFailed": "Couldn't upload photo",
+    "fetchFromSource": "Use image from source",
+    "fetchFromSourceFailed": "Couldn't fetch image from source"
   },
   "people": {
     "title": "People",
@@ -91,6 +102,7 @@
     "newScreenTitle": "Who are we adding?",
     "newSubtitle": "Someone you want to remember",
     "editScreenTitle": "Edit person",
+    "photo": "Photo",
     "name": "Name",
     "nickname": "Nickname",
     "relationship": "Relationship",

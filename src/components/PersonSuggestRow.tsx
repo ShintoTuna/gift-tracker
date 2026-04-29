@@ -6,6 +6,7 @@ import { Avatar } from "./Avatar";
 
 type Props = {
   initial: string;
+  imageUrl?: string | null;
   name: string;
   relationship?: string;
   onPress?: () => void;
@@ -16,6 +17,7 @@ type Props = {
 // list under the picker's search input.
 export function PersonSuggestRow({
   initial,
+  imageUrl,
   name,
   relationship,
   onPress,
@@ -25,7 +27,7 @@ export function PersonSuggestRow({
       onPress={onPress}
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
-      <Avatar initial={initial} size={40} />
+      <Avatar initial={initial} imageUrl={imageUrl} size={40} />
       <View style={styles.middle}>
         <Text style={styles.name} numberOfLines={1}>
           {name}

@@ -32,12 +32,23 @@
     "screenTitle": "Записать идею",
     "ideaLabel": "Идея",
     "ideaPlaceholder": "напр., беспроводной секатор",
+    "imageLabel": "Фото",
     "sourceLabel": "Источник",
     "priceLabel": "Цена ({{currency}})",
     "descriptionLabel": "Описание",
     "saveIdea": "Сохранить идею",
     "couldNotSave": "Не удалось сохранить",
     "fabLabel": "Записать идею"
+  },
+  "imagePicker": {
+    "add": "Добавить фото",
+    "addA11y": "Добавить фото",
+    "change": "Изменить фото",
+    "changeA11y": "Изменить фото",
+    "remove": "Убрать",
+    "uploadFailed": "Не удалось загрузить фото",
+    "fetchFromSource": "Взять изображение со страницы",
+    "fetchFromSourceFailed": "Не удалось получить изображение со страницы"
   },
   "people": {
     "title": "Люди",
@@ -97,6 +108,7 @@
     "newScreenTitle": "Кого добавляем?",
     "newSubtitle": "Тот, кого хотите запомнить",
     "editScreenTitle": "Редактировать человека",
+    "photo": "Фото",
     "name": "Имя",
     "nickname": "Прозвище",
     "relationship": "Отношения",

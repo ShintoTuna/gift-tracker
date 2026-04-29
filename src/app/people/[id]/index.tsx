@@ -104,6 +104,7 @@ export default function ProfileScreen() {
         <View style={styles.hero}>
           <Avatar
             initial={person.name[0]?.toUpperCase() ?? "?"}
+            imageUrl={person.photoUrl}
             size={56}
             accent="brass"
           />
@@ -219,6 +220,7 @@ export default function ProfileScreen() {
                       ? buildInitials(idea.taggedPeople, person)
                       : undefined
                   }
+                  imageUrl={idea.imageUrl}
                   status={idea.status}
                 />
               ))}
@@ -239,6 +241,7 @@ export default function ProfileScreen() {
                   title={idea.title}
                   source={shortenSource(idea.sourceUrl)}
                   price={formatPrice(idea.priceEstimate, idea.currency)}
+                  imageUrl={idea.imageUrl}
                   status={idea.status}
                 />
               ))}

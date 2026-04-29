@@ -7,6 +7,9 @@ import { Label } from "./Label";
 
 type Props = {
   initial: string;
+  // Optional avatar photo URL. Falls back to the initial-on-gradient
+  // when null/undefined (Avatar handles the branch internally).
+  imageUrl?: string | null;
   name: string;
   relation?: string;
   // e.g., "Birthday · in 5 days" — preformatted by the caller.
@@ -26,6 +29,7 @@ type Props = {
 // Label below it.
 export function PersonRow({
   initial,
+  imageUrl,
   name,
   relation,
   dateLine,
@@ -45,6 +49,7 @@ export function PersonRow({
     >
       <Avatar
         initial={initial}
+        imageUrl={imageUrl}
         size={40}
         accent={urgent ? "claret" : "default"}
       />

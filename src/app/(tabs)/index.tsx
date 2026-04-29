@@ -152,6 +152,7 @@ export default function PeopleScreen() {
               <PersonRow
                 key={person._id}
                 initial={person.name[0]?.toUpperCase() ?? "?"}
+                imageUrl={person.photoUrl}
                 name={person.name}
                 relation={person.relationship}
                 dateLine={dateLineFor(person, t)}
@@ -176,6 +177,7 @@ export default function PeopleScreen() {
               <PersonRow
                 key={person._id}
                 initial={person.name[0]?.toUpperCase() ?? "?"}
+                imageUrl={person.photoUrl}
                 name={person.name}
                 relation={person.relationship}
                 dateLine={dateLineFor(person, t)}

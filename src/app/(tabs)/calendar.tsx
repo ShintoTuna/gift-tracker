@@ -132,6 +132,7 @@ function Section({
         <PersonRow
           key={item.occasion._id}
           initial={item.person.name[0]?.toUpperCase() ?? "?"}
+          imageUrl={item.person.photoUrl}
           name={item.occasion.title}
           relation={item.person.nickname ?? item.person.name}
           dateLine={

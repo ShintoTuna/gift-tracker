@@ -1,22 +1,37 @@
 import { v } from "convex/values";
 
-import { mutation, query } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
+import { mutation, query, type QueryCtx } from "./_generated/server";
 import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { capFor, limitReached } from "./lib/limits";
+import { resolveImageUrl } from "./lib/storage";
 
 // All bounded at 1000 per Convex guideline. PRD models a single user
 // over years of capture; the Backlog screen will switch to pagination
 // before this becomes a concern.
 const MAX_GIFT_IDEAS = 1000;
 
+async function withImageUrl(
+  ctx: QueryCtx,
+  rows: Doc<"giftIdeas">[],
+): Promise<(Doc<"giftIdeas"> & { imageUrl: string | null })[]> {
+  return await Promise.all(
+    rows.map(async (r) => ({
+      ...r,
+      imageUrl: await resolveImageUrl(ctx, r.imageStorageId),
+    })),
+  );
+}
+
 export const listByUser = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getCurrentUserId(ctx);
-    return await ctx.db
+    const rows = await ctx.db
       .query("giftIdeas")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .take(MAX_GIFT_IDEAS);
+    return await withImageUrl(ctx, rows);
   },
 });
 
@@ -33,7 +48,8 @@ export const listByPerson = query({
       .query("giftIdeas")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .take(MAX_GIFT_IDEAS);
-    return all.filter((idea) => idea.taggedPeople.includes(personId));
+    const rows = all.filter((idea) => idea.taggedPeople.includes(personId));
+    return await withImageUrl(ctx, rows);
   },
 });
 
@@ -43,12 +59,13 @@ export const listByStatus = query({
   },
   handler: async (ctx, { status }) => {
     const userId = await getCurrentUserId(ctx);
-    return await ctx.db
+    const rows = await ctx.db
       .query("giftIdeas")
       .withIndex("by_user_status", (q) =>
         q.eq("userId", userId).eq("status", status),
       )
       .take(MAX_GIFT_IDEAS);
+    return await withImageUrl(ctx, rows);
   },
 });
 
@@ -61,6 +78,7 @@ export const create = mutation({
   args: {
     title: v.string(),
     description: v.optional(v.string()),
+    imageStorageId: v.optional(v.id("_storage")),
     sourceUrl: v.optional(v.string()),
     priceEstimate: v.optional(v.number()),
     currency: v.optional(v.string()),
@@ -98,19 +116,25 @@ export const getById = query({
     const userId = await getCurrentUserId(ctx);
     const row = await ctx.db.get(id);
     if (!row || row.userId !== userId) return null;
-    return row;
+    return {
+      ...row,
+      imageUrl: await resolveImageUrl(ctx, row.imageStorageId),
+    };
   },
 });
 
 // Edit mutation used by the Backlog edit screen. Patch object
 // mirrors the create args (minus userId, plus status). All fields
-// optional — pass only what changed.
+// optional — pass only what changed. `imageStorageId: null` means
+// "clear it" (and free the underlying blob); omit the key to leave
+// the field alone.
 export const update = mutation({
   args: {
     id: v.id("giftIdeas"),
     patch: v.object({
       title: v.optional(v.string()),
       description: v.optional(v.string()),
+      imageStorageId: v.optional(v.union(v.id("_storage"), v.null())),
       sourceUrl: v.optional(v.string()),
       priceEstimate: v.optional(v.number()),
       currency: v.optional(v.string()),
@@ -126,7 +150,21 @@ export const update = mutation({
     if (!existing || existing.userId !== userId) {
       throw new Error("Not found or not authorized");
     }
-    await ctx.db.patch(id, { ...patch, updatedAt: Date.now() });
+    const { imageStorageId: newImage, ...rest } = patch;
+    const dbPatch: Partial<Doc<"giftIdeas">> = {
+      ...rest,
+      updatedAt: Date.now(),
+    };
+    if (newImage !== undefined) {
+      if (
+        existing.imageStorageId &&
+        existing.imageStorageId !== newImage
+      ) {
+        await ctx.storage.delete(existing.imageStorageId);
+      }
+      dbPatch.imageStorageId = newImage ?? undefined;
+    }
+    await ctx.db.patch(id, dbPatch);
   },
 });
 
@@ -140,6 +178,9 @@ export const remove = mutation({
     const existing = await ctx.db.get(id);
     if (!existing || existing.userId !== userId) {
       throw new Error("Not found or not authorized");
+    }
+    if (existing.imageStorageId) {
+      await ctx.storage.delete(existing.imageStorageId);
     }
     await ctx.db.delete(id);
   },

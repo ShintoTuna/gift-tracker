@@ -1,3 +1,4 @@
+import { Image } from "expo-image";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
@@ -17,6 +18,9 @@ type Props = {
   // Initials of all tagged people. Stack omitted if undefined or empty.
   peopleInitials?: string[];
   occasion?: string;
+  // When set, replaces the placeholder thumbnail with the uploaded
+  // image. Falls back to the muted placeholder when null/undefined.
+  imageUrl?: string | null;
   // Two states for now. "given" gets the fern Pill plus dimmed
   // strikethrough title; "idea" uses the default tone.
   status: IdeaStatus;
@@ -41,6 +45,7 @@ export function IdeaCard({
   price,
   peopleInitials,
   occasion,
+  imageUrl,
   status,
   onPress,
 }: Props) {
@@ -49,7 +54,16 @@ export function IdeaCard({
   const content = (
     <Card>
       <View style={styles.row}>
-        <View style={styles.thumb} />
+        {imageUrl ? (
+          <Image
+            source={{ uri: imageUrl }}
+            style={styles.thumb}
+            contentFit="cover"
+            transition={120}
+          />
+        ) : (
+          <View style={styles.thumb} />
+        )}
         <View style={styles.middle}>
           <Text
             style={[styles.title, isGiven && styles.titleGiven]}
