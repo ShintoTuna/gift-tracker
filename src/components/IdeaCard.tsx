@@ -1,7 +1,9 @@
 import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
+import { thumbColorForSeed } from "@/lib/seedColor";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { AvatarStack } from "./AvatarStack";
@@ -21,6 +23,12 @@ type Props = {
   // When set, replaces the placeholder thumbnail with the uploaded
   // image. Falls back to the muted placeholder when null/undefined.
   imageUrl?: string | null;
+  // Stable seed for the placeholder thumb's color. Same seed → same
+  // color, so a row's tile keeps its hue across renders without us
+  // having to persist anything. Idea ID is the canonical choice;
+  // falls back to the title (used by the design-system preview where
+  // there's no row id).
+  placeholderSeed?: string;
   // Two states for now. "given" gets the fern Pill plus dimmed
   // strikethrough title; "idea" uses the default tone.
   status: IdeaStatus;
@@ -33,12 +41,13 @@ const STATUS_KEY: Record<IdeaStatus, "ideaCard.statusOpen" | "ideaCard.statusGiv
 };
 
 // Composed gift-idea card. Used on the Profile screen, the Backlog
-// screen (Step 6+), and the Brainstorm result list (Step 7+).
+// screen, and the Brainstorm result list (post-launch).
 //
-// The 60px thumbnail is a solid-color block for now — image upload +
-// real thumbnail rendering lands with Convex File Storage in a later
-// step. The diagonal-stripe pattern from the web design needs SVG
-// support, also deferred.
+// When no `imageUrl` is supplied, the 60px thumbnail falls back to
+// a deterministic placeholder: a Midnight Garden palette color
+// chosen by hashing `placeholderSeed`, with a subtle diagonal sheen
+// for depth (mimicking the 4% diagonal stripe in the web design
+// without needing react-native-svg).
 export function IdeaCard({
   title,
   source,
@@ -46,11 +55,13 @@ export function IdeaCard({
   peopleInitials,
   occasion,
   imageUrl,
+  placeholderSeed,
   status,
   onPress,
 }: Props) {
   const { t } = useTranslation();
   const isGiven = status === "given";
+  const placeholderColor = thumbColorForSeed(placeholderSeed ?? title);
   const content = (
     <Card>
       <View style={styles.row}>
@@ -62,7 +73,14 @@ export function IdeaCard({
             transition={120}
           />
         ) : (
-          <View style={styles.thumb} />
+          <View style={[styles.thumb, { backgroundColor: placeholderColor }]}>
+            <LinearGradient
+              colors={["rgba(255,255,255,0.07)", "rgba(0,0,0,0.18)"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </View>
         )}
         <View style={styles.middle}>
           <Text
@@ -117,10 +135,10 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 10,
-    backgroundColor: "#3a4a4a",
     borderWidth: 1,
     borderColor: colors.border,
     flexShrink: 0,
+    overflow: "hidden",
   },
   middle: {
     flex: 1,

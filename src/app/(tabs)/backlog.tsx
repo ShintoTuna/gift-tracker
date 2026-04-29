@@ -165,6 +165,7 @@ export default function GiftsScreen() {
                   price={formatPrice(idea.priceEstimate, idea.currency)}
                   peopleInitials={initials.length > 0 ? initials : undefined}
                   imageUrl={idea.imageUrl}
+                  placeholderSeed={idea._id}
                   status={idea.status}
                   onPress={() =>
                     router.push({

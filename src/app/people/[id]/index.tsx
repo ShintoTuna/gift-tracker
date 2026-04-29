@@ -221,6 +221,7 @@ export default function ProfileScreen() {
                       : undefined
                   }
                   imageUrl={idea.imageUrl}
+                  placeholderSeed={idea._id}
                   status={idea.status}
                 />
               ))}
@@ -242,6 +243,7 @@ export default function ProfileScreen() {
                   source={shortenSource(idea.sourceUrl)}
                   price={formatPrice(idea.priceEstimate, idea.currency)}
                   imageUrl={idea.imageUrl}
+                  placeholderSeed={idea._id}
                   status={idea.status}
                 />
               ))}
