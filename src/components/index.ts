@@ -6,6 +6,7 @@ export { AvatarStack } from "./AvatarStack";
 export { Btn, type BtnTone } from "./Btn";
 export { CaptureFab } from "./CaptureFab";
 export { Card, type CardTone } from "./Card";
+export { ConnectionBanner } from "./ConnectionBanner";
 export { DatePicker } from "./DatePicker";
 export { DevDock } from "./DevDock";
 export { ErrorFallback } from "./ErrorFallback";

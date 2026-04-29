@@ -41,6 +41,11 @@ export function PersonRow({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={
+        relation != null ? `${name}, ${relation}` : name
+      }
+      accessibilityHint={dateLine}
       style={({ pressed }) => [
         styles.row,
         !hideBorder && styles.rowBorder,

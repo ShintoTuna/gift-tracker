@@ -9,6 +9,7 @@ import {
   isSupportedLanguage,
   type Language,
 } from "@/i18n";
+import { setErrorReportsRuntime } from "@/lib/sentry";
 
 import { api } from "../../convex/_generated/api";
 
@@ -108,4 +109,30 @@ export function useNotificationPrefs(): {
     [setNotificationPrefs],
   );
   return { prefs: prefs ?? null, setPrefs };
+}
+
+// Reactive accessor for the Sentry crash-reporting toggle. Default is
+// on (so freshly-installed apps capture errors out of the box). The
+// write side fans out three places: Sentry runtime (init/close +
+// AsyncStorage cache for the next cold boot) and Convex (cross-device
+// sync). Reads prefer Convex once it resolves and fall back to the
+// default while loading.
+export function useErrorReportsEnabled(): {
+  enabled: boolean;
+  setEnabled: (next: boolean) => Promise<void>;
+} {
+  const settings = useQuery(api.userSettings.get);
+  const setOnServer = useMutation(api.userSettings.setErrorReportsEnabled);
+  const enabled = settings?.errorReportsEnabled ?? true;
+  const setEnabled = useCallback(
+    async (next: boolean) => {
+      // Flip Sentry + AsyncStorage first so the user's choice is
+      // honored immediately — AsyncStorage is what the next cold-boot
+      // gate consults.
+      await setErrorReportsRuntime(next);
+      void setOnServer({ enabled: next });
+    },
+    [setOnServer],
+  );
+  return { enabled, setEnabled };
 }

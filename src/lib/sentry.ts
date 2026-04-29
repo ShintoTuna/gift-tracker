@@ -1,5 +1,6 @@
-import Constants from "expo-constants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Sentry from "@sentry/react-native";
+import Constants from "expo-constants";
 
 // Sentry crash + error reporting.
 //
@@ -16,9 +17,15 @@ import * as Sentry from "@sentry/react-native";
 // account.
 const DSN = process.env.EXPO_PUBLIC_SENTRY_DSN;
 
-export function initSentry(): void {
-  if (!DSN) return;
+// AsyncStorage mirror of `userSettings.errorReportsEnabled` so the
+// boot-time gate can decide before Convex (and even auth) is ready.
+// Missing = treat as enabled (default-on).
+export const ERROR_REPORTS_STORAGE_KEY = "error-reports-enabled";
 
+let initialized = false;
+
+function applyInit() {
+  if (initialized) return;
   Sentry.init({
     dsn: DSN,
     // Skip dev: keep your inbox quiet and dashboards clean while
@@ -52,6 +59,45 @@ export function initSentry(): void {
     // Breadcrumbs: leave the SDK default (100). They're attached to
     // error events, not sent independently, so they don't cost extra.
   });
+  initialized = true;
+}
+
+// Async because it consults AsyncStorage for the user's opt-out.
+// Caller in _layout.tsx fires-and-forgets — first frame may render
+// before init resolves; any thrown error during that brief window is
+// just not captured, which is acceptable.
+export async function initSentry(): Promise<void> {
+  if (!DSN) return;
+  let cached: string | null = null;
+  try {
+    cached = await AsyncStorage.getItem(ERROR_REPORTS_STORAGE_KEY);
+  } catch {
+    // ignore — fall through to default-on
+  }
+  if (cached === "false") return;
+  applyInit();
+}
+
+// Runtime toggle for the Settings screen. Persists to AsyncStorage
+// (boot-time source of truth) and either initializes Sentry or closes
+// the existing client. Convex persistence is a separate write done by
+// the caller via `setErrorReportsEnabled` mutation.
+export async function setErrorReportsRuntime(enabled: boolean): Promise<void> {
+  try {
+    await AsyncStorage.setItem(
+      ERROR_REPORTS_STORAGE_KEY,
+      enabled ? "true" : "false",
+    );
+  } catch {
+    // Best-effort cache write.
+  }
+  if (!DSN) return;
+  if (enabled) {
+    applyInit();
+  } else if (initialized) {
+    await Sentry.close();
+    initialized = false;
+  }
 }
 
 // Re-export the wrap HOC so callers don't need to pull from

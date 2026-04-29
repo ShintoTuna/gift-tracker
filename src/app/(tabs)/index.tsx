@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Label, PersonRow, Pill, ScreenTitle } from "@/components";
+import { Btn, Label, PersonRow, Pill, ScreenTitle } from "@/components";
 import { formatDateLine } from "@/lib/format";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
@@ -92,6 +92,15 @@ export default function PeopleScreen() {
                 components={{ accent: <Text style={styles.emptyAccent} /> }}
               />
             </Text>
+            <View style={styles.emptyCta}>
+              <Btn
+                tone="primary"
+                full
+                onPress={() => router.push("/people/new")}
+              >
+                {t("people.emptyCta")}
+              </Btn>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -325,6 +334,9 @@ const styles = StyleSheet.create({
   emptyAccent: {
     color: colors.brass,
     fontFamily: fonts.bodyMedium,
+  },
+  emptyCta: {
+    marginTop: spacing.xl,
   },
   loadingWrap: {
     flex: 1,

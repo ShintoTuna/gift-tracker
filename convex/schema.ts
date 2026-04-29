@@ -73,6 +73,14 @@ export default defineSchema({
     // first opt-in. The cron uses it to map "user's 9am" to the right
     // UTC hour.
     notificationTimezone: v.optional(v.string()),
+    // Sentry crash/error reporting opt-out. Missing = treat as enabled
+    // (default-on). The boot-time gate reads an AsyncStorage mirror of
+    // this so it can decide pre-auth.
+    errorReportsEnabled: v.optional(v.boolean()),
+    // Set after the user dismisses the post-signup welcome screen.
+    // Missing = false; the AuthGate routes signed-in users without
+    // this flag to /welcome before letting them into the tabs.
+    hasSeenWelcome: v.optional(v.boolean()),
   }).index("by_user", ["userId"]),
 
   // One row per device that has opted in. Multiple rows per user are

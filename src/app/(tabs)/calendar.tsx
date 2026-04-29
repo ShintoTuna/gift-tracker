@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Label, PersonRow, ScreenTitle } from "@/components";
+import { Btn, Label, PersonRow, ScreenTitle } from "@/components";
 import {
   formatMonthLabel,
   formatRelativeDays,
@@ -64,6 +64,15 @@ export default function CalendarScreen() {
           <ScreenTitle>{t("calendar.title")}</ScreenTitle>
           <View style={styles.empty}>
             <Text style={styles.emptyText}>{t("calendar.empty")}</Text>
+            <View style={styles.emptyCta}>
+              <Btn
+                tone="primary"
+                full
+                onPress={() => router.push("/people/new")}
+              >
+                {t("calendar.emptyCta")}
+              </Btn>
+            </View>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -216,6 +225,9 @@ const styles = StyleSheet.create({
     color: colors.text2,
     lineHeight: 22,
     textAlign: "center",
+  },
+  emptyCta: {
+    marginTop: spacing.xl,
   },
   loadingWrap: {
     flex: 1,

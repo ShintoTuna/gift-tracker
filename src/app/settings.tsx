@@ -1,11 +1,13 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "convex/react";
+import * as Application from "expo-application";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Alert,
+  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -25,6 +27,7 @@ import {
   DEFAULT_CURRENCY,
   DEFAULT_REMINDER_DAYS_AHEAD,
   DEFAULT_REMINDER_TIME_OF_DAY_MINUTES,
+  useErrorReportsEnabled,
   useNotificationPrefs,
   usePreferredLanguage,
 } from "@/lib/settings";
@@ -37,6 +40,13 @@ import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
 import { api } from "../../convex/_generated/api";
 
+// External URLs for the About section. Swap to the production domain
+// once the marketing site lands; the in-app links are the only thing
+// that needs updating.
+const PRIVACY_POLICY_URL = "https://giftsmith.app/privacy";
+const TERMS_OF_SERVICE_URL = "https://giftsmith.app/terms";
+const FEEDBACK_EMAIL = "nikita.shatunov@gmail.com";
+
 const MAX_DAYS_AHEAD_ENTRIES = 10;
 const MIN_DAYS_AHEAD = 1;
 const MAX_DAYS_AHEAD = 365;
@@ -48,10 +58,10 @@ const CURRENCIES: { code: string; label: string }[] = [
   { code: "JPY", label: "JPY ¥" },
 ];
 
-// Modal-presented Settings screen. Default currency + preferred
-// language + Notifications + Account (signed-in email, sign out,
-// delete account). About section slots in here when its content
-// (privacy/terms links, version, error-reports toggle) lands.
+// Modal-presented Settings screen. Sections (top-to-bottom):
+// Preferences (currency, language) → Notifications → Account
+// (email, usage, sign out, delete) → About (version, privacy /
+// terms links, feedback, error-reports toggle).
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const settings = useQuery(api.userSettings.get);
@@ -150,6 +160,9 @@ export default function SettingsScreen() {
                     }
                   }}
                   hitSlop={4}
+                  accessibilityRole="button"
+                  accessibilityLabel={c.label}
+                  accessibilityState={{ selected: c.code === currentCurrency }}
                 >
                   <Pill tone={c.code === currentCurrency ? "brass" : "default"}>
                     {c.label}
@@ -174,6 +187,9 @@ export default function SettingsScreen() {
                     }
                   }}
                   hitSlop={4}
+                  accessibilityRole="button"
+                  accessibilityLabel={LANGUAGE_LABELS[code]}
+                  accessibilityState={{ selected: code === currentLanguage }}
                 >
                   <Pill tone={code === currentLanguage ? "brass" : "default"}>
                     {LANGUAGE_LABELS[code]}
@@ -223,8 +239,118 @@ export default function SettingsScreen() {
             </View>
           </Card>
         </View>
+
+        <AboutSection />
       </ScrollView>
     </View>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// About section. App version + external links (privacy/terms,
+// feedback) + crash-reporting opt-out toggle.
+// ---------------------------------------------------------------------------
+
+function AboutSection() {
+  const { t } = useTranslation();
+  const { enabled: errorReportsEnabled, setEnabled: setErrorReportsEnabled } =
+    useErrorReportsEnabled();
+
+  const version = Application.nativeApplicationVersion;
+  const build = Application.nativeBuildVersion;
+  const versionLabel =
+    version && build ? `${version} (${build})` : version ?? "—";
+
+  const openExternal = (url: string) => {
+    void Linking.openURL(url).catch(() => {
+      Alert.alert(t("settings.about.openFailed"));
+    });
+  };
+
+  const onSendFeedback = () => {
+    const subject = encodeURIComponent(t("settings.about.feedbackSubject"));
+    openExternal(`mailto:${FEEDBACK_EMAIL}?subject=${subject}`);
+  };
+
+  return (
+    <View style={styles.section}>
+      <Label style={styles.sectionLabel}>{t("settings.about.title")}</Label>
+
+      <Card>
+        <View style={styles.aboutRow}>
+          <Text style={styles.fieldLabel}>{t("settings.about.version")}</Text>
+          <Text style={styles.aboutValue}>{versionLabel}</Text>
+        </View>
+      </Card>
+
+      <View style={styles.cardSpacer} />
+
+      <Card padding={0}>
+        <AboutLinkRow
+          label={t("settings.about.privacy")}
+          onPress={() => openExternal(PRIVACY_POLICY_URL)}
+          showDivider
+        />
+        <AboutLinkRow
+          label={t("settings.about.terms")}
+          onPress={() => openExternal(TERMS_OF_SERVICE_URL)}
+          showDivider
+        />
+        <AboutLinkRow
+          label={t("settings.about.feedback")}
+          onPress={onSendFeedback}
+        />
+      </Card>
+
+      <View style={styles.cardSpacer} />
+
+      <Card>
+        <View style={styles.toggleRow}>
+          <View style={styles.toggleText}>
+            <Text style={styles.fieldLabel}>
+              {t("settings.about.errorReports")}
+            </Text>
+            <Text style={styles.fieldHint}>
+              {t("settings.about.errorReportsHint")}
+            </Text>
+          </View>
+          <Switch
+            value={errorReportsEnabled}
+            onValueChange={(next) => {
+              void setErrorReportsEnabled(next);
+            }}
+            trackColor={{ true: colors.brass, false: colors.surface2 }}
+            thumbColor={colors.bg}
+          />
+        </View>
+      </Card>
+    </View>
+  );
+}
+
+function AboutLinkRow({
+  label,
+  onPress,
+  showDivider = false,
+}: {
+  label: string;
+  onPress: () => void;
+  showDivider?: boolean;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      accessibilityRole="link"
+      accessibilityLabel={label}
+      style={({ pressed }) => [
+        styles.aboutLinkRow,
+        showDivider && styles.aboutLinkRowDivider,
+        pressed && styles.aboutLinkRowPressed,
+      ]}
+    >
+      <Text style={styles.aboutLinkLabel}>{label}</Text>
+      <Text style={styles.aboutLinkChevron}>›</Text>
+    </Pressable>
   );
 }
 
@@ -558,5 +684,40 @@ const styles = StyleSheet.create({
   timePickerRow: {
     alignItems: "center",
     marginTop: spacing.sm,
+  },
+  aboutRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  aboutValue: {
+    fontFamily: fonts.body,
+    fontSize: 15,
+    color: colors.text2,
+  },
+  aboutLinkRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: spacing.base,
+    paddingVertical: spacing.md,
+  },
+  aboutLinkRowDivider: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  aboutLinkRowPressed: {
+    opacity: 0.6,
+  },
+  aboutLinkLabel: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 15,
+    color: colors.text,
+  },
+  aboutLinkChevron: {
+    fontFamily: fonts.body,
+    fontSize: 22,
+    color: colors.text3,
+    marginLeft: spacing.sm,
   },
 });

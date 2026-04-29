@@ -6,6 +6,11 @@ import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { getNextOccurrence } from "./lib/dates";
 import { capFor, limitReached } from "./lib/limits";
 import { resolveImageUrl } from "./lib/storage";
+import {
+  FIELD_LIMITS,
+  assertInterests,
+  assertMaxLength,
+} from "./lib/validate";
 
 // Returns the current user's people. No userId scoping argument —
 // that's resolved server-side via getCurrentUserId so callers can't
@@ -181,6 +186,15 @@ export const create = mutation({
     interests: v.array(v.string()),
   },
   handler: async (ctx, args) => {
+    assertMaxLength("name", args.name, FIELD_LIMITS.personName);
+    assertMaxLength("nickname", args.nickname, FIELD_LIMITS.personNickname);
+    assertMaxLength(
+      "relationship",
+      args.relationship,
+      FIELD_LIMITS.personRelationship,
+    );
+    assertInterests(args.interests);
+
     const { userId, user } = await requireCurrentUser(ctx);
     const cap = capFor(user.subscriptionTier, "people");
     // Count via the indexed query bounded at cap+1 — that's the
@@ -224,6 +238,19 @@ export const update = mutation({
     }),
   },
   handler: async (ctx, { id, patch }) => {
+    assertMaxLength("name", patch.name, FIELD_LIMITS.personName);
+    assertMaxLength(
+      "nickname",
+      patch.nickname,
+      FIELD_LIMITS.personNickname,
+    );
+    assertMaxLength(
+      "relationship",
+      patch.relationship,
+      FIELD_LIMITS.personRelationship,
+    );
+    assertInterests(patch.interests);
+
     const userId = await getCurrentUserId(ctx);
     const existing = await ctx.db.get(id);
     if (!existing || existing.userId !== userId) {
