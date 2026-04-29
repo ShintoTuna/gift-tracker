@@ -8,7 +8,15 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "expo": {
+    "install": {
+      "exclude": [
+        "@sentry/react-native"
+      ]
+    }
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
@@ -26,6 +34,7 @@
     "convex": "^1.36.1",
     "expo": "~55.0.18",
     "expo-apple-authentication": "~55.0.13",
+    "expo-application": "~55.0.14",
     "expo-auth-session": "~55.0.15",
     "expo-constants": "~55.0.15",
     "expo-device": "~55.0.15",

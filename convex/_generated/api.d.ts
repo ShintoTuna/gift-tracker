@@ -19,6 +19,7 @@ import type * as lib_limits from "../lib/limits.js";
 import type * as lib_pushNotifications from "../lib/pushNotifications.js";
 import type * as lib_seedData from "../lib/seedData.js";
 import type * as lib_storage from "../lib/storage.js";
+import type * as lib_validate from "../lib/validate.js";
 import type * as notifications from "../notifications.js";
 import type * as occasions from "../occasions.js";
 import type * as people from "../people.js";
@@ -45,6 +46,7 @@ declare const fullApi: ApiFromModules<{
   "lib/pushNotifications": typeof lib_pushNotifications;
   "lib/seedData": typeof lib_seedData;
   "lib/storage": typeof lib_storage;
+  "lib/validate": typeof lib_validate;
   notifications: typeof notifications;
   occasions: typeof occasions;
   people: typeof people;

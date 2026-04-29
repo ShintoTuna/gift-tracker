@@ -58,3 +58,43 @@ export const setPreferredLanguage = mutation({
     }
   },
 });
+
+export const setErrorReportsEnabled = mutation({
+  args: { enabled: v.boolean() },
+  handler: async (ctx, { enabled }) => {
+    const userId = await getCurrentUserId(ctx);
+    const existing = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+    if (existing === null) {
+      await ctx.db.insert("userSettings", {
+        userId,
+        errorReportsEnabled: enabled,
+      });
+    } else {
+      await ctx.db.patch(existing._id, { errorReportsEnabled: enabled });
+    }
+  },
+});
+
+// Idempotent: called by the welcome screen's "Get started" button.
+// Future signins skip the welcome flow.
+export const markWelcomeSeen = mutation({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getCurrentUserId(ctx);
+    const existing = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+    if (existing === null) {
+      await ctx.db.insert("userSettings", {
+        userId,
+        hasSeenWelcome: true,
+      });
+    } else if (existing.hasSeenWelcome !== true) {
+      await ctx.db.patch(existing._id, { hasSeenWelcome: true });
+    }
+  },
+});

@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { IdeaCard, Pill, ScreenTitle } from "@/components";
+import { Btn, IdeaCard, Pill, ScreenTitle } from "@/components";
 import { formatPrice, shortenSource } from "@/lib/format";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
@@ -133,6 +133,9 @@ export default function GiftsScreen() {
               key={f.value}
               onPress={() => setFilter(f.value)}
               hitSlop={6}
+              accessibilityRole="button"
+              accessibilityLabel={t(`backlog.${f.key}`)}
+              accessibilityState={{ selected: filter === f.value }}
             >
               <Pill tone={filter === f.value ? "brass" : "default"}>
                 {t(`backlog.${f.key}`)}
@@ -150,6 +153,17 @@ export default function GiftsScreen() {
                   ? t("backlog.emptySearch", { query: search.trim() })
                   : t("backlog.emptyFilter")}
             </Text>
+            {ideas.length === 0 && (
+              <View style={styles.emptyCta}>
+                <Btn
+                  tone="primary"
+                  full
+                  onPress={() => router.push("/capture")}
+                >
+                  {t("backlog.emptyCta")}
+                </Btn>
+              </View>
+            )}
           </View>
         ) : (
           <View style={styles.ideaList}>
@@ -239,6 +253,9 @@ const styles = StyleSheet.create({
     color: colors.text2,
     lineHeight: 22,
     textAlign: "center",
+  },
+  emptyCta: {
+    marginTop: spacing.xl,
   },
   loadingWrap: {
     flex: 1,

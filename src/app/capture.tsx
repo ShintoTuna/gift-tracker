@@ -181,6 +181,8 @@ export default function CaptureScreen() {
                   onPress={onFetchImageFromSource}
                   hitSlop={6}
                   style={styles.fetchFromSource}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("imagePicker.fetchFromSource")}
                 >
                   <Text style={styles.fetchFromSourceText}>
                     {t("imagePicker.fetchFromSource")}

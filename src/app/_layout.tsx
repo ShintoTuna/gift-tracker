@@ -19,7 +19,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, View } from "react-native";
 
-import { DevDock, ErrorFallback } from "@/components";
+import { ConnectionBanner, DevDock, ErrorFallback } from "@/components";
 // IMPORTANT: importing `@/i18n` runs i18next's `init()` for its
 // side effect. This must happen before any child component calls
 // `useTranslation()`, which the static import order guarantees.
@@ -35,8 +35,9 @@ import { api } from "../../convex/_generated/api";
 
 // Init Sentry as a module side-effect so it's live before any
 // component renders and can capture errors thrown during the very
-// first frame. No-ops when EXPO_PUBLIC_SENTRY_DSN is unset.
-initSentry();
+// first frame. No-ops when EXPO_PUBLIC_SENTRY_DSN is unset, or when
+// the user has opted out (mirrored to AsyncStorage).
+void initSentry();
 
 // Hold the splash up until fonts are ready. Without this, the app
 // boots in fallback fonts for a frame and then re-flows.
@@ -155,17 +156,34 @@ function NotificationsRegistrar() {
 // AuthGate redirects unauthenticated users to the (auth) route group,
 // and conversely keeps signed-in users out of it. `useConvexAuth()` is
 // what reads from the secure-store-backed token cache, so this is the
-// single source of truth for "who is signed in".
+// single source of truth for "who is signed in". A second-stage gate
+// routes signed-in users through /welcome the first time they sign up.
 function AuthGate({ children }: { children: ReactNode }) {
   const { isLoading, isAuthenticated } = useConvexAuth();
+  const settings = useQuery(api.userSettings.get);
   const segments = useSegments();
   const inAuthGroup = segments[0] === "(auth)";
+  const inWelcome = segments[0] === "welcome";
 
   if (isLoading) return null;
-  if (!isAuthenticated && !inAuthGroup) {
-    return <Redirect href="/(auth)/login" />;
+  if (!isAuthenticated) {
+    if (!inAuthGroup) return <Redirect href="/(auth)/login" />;
+    return <>{children}</>;
   }
-  if (isAuthenticated && inAuthGroup) {
+
+  // Authenticated. The welcome gate needs `settings` resolved; while
+  // the query is in-flight (`undefined`) we hold rendering rather
+  // than risk a flash of the tabs followed by a redirect to /welcome.
+  if (settings === undefined) return null;
+  const hasSeenWelcome = settings?.hasSeenWelcome === true;
+
+  if (inAuthGroup) {
+    return <Redirect href={hasSeenWelcome ? "/" : "/welcome"} />;
+  }
+  if (!hasSeenWelcome && !inWelcome) {
+    return <Redirect href="/welcome" />;
+  }
+  if (hasSeenWelcome && inWelcome) {
     return <Redirect href="/" />;
   }
   return <>{children}</>;
@@ -245,9 +263,11 @@ function RootLayout() {
                   name="settings"
                   options={{ presentation: "modal" }}
                 />
+                <Stack.Screen name="welcome" />
                 <Stack.Screen name="design-system" />
               </Stack>
               <DevDock />
+              <ConnectionBanner />
             </View>
           </AuthGate>
         </LanguageGate>

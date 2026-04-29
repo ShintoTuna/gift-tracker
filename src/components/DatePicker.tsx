@@ -32,6 +32,8 @@ export function DatePicker({ label, value, onChange }: Props) {
           onPress={() => onChange(new Date())}
           hitSlop={6}
           style={styles.setRow}
+          accessibilityRole="button"
+          accessibilityLabel={t("datePicker.setDate")}
         >
           <Pill tone="brass" dashed>
             {t("datePicker.setDate")}
@@ -53,6 +55,8 @@ export function DatePicker({ label, value, onChange }: Props) {
             onPress={() => onChange(null)}
             hitSlop={6}
             style={styles.clearRow}
+            accessibilityRole="button"
+            accessibilityLabel={t("datePicker.clearDate")}
           >
             <Pill tone="default">{t("datePicker.clearDate")}</Pill>
           </Pressable>

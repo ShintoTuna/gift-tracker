@@ -25,6 +25,10 @@ export function PersonSuggestRow({
   return (
     <Pressable
       onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={
+        relationship != null ? `${name}, ${relationship}` : name
+      }
       style={({ pressed }) => [styles.row, pressed && styles.rowPressed]}
     >
       <Avatar initial={initial} imageUrl={imageUrl} size={40} />

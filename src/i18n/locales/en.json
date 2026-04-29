@@ -42,6 +42,17 @@
       "daysAheadRemoveA11y": "Remove {{count}} day reminder",
       "timeOfDay": "Time of day",
       "timeOfDayHint": "We'll send the reminder around this time."
+    },
+    "about": {
+      "title": "About",
+      "version": "Version",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "feedback": "Send feedback",
+      "feedbackSubject": "Giftsmith feedback",
+      "errorReports": "Send error reports",
+      "errorReportsHint": "Anonymous crash reports help fix bugs faster. No personal data is sent.",
+      "openFailed": "Couldn't open that link."
     }
   },
   "push": {
@@ -87,6 +98,7 @@
     "thisWeek": "This week",
     "upcoming": "Upcoming",
     "emptyAll": "No one here yet. Tap <accent>+ Person</accent> to add someone, or use the <accent>dev</accent> pill to seed test data.",
+    "emptyCta": "Add your first person",
     "noMatches": "No matches for <accent>“{{query}}”</accent>.",
     "pendingDate": "Pending date",
     "noUpcomingDates": "No upcoming dates",
@@ -96,7 +108,8 @@
     "title": "Calendar",
     "thisWeek": "This week",
     "pendingDates": "Pending dates",
-    "empty": "Nothing on the horizon. Add occasions on a person’s profile and they’ll show up here."
+    "empty": "Nothing on the horizon. Add occasions on a person’s profile and they’ll show up here.",
+    "emptyCta": "Add a person"
   },
   "format": {
     "dateLine": "{{title}} · {{suffix}}",
@@ -120,6 +133,7 @@
     "filterOpen": "Open",
     "filterGiven": "Given",
     "emptyNone": "No ideas captured yet. Tap the + button to capture your first.",
+    "emptyCta": "Capture your first idea",
     "emptySearch": "No ideas match “{{query}}”.",
     "emptyFilter": "No ideas match this filter."
   },
@@ -177,8 +191,7 @@
     "interests": "Interests",
     "openIdeas": "Open ideas · {{count}}",
     "givenIdeas": "Given · {{count}}",
-    "ideasEmpty": "No gift ideas yet. Brainstorm some below or add one from Quick Capture.",
-    "brainstormCta": "Brainstorm a gift",
+    "ideasEmpty": "No gift ideas yet. Add one from Quick Capture.",
     "notFound": "Person not found."
   },
   "brainstorm": {
@@ -202,6 +215,20 @@
     "defaultLabel": "Date",
     "setDate": "+ Set a date",
     "clearDate": "Clear date"
+  },
+  "network": {
+    "reconnecting": "Reconnecting…"
+  },
+  "welcome": {
+    "title": "Welcome to Giftsmith",
+    "subtitle": "Three steps to never forget a gift again.",
+    "step1Title": "Add the people who matter",
+    "step1Body": "Names, relationships, what they're into. Build it up as you go.",
+    "step2Title": "Capture ideas in seconds",
+    "step2Body": "Spot something they'd love? Snap it now and tag it to them.",
+    "step3Title": "Get reminded in time",
+    "step3Body": "Birthdays, anniversaries, custom occasions — we'll nudge you ahead of time.",
+    "cta": "Get started"
   },
   "auth": {
     "welcome": {

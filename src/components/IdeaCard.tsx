@@ -117,6 +117,8 @@ export function IdeaCard({
     return (
       <Pressable
         onPress={onPress}
+        accessibilityRole="button"
+        accessibilityLabel={title}
         style={({ pressed }) => pressed && styles.pressed}
       >
         {content}

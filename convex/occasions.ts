@@ -5,6 +5,7 @@ import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { getNextOccurrence } from "./lib/dates";
 import { capFor, limitReached } from "./lib/limits";
 import { resolveImageUrl } from "./lib/storage";
+import { FIELD_LIMITS, assertMaxLength } from "./lib/validate";
 
 // Returns occasions for a single person, ordered by their stored
 // canonical date. The Calendar screen will need a separate
@@ -135,6 +136,8 @@ export const create = mutation({
     recurrence: recurrenceValidator,
   },
   handler: async (ctx, args) => {
+    assertMaxLength("title", args.title, FIELD_LIMITS.occasionTitle);
+
     const { userId, user } = await requireCurrentUser(ctx);
     // Confirm the parent person belongs to this user before
     // allowing an occasion attached to it.
@@ -169,6 +172,8 @@ export const update = mutation({
     }),
   },
   handler: async (ctx, { id, patch }) => {
+    assertMaxLength("title", patch.title, FIELD_LIMITS.occasionTitle);
+
     const userId = await getCurrentUserId(ctx);
     const occ = await ctx.db.get(id);
     if (!occ) throw new Error("Not found");

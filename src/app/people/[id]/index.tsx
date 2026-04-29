@@ -12,7 +12,6 @@ import {
 
 import {
   Avatar,
-  Btn,
   Card,
   IdeaCard,
   Label,
@@ -132,6 +131,8 @@ export default function ProfileScreen() {
                 })
               }
               hitSlop={6}
+              accessibilityRole="button"
+              accessibilityLabel={t("profile.addOccasion")}
             >
               <Pill tone="brass" dashed>
                 {t("profile.addOccasion")}
@@ -151,6 +152,8 @@ export default function ProfileScreen() {
                         params: { id: occ._id },
                       })
                     }
+                    accessibilityRole="button"
+                    accessibilityLabel={occ.title}
                     style={({ pressed }) => [
                       styles.occasionRow,
                       idx < occasions.length - 1 && styles.occasionRowDivider,
@@ -259,22 +262,6 @@ export default function ProfileScreen() {
             </Card>
           </View>
         )}
-
-        {/* Brainstorm CTA */}
-        <View style={[styles.section, styles.ctaWrap]}>
-          <Btn
-            tone="primary"
-            full
-            onPress={() =>
-              router.push({
-                pathname: "/brainstorm/[personId]",
-                params: { personId: person._id },
-              })
-            }
-          >
-            {t("profile.brainstormCta")}
-          </Btn>
-        </View>
       </ScrollView>
     </View>
   );
@@ -342,9 +329,6 @@ const styles = StyleSheet.create({
   section: {
     paddingHorizontal: spacing.xl,
     marginBottom: spacing.xxl,
-  },
-  ctaWrap: {
-    marginTop: spacing.xs,
   },
   sectionLabel: {
     marginBottom: spacing.md,

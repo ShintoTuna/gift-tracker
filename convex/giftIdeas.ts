@@ -5,6 +5,11 @@ import { mutation, query, type QueryCtx } from "./_generated/server";
 import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { capFor, limitReached } from "./lib/limits";
 import { resolveImageUrl } from "./lib/storage";
+import {
+  FIELD_LIMITS,
+  assertCurrency,
+  assertMaxLength,
+} from "./lib/validate";
 
 // All bounded at 1000 per Convex guideline. PRD models a single user
 // over years of capture; the Backlog screen will switch to pagination
@@ -85,6 +90,15 @@ export const create = mutation({
     taggedPeople: v.array(v.id("people")),
   },
   handler: async (ctx, args) => {
+    assertMaxLength("title", args.title, FIELD_LIMITS.giftTitle);
+    assertMaxLength(
+      "description",
+      args.description,
+      FIELD_LIMITS.giftDescription,
+    );
+    assertMaxLength("sourceUrl", args.sourceUrl, FIELD_LIMITS.giftSourceUrl);
+    assertCurrency("currency", args.currency);
+
     const { userId, user } = await requireCurrentUser(ctx);
     const cap = capFor(user.subscriptionTier, "giftIdeas");
     const existing = await ctx.db
@@ -145,6 +159,15 @@ export const update = mutation({
     }),
   },
   handler: async (ctx, { id, patch }) => {
+    assertMaxLength("title", patch.title, FIELD_LIMITS.giftTitle);
+    assertMaxLength(
+      "description",
+      patch.description,
+      FIELD_LIMITS.giftDescription,
+    );
+    assertMaxLength("sourceUrl", patch.sourceUrl, FIELD_LIMITS.giftSourceUrl);
+    assertCurrency("currency", patch.currency);
+
     const userId = await getCurrentUserId(ctx);
     const existing = await ctx.db.get(id);
     if (!existing || existing.userId !== userId) {
