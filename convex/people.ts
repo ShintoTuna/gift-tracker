@@ -2,8 +2,9 @@ import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
-import { getCurrentUserId } from "./lib/auth";
+import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { getNextOccurrence } from "./lib/dates";
+import { capFor, limitReached } from "./lib/limits";
 
 // Returns the current user's people. No userId scoping argument —
 // that's resolved server-side via getCurrentUserId so callers can't
@@ -161,7 +162,23 @@ export const create = mutation({
     interests: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getCurrentUserId(ctx);
+    const { userId, user } = await requireCurrentUser(ctx);
+    const cap = capFor(user.subscriptionTier, "people");
+    // Count via the indexed query bounded at cap+1 — that's the
+    // smallest read that lets us tell "at limit" from "below limit"
+    // without scanning the whole table.
+    const existing = await ctx.db
+      .query("people")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(cap + 1);
+    if (existing.length >= cap) {
+      limitReached({
+        resource: "people",
+        limit: cap,
+        current: existing.length,
+        tier: user.subscriptionTier,
+      });
+    }
     const now = Date.now();
     return await ctx.db.insert("people", {
       userId,

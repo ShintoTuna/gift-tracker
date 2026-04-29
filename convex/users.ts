@@ -3,6 +3,7 @@ import { getAuthUserId } from "@convex-dev/auth/server";
 import type { Id } from "./_generated/dataModel";
 import { mutation, query } from "./_generated/server";
 import { getCurrentUserId } from "./lib/auth";
+import { LIMITS } from "./lib/limits";
 
 // Light "current user" surface for the Settings → Account section.
 // Returns null when unauthenticated so the UI can render skeletons /
@@ -13,6 +14,38 @@ export const me = query({
     const userId = await getAuthUserId(ctx);
     if (userId === null) return null;
     return await ctx.db.get(userId);
+  },
+});
+
+// Usage stats for Settings → Account ("Gift ideas: 84 / 200"). One
+// query per resource counted, each capped at limit+1 so we report
+// "at-limit" cleanly without scanning the full table. Returns null
+// when unauthenticated.
+export const getUsage = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) return null;
+    const user = await ctx.db.get(userId);
+    if (!user) return null;
+
+    const tier = user.subscriptionTier;
+    const caps = LIMITS[tier];
+
+    const peopleSlice = await ctx.db
+      .query("people")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(caps.maxPeople + 1);
+    const ideaSlice = await ctx.db
+      .query("giftIdeas")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(caps.maxGiftIdeas + 1);
+
+    return {
+      tier,
+      people: { current: peopleSlice.length, limit: caps.maxPeople },
+      giftIdeas: { current: ideaSlice.length, limit: caps.maxGiftIdeas },
+    };
   },
 });
 

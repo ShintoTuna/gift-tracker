@@ -18,6 +18,7 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
+import { describeMutationError } from "@/lib/convexErrors";
 import { useDefaultCurrency } from "@/lib/settings";
 import { colors, spacing } from "@/theme/tokens";
 
@@ -69,10 +70,7 @@ export default function CaptureScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(
-        t("capture.couldNotSave"),
-        err instanceof Error ? err.message : String(err),
-      );
+      Alert.alert(t("capture.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };

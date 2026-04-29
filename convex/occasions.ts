@@ -1,8 +1,9 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { getCurrentUserId } from "./lib/auth";
+import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { getNextOccurrence } from "./lib/dates";
+import { capFor, limitReached } from "./lib/limits";
 
 // Returns occasions for a single person, ordered by their stored
 // canonical date. The Calendar screen will need a separate
@@ -124,12 +125,25 @@ export const create = mutation({
     recurrence: recurrenceValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getCurrentUserId(ctx);
+    const { userId, user } = await requireCurrentUser(ctx);
     // Confirm the parent person belongs to this user before
     // allowing an occasion attached to it.
     const person = await ctx.db.get(args.personId);
     if (!person || person.userId !== userId) {
       throw new Error("Not found or not authorized");
+    }
+    const cap = capFor(user.subscriptionTier, "occasionsPerPerson");
+    const existing = await ctx.db
+      .query("occasions")
+      .withIndex("by_person", (q) => q.eq("personId", args.personId))
+      .take(cap + 1);
+    if (existing.length >= cap) {
+      limitReached({
+        resource: "occasionsPerPerson",
+        limit: cap,
+        current: existing.length,
+        tier: user.subscriptionTier,
+      });
     }
     return await ctx.db.insert("occasions", args);
   },

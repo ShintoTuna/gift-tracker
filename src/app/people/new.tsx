@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 import { Btn, NavBar, ScreenTitle, TextField } from "@/components";
+import { describeMutationError } from "@/lib/convexErrors";
 import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
@@ -46,10 +47,7 @@ export default function NewPersonScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(
-        t("common.couldNotSave"),
-        err instanceof Error ? err.message : String(err),
-      );
+      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };

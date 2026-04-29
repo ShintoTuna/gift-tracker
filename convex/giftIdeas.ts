@@ -1,7 +1,8 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { getCurrentUserId } from "./lib/auth";
+import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
+import { capFor, limitReached } from "./lib/limits";
 
 // All bounded at 1000 per Convex guideline. PRD models a single user
 // over years of capture; the Backlog screen will switch to pagination
@@ -66,7 +67,20 @@ export const create = mutation({
     taggedPeople: v.array(v.id("people")),
   },
   handler: async (ctx, args) => {
-    const userId = await getCurrentUserId(ctx);
+    const { userId, user } = await requireCurrentUser(ctx);
+    const cap = capFor(user.subscriptionTier, "giftIdeas");
+    const existing = await ctx.db
+      .query("giftIdeas")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(cap + 1);
+    if (existing.length >= cap) {
+      limitReached({
+        resource: "giftIdeas",
+        limit: cap,
+        current: existing.length,
+        tier: user.subscriptionTier,
+      });
+    }
     const now = Date.now();
     return await ctx.db.insert("giftIdeas", {
       userId,
