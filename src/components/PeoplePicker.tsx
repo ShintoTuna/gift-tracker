@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { StyleSheet, Text, TextInput, View } from "react-native";
 
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
@@ -16,6 +17,9 @@ type Person = {
 };
 
 type Props = {
+  // When omitted, falls back to t("personPicker.label") so the
+  // default copy stays localized. Pass a custom label for a
+  // non-default header.
   label?: string;
   // Cap on how many suggestion rows to show at once. Anything beyond
   // this is reachable by typing into the search input. Default 5.
@@ -30,12 +34,14 @@ type Props = {
 // "For" block — scales to many people because typing filters the
 // list, unlike a horizontal-scrolling pile of chips.
 export function PeoplePicker({
-  label = "For",
+  label,
   maxSuggestions = 5,
   people,
   selectedIds,
   onChange,
 }: Props) {
+  const { t } = useTranslation();
+  const resolvedLabel = label ?? t("personPicker.label");
   const [search, setSearch] = useState("");
 
   const selectedSet = useMemo(() => new Set(selectedIds), [selectedIds]);
@@ -73,17 +79,15 @@ export function PeoplePicker({
   if (people.length === 0) {
     return (
       <View>
-        <Label style={styles.label}>{label}</Label>
-        <Text style={styles.empty}>
-          No people yet — add someone from the People tab first.
-        </Text>
+        <Label style={styles.label}>{resolvedLabel}</Label>
+        <Text style={styles.empty}>{t("personPicker.noPeople")}</Text>
       </View>
     );
   }
 
   return (
     <View>
-      <Label style={styles.label}>{label}</Label>
+      <Label style={styles.label}>{resolvedLabel}</Label>
 
       {selected.length > 0 && (
         <View style={styles.selectedRow}>
@@ -99,7 +103,7 @@ export function PeoplePicker({
       )}
 
       <TextInput
-        placeholder="Search people…"
+        placeholder={t("personPicker.placeholder")}
         placeholderTextColor={colors.text3}
         selectionColor={colors.brass}
         value={search}
@@ -122,13 +126,15 @@ export function PeoplePicker({
           ))}
           {overflow > 0 && (
             <Text style={styles.overflow}>
-              + {overflow} more — type to filter
+              {t("personPicker.moreOverflow", { count: overflow })}
             </Text>
           )}
         </View>
       ) : (
         search.trim().length > 0 && (
-          <Text style={styles.empty}>No matches for “{search.trim()}”.</Text>
+          <Text style={styles.empty}>
+            {t("personPicker.noMatches", { query: search.trim() })}
+          </Text>
         )
       )}
     </View>

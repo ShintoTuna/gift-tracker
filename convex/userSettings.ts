@@ -35,3 +35,24 @@ export const setDefaultCurrency = mutation({
     }
   },
 });
+
+// Upsert mutation for the preferred UI language. Mirrors
+// `setDefaultCurrency` — same shape, same resolver, same upsert
+// semantics. The string is a two-letter language code from
+// `SUPPORTED_LANGUAGES` in src/i18n/index.ts; we don't validate the
+// enum on the server so adding a new locale is a client-only change.
+export const setPreferredLanguage = mutation({
+  args: { language: v.string() },
+  handler: async (ctx, { language }) => {
+    const userId = await getCurrentUserId(ctx);
+    const existing = await ctx.db
+      .query("userSettings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .unique();
+    if (existing === null) {
+      await ctx.db.insert("userSettings", { userId, preferredLanguage: language });
+    } else {
+      await ctx.db.patch(existing._id, { preferredLanguage: language });
+    }
+  },
+});

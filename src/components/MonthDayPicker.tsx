@@ -1,26 +1,12 @@
 import { Picker } from "@react-native-picker/picker";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { colors, spacing } from "@/theme/tokens";
 
 import { Label } from "./Label";
 import { Pill } from "./Pill";
-
-const MONTHS = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December",
-];
 
 // Days available per month (1-indexed via MONTHS, 0 = January).
 // February gets 29 to allow Feb 29; we don't track leap years
@@ -45,12 +31,25 @@ type Props = {
 // "+ Set a date" pill in the empty state mirrors the DatePicker
 // atom; "Clear date" pill below the wheels resets to null.
 export function MonthDayPicker({
-  label = "Date",
+  label,
   value,
   onChange,
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const resolvedLabel = label ?? t("monthDayPicker.defaultLabel");
   const [month, setMonth] = useState(value?.getUTCMonth() ?? 0);
   const [day, setDay] = useState(value?.getUTCDate() ?? 1);
+
+  // Localized month names via Intl.DateTimeFormat — recomputed only
+  // when the active language changes, so a Russian boot doesn't ship
+  // English month wheel labels. Sentinel year doesn't matter since
+  // we only ask for the month part.
+  const monthNames = useMemo(() => {
+    const fmt = new Intl.DateTimeFormat(i18n.language, { month: "long" });
+    return Array.from({ length: 12 }, (_, i) =>
+      fmt.format(new Date(Date.UTC(2000, i, 1))),
+    );
+  }, [i18n.language]);
 
   // Sync local picker state when the parent passes a new value
   // (e.g., the edit screen initializes from a loaded row). Using
@@ -88,7 +87,7 @@ export function MonthDayPicker({
 
   return (
     <View>
-      <Label style={styles.headerLabel}>{label}</Label>
+      <Label style={styles.headerLabel}>{resolvedLabel}</Label>
       {value === null ? (
         <Pressable
           onPress={() => onChange(new Date(Date.UTC(2000, month, day)))}
@@ -96,7 +95,7 @@ export function MonthDayPicker({
           style={styles.setRow}
         >
           <Pill tone="brass" dashed>
-            + Set a date
+            {t("monthDayPicker.setDate")}
           </Pill>
         </Pressable>
       ) : (
@@ -108,7 +107,7 @@ export function MonthDayPicker({
               selectedValue={month}
               onValueChange={(v) => handleMonthChange(Number(v))}
             >
-              {MONTHS.map((name, idx) => (
+              {monthNames.map((name, idx) => (
                 <Picker.Item
                   key={idx}
                   label={name}
@@ -138,7 +137,7 @@ export function MonthDayPicker({
             hitSlop={6}
             style={styles.clearRow}
           >
-            <Pill tone="default">Clear date</Pill>
+            <Pill tone="default">{t("monthDayPicker.clearDate")}</Pill>
           </Pressable>
         </View>
       )}

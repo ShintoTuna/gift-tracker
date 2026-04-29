@@ -1,4 +1,5 @@
 import { SymbolView } from "expo-symbols";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { colors, radii, spacing } from "@/theme/tokens";
@@ -23,6 +24,7 @@ export function NavBar({
   trailing,
   onLeadingPress,
 }: Props) {
+  const { t } = useTranslation();
   return (
     <View>
       <View style={styles.spacer} />
@@ -35,7 +37,9 @@ export function NavBar({
               pressed && styles.leadingPressed,
             ]}
             accessibilityRole="button"
-            accessibilityLabel={leading === "back" ? "Back" : "Close"}
+            accessibilityLabel={
+              leading === "back" ? t("common.back") : t("common.close")
+            }
           >
             <SymbolView
               name={leading === "back" ? "chevron.left" : "xmark"}

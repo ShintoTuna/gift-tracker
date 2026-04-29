@@ -1,4 +1,5 @@
 import { SymbolView } from "expo-symbols";
+import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, fonts, radii, tints } from "@/theme/tokens";
@@ -17,6 +18,7 @@ type Props = {
 // picker's selected row. Always reads as "active" — appears only
 // when this person is selected. The tappable "×" removes them.
 export function PersonChip({ initial, name, onRemove }: Props) {
+  const { t } = useTranslation();
   return (
     <View style={styles.chip}>
       <Avatar initial={initial} size={22} accent="brass" />
@@ -28,7 +30,7 @@ export function PersonChip({ initial, name, onRemove }: Props) {
           onPress={onRemove}
           hitSlop={6}
           accessibilityRole="button"
-          accessibilityLabel={`Remove ${name}`}
+          accessibilityLabel={t("personChip.removeA11y", { name })}
           style={({ pressed }) => [
             styles.removeBtn,
             pressed && styles.removePressed,

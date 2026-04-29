@@ -1,6 +1,7 @@
 import { useQuery } from "convex/react";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   RefreshControl,
@@ -34,6 +35,7 @@ type MonthGroup = { key: string; label: string; items: AgendaItem[] };
 // PersonRow with the occasion as the headline and the person as the
 // subtitle; tap → person profile.
 export default function CalendarScreen() {
+  const { t } = useTranslation();
   const items = useQuery(api.occasions.listUpcoming);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -59,12 +61,9 @@ export default function CalendarScreen() {
     return (
       <SafeAreaView style={styles.root} edges={["top"]}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <ScreenTitle>Calendar</ScreenTitle>
+          <ScreenTitle>{t("calendar.title")}</ScreenTitle>
           <View style={styles.empty}>
-            <Text style={styles.emptyText}>
-              Nothing on the horizon. Add occasions on a person&apos;s
-              profile and they&apos;ll show up here.
-            </Text>
+            <Text style={styles.emptyText}>{t("calendar.empty")}</Text>
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -86,10 +85,15 @@ export default function CalendarScreen() {
           />
         }
       >
-        <ScreenTitle>Calendar</ScreenTitle>
+        <ScreenTitle>{t("calendar.title")}</ScreenTitle>
 
         {thisWeek.length > 0 && (
-          <Section label="This week" tone="claret" items={thisWeek} urgent />
+          <Section
+            label={t("calendar.thisWeek")}
+            tone="claret"
+            items={thisWeek}
+            urgent
+          />
         )}
 
         {monthGroups.map((group) => (
@@ -97,7 +101,7 @@ export default function CalendarScreen() {
         ))}
 
         {pending.length > 0 && (
-          <Section label="Pending dates" items={pending} />
+          <Section label={t("calendar.pendingDates")} items={pending} />
         )}
       </ScrollView>
     </SafeAreaView>
@@ -115,6 +119,7 @@ function Section({
   items: AgendaItem[];
   urgent?: boolean;
 }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.section}>
       <Label
@@ -132,7 +137,7 @@ function Section({
           dateLine={
             item.nextDate !== null
               ? formatRelativeDays(item.nextDate)
-              : "Date TBD"
+              : t("format.dateTBD")
           }
           ideas={item.ideaCount}
           urgent={urgent}

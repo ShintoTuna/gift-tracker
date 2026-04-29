@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -34,6 +35,7 @@ type Recurrence = "yearly" | "one_off";
 // Mirrors `occasion/new.tsx` for the form layout — the differences
 // are init-from-loaded-row and the Delete affordance.
 export default function EditOccasionScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const occasionId = id as Id<"occasions">;
   const occasion = useQuery(api.occasions.getById, { id: occasionId });
@@ -61,7 +63,7 @@ export default function EditOccasionScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Edit occasion"
+          title={t("occasionForm.editTitle")}
           leading="close"
           onLeadingPress={() => router.back()}
         />
@@ -76,11 +78,11 @@ export default function EditOccasionScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Edit occasion"
+          title={t("occasionForm.editTitle")}
           leading="close"
           onLeadingPress={() => router.back()}
         />
-        <Text style={styles.loadingText}>Occasion not found.</Text>
+        <Text style={styles.loadingText}>{t("occasionForm.notFound")}</Text>
       </View>
     );
   }
@@ -102,7 +104,7 @@ export default function EditOccasionScreen() {
       router.back();
     } catch (err) {
       Alert.alert(
-        "Could not save",
+        t("common.couldNotSave"),
         err instanceof Error ? err.message : String(err),
       );
       setSaving(false);
@@ -110,10 +112,10 @@ export default function EditOccasionScreen() {
   };
 
   const onDelete = () => {
-    Alert.alert("Delete this occasion?", "This can't be undone.", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("occasionForm.deleteConfirmTitle"), t("common.cantBeUndone"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           try {
@@ -121,7 +123,7 @@ export default function EditOccasionScreen() {
             router.back();
           } catch (err) {
             Alert.alert(
-              "Could not delete",
+              t("common.couldNotDelete"),
               err instanceof Error ? err.message : String(err),
             );
           }
@@ -133,7 +135,7 @@ export default function EditOccasionScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title="Edit occasion"
+        title={t("occasionForm.editTitle")}
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -146,11 +148,11 @@ export default function EditOccasionScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle>Edit occasion</ScreenTitle>
+          <ScreenTitle>{t("occasionForm.editScreenTitle")}</ScreenTitle>
 
           <View style={styles.fields}>
             <TextField
-              label="Title"
+              label={t("occasionForm.titleLabel")}
               value={title}
               onChangeText={setTitle}
               autoCapitalize="words"
@@ -162,14 +164,16 @@ export default function EditOccasionScreen() {
 
             {date != null && (
               <View>
-                <Label style={styles.recurrenceLabel}>Recurrence</Label>
+                <Label style={styles.recurrenceLabel}>
+                  {t("occasionForm.recurrence")}
+                </Label>
                 <View style={styles.recurrenceRow}>
                   <Pressable
                     onPress={() => setRecurrence("yearly")}
                     hitSlop={4}
                   >
                     <Pill tone={recurrence === "yearly" ? "brass" : "default"}>
-                      Yearly
+                      {t("occasionForm.recurrenceYearly")}
                     </Pill>
                   </Pressable>
                   <Pressable
@@ -179,7 +183,7 @@ export default function EditOccasionScreen() {
                     <Pill
                       tone={recurrence === "one_off" ? "brass" : "default"}
                     >
-                      One-off
+                      {t("occasionForm.recurrenceOneOff")}
                     </Pill>
                   </Pressable>
                 </View>
@@ -193,7 +197,7 @@ export default function EditOccasionScreen() {
               onPress={onSave}
               style={styles.saveBtn}
             >
-              {saving ? "Saving…" : "Save"}
+              {saving ? t("common.saving") : t("common.save")}
             </Btn>
 
             <Btn
@@ -202,7 +206,7 @@ export default function EditOccasionScreen() {
               onPress={onDelete}
               style={styles.deleteBtn}
             >
-              Delete occasion
+              {t("occasionForm.deleteButton")}
             </Btn>
           </View>
         </ScrollView>

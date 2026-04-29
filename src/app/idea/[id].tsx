@@ -1,6 +1,7 @@
 import { useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
@@ -30,9 +31,9 @@ import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
 const STATUSES: IdeaStatus[] = ["idea", "given"];
-const STATUS_LABEL: Record<IdeaStatus, string> = {
-  idea: "Open",
-  given: "Given",
+const STATUS_KEY: Record<IdeaStatus, "ideaForm.statusOpen" | "ideaForm.statusGiven"> = {
+  idea: "ideaForm.statusOpen",
+  given: "ideaForm.statusGiven",
 };
 
 // Modal-presented edit screen for a single gift idea. Mirrors the
@@ -40,6 +41,7 @@ const STATUS_LABEL: Record<IdeaStatus, string> = {
 // adds a Status picker plus a Delete affordance. Save runs the
 // update mutation; Delete runs remove (with an Alert confirmation).
 export default function EditIdeaScreen() {
+  const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
   const ideaId = id as Id<"giftIdeas">;
   const idea = useQuery(api.giftIdeas.getById, { id: ideaId });
@@ -77,7 +79,7 @@ export default function EditIdeaScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Edit idea"
+          title={t("ideaForm.editTitle")}
           leading="close"
           onLeadingPress={() => router.back()}
         />
@@ -92,11 +94,11 @@ export default function EditIdeaScreen() {
     return (
       <View style={styles.root}>
         <NavBar
-          title="Edit idea"
+          title={t("ideaForm.editTitle")}
           leading="close"
           onLeadingPress={() => router.back()}
         />
-        <Text style={styles.loadingText}>Idea not found.</Text>
+        <Text style={styles.loadingText}>{t("ideaForm.notFound")}</Text>
       </View>
     );
   }
@@ -130,7 +132,7 @@ export default function EditIdeaScreen() {
       router.back();
     } catch (err) {
       Alert.alert(
-        "Could not save",
+        t("common.couldNotSave"),
         err instanceof Error ? err.message : String(err),
       );
       setSaving(false);
@@ -138,10 +140,10 @@ export default function EditIdeaScreen() {
   };
 
   const onDelete = () => {
-    Alert.alert("Delete this gift idea?", "This can't be undone.", [
-      { text: "Cancel", style: "cancel" },
+    Alert.alert(t("ideaForm.deleteConfirmTitle"), t("common.cantBeUndone"), [
+      { text: t("common.cancel"), style: "cancel" },
       {
-        text: "Delete",
+        text: t("common.delete"),
         style: "destructive",
         onPress: async () => {
           try {
@@ -149,7 +151,7 @@ export default function EditIdeaScreen() {
             router.back();
           } catch (err) {
             Alert.alert(
-              "Could not delete",
+              t("common.couldNotDelete"),
               err instanceof Error ? err.message : String(err),
             );
           }
@@ -161,7 +163,7 @@ export default function EditIdeaScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title="Edit idea"
+        title={t("ideaForm.editTitle")}
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -174,11 +176,11 @@ export default function EditIdeaScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle>Edit idea</ScreenTitle>
+          <ScreenTitle>{t("ideaForm.editScreenTitle")}</ScreenTitle>
 
           <View style={styles.fields}>
             <TextField
-              label="Idea"
+              label={t("capture.ideaLabel")}
               value={title}
               onChangeText={setTitle}
               autoCapitalize="sentences"
@@ -187,7 +189,7 @@ export default function EditIdeaScreen() {
             />
 
             <TextField
-              label="Source"
+              label={t("capture.sourceLabel")}
               placeholder="https://…"
               value={sourceUrl}
               onChangeText={setSourceUrl}
@@ -198,8 +200,8 @@ export default function EditIdeaScreen() {
             />
 
             <TextField
-              label={`Price (${defaultCurrency})`}
-              placeholder="Optional"
+              label={t("capture.priceLabel", { currency: defaultCurrency })}
+              placeholder={t("common.optional")}
               value={priceText}
               onChangeText={setPriceText}
               keyboardType="decimal-pad"
@@ -213,7 +215,7 @@ export default function EditIdeaScreen() {
             />
 
             <View>
-              <Label style={styles.statusLabel}>Status</Label>
+              <Label style={styles.statusLabel}>{t("ideaForm.status")}</Label>
               <View style={styles.statusRow}>
                 {STATUSES.map((s) => (
                   <Pressable
@@ -222,7 +224,7 @@ export default function EditIdeaScreen() {
                     hitSlop={4}
                   >
                     <Pill tone={status === s ? "brass" : "default"}>
-                      {STATUS_LABEL[s]}
+                      {t(STATUS_KEY[s])}
                     </Pill>
                   </Pressable>
                 ))}
@@ -230,8 +232,8 @@ export default function EditIdeaScreen() {
             </View>
 
             <TextField
-              label="Description"
-              placeholder="Optional"
+              label={t("capture.descriptionLabel")}
+              placeholder={t("common.optional")}
               value={description}
               onChangeText={setDescription}
               multiline
@@ -249,7 +251,7 @@ export default function EditIdeaScreen() {
               onPress={onSave}
               style={styles.saveBtn}
             >
-              {saving ? "Saving…" : "Save"}
+              {saving ? t("common.saving") : t("common.save")}
             </Btn>
 
             <Btn
@@ -258,7 +260,7 @@ export default function EditIdeaScreen() {
               onPress={onDelete}
               style={styles.deleteBtn}
             >
-              Delete idea
+              {t("ideaForm.deleteButton")}
             </Btn>
           </View>
         </ScrollView>
