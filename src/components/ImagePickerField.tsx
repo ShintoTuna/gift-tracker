@@ -1,15 +1,20 @@
 import { Image } from "expo-image";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  ActionSheetIOS,
   ActivityIndicator,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from "react-native";
 
+import type { PickSource } from "@/lib/imageUpload";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
+import { ImageSourceSheet } from "./ImageSourceSheet";
 import { Label } from "./Label";
 
 type Props = {
@@ -22,7 +27,7 @@ type Props = {
   // two flavors so the form UI doesn't need a parallel component.
   shape?: "circle" | "square";
   uploading?: boolean;
-  onPick: () => void;
+  onPick: (source: PickSource) => void;
   // Render the Remove affordance only when supplied AND a preview is
   // present. New-item forms don't pass this; edit forms do.
   onRemove?: () => void;
@@ -43,15 +48,44 @@ export function ImagePickerField({
   onRemove,
 }: Props) {
   const { t } = useTranslation();
+  const [androidSheetOpen, setAndroidSheetOpen] = useState(false);
   const radius = shape === "circle" ? PREVIEW_SIZE / 2 : 14;
   const hasPreview = !!previewUri;
+
+  const openChooser = () => {
+    if (uploading) return;
+    if (Platform.OS === "ios") {
+      const options = [
+        t("imagePicker.takePhoto"),
+        t("imagePicker.chooseFromLibrary"),
+        t("common.cancel"),
+      ];
+      ActionSheetIOS.showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex: 2,
+        },
+        (idx) => {
+          if (idx === 0) onPick("camera");
+          else if (idx === 1) onPick("library");
+        },
+      );
+    } else {
+      setAndroidSheetOpen(true);
+    }
+  };
+
+  const handleAndroidSelect = (source: PickSource) => {
+    setAndroidSheetOpen(false);
+    onPick(source);
+  };
 
   return (
     <View>
       <Label style={styles.label}>{label}</Label>
       <View style={styles.row}>
         <Pressable
-          onPress={uploading ? undefined : onPick}
+          onPress={openChooser}
           accessibilityLabel={
             hasPreview
               ? t("imagePicker.changeA11y")
@@ -82,7 +116,7 @@ export function ImagePickerField({
           )}
         </Pressable>
         <View style={styles.actions}>
-          <Pressable onPress={uploading ? undefined : onPick} hitSlop={6}>
+          <Pressable onPress={openChooser} hitSlop={6}>
             <Text style={styles.action}>
               {hasPreview
                 ? t("imagePicker.change")
@@ -101,6 +135,13 @@ export function ImagePickerField({
           )}
         </View>
       </View>
+      {Platform.OS !== "ios" && (
+        <ImageSourceSheet
+          visible={androidSheetOpen}
+          onSelect={handleAndroidSelect}
+          onCancel={() => setAndroidSheetOpen(false)}
+        />
+      )}
     </View>
   );
 }

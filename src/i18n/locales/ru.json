@@ -46,6 +46,8 @@
     "change": "Изменить фото",
     "changeA11y": "Изменить фото",
     "remove": "Убрать",
+    "takePhoto": "Снять фото",
+    "chooseFromLibrary": "Выбрать из галереи",
     "uploadFailed": "Не удалось загрузить фото",
     "fetchFromSource": "Взять изображение со страницы",
     "fetchFromSourceFailed": "Не удалось получить изображение со страницы"

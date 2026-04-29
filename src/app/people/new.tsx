@@ -19,7 +19,7 @@ import {
   TextField,
 } from "@/components";
 import { describeMutationError } from "@/lib/convexErrors";
-import { pickCompressUpload } from "@/lib/imageUpload";
+import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
@@ -45,12 +45,13 @@ export default function NewPersonScreen() {
 
   const canSave = name.trim().length > 0 && !saving && !uploading;
 
-  const onPickPhoto = async () => {
+  const onPickPhoto = async (source: PickSource) => {
     if (uploading) return;
     setUploading(true);
     try {
       const result = await pickCompressUpload({
         generateUploadUrl: () => generateUploadUrl({}),
+        source,
         square: true,
       });
       if (result) {

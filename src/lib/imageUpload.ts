@@ -16,6 +16,8 @@ export interface PickedImage {
   mimeType: string;
 }
 
+export type PickSource = "camera" | "library";
+
 // Asks for media-library permission, opens the system picker, and
 // resolves to the chosen asset (or null if the user cancels or
 // declines permission). Square aspect for avatars; pass `false` to
@@ -27,6 +29,27 @@ export async function pickFromLibrary(opts?: {
   if (!perm.granted) return null;
 
   const result = await ImagePicker.launchImageLibraryAsync({
+    mediaTypes: ImagePicker.MediaTypeOptions.Images,
+    allowsEditing: true,
+    aspect: opts?.square ? [1, 1] : undefined,
+    quality: 1,
+  });
+  if (result.canceled || result.assets.length === 0) return null;
+  const asset = result.assets[0];
+  return { uri: asset.uri, mimeType: asset.mimeType ?? "image/jpeg" };
+}
+
+// Asks for camera permission, opens the system camera UI, and
+// resolves to the captured asset (or null if the user cancels or
+// declines permission). The system camera includes its own Retake /
+// Use Photo affordance, so we don't reimplement that here.
+export async function pickFromCamera(opts?: {
+  square?: boolean;
+}): Promise<PickedImage | null> {
+  const perm = await ImagePicker.requestCameraPermissionsAsync();
+  if (!perm.granted) return null;
+
+  const result = await ImagePicker.launchCameraAsync({
     mediaTypes: ImagePicker.MediaTypeOptions.Images,
     allowsEditing: true,
     aspect: opts?.square ? [1, 1] : undefined,
@@ -77,9 +100,13 @@ async function uploadToConvex(
 // the picker.
 export async function pickCompressUpload(opts: {
   generateUploadUrl: () => Promise<string>;
+  source: PickSource;
   square?: boolean;
 }): Promise<{ storageId: Id<"_storage">; previewUri: string } | null> {
-  const picked = await pickFromLibrary({ square: opts.square });
+  const picked =
+    opts.source === "camera"
+      ? await pickFromCamera({ square: opts.square })
+      : await pickFromLibrary({ square: opts.square });
   if (!picked) return null;
   const compressed = await compress(picked);
   const uploadUrl = await opts.generateUploadUrl();

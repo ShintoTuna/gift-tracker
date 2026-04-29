@@ -26,7 +26,7 @@ import {
 } from "@/components";
 import type { IdeaStatus } from "@/components/IdeaCard";
 import { describeMutationError } from "@/lib/convexErrors";
-import { pickCompressUpload } from "@/lib/imageUpload";
+import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
@@ -90,12 +90,13 @@ export default function EditIdeaScreen() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idea?._id]);
 
-  const onPickImage = async () => {
+  const onPickImage = async (source: PickSource) => {
     if (uploading) return;
     setUploading(true);
     try {
       const result = await pickCompressUpload({
         generateUploadUrl: () => generateUploadUrl({}),
+        source,
       });
       if (result) {
         setImage({

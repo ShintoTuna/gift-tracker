@@ -46,6 +46,8 @@
     "change": "Change photo",
     "changeA11y": "Change photo",
     "remove": "Remove",
+    "takePhoto": "Take Photo",
+    "chooseFromLibrary": "Choose from Library",
     "uploadFailed": "Couldn't upload photo",
     "fetchFromSource": "Use image from source",
     "fetchFromSourceFailed": "Couldn't fetch image from source"
