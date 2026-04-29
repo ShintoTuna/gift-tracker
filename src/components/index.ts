@@ -8,6 +8,7 @@ export { CaptureFab } from "./CaptureFab";
 export { Card, type CardTone } from "./Card";
 export { DatePicker } from "./DatePicker";
 export { DevDock } from "./DevDock";
+export { ErrorFallback } from "./ErrorFallback";
 export { IdeaCard } from "./IdeaCard";
 export { ImagePickerField } from "./ImagePickerField";
 export { Label, type LabelTone } from "./Label";

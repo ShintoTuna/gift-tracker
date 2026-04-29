@@ -231,5 +231,10 @@
     "giftIdeas_other": "You've reached this plan's limit of {{count}} gift ideas.",
     "occasionsPerPerson_one": "Each person can have up to {{count}} occasion.",
     "occasionsPerPerson_other": "Each person can have up to {{count}} occasions."
+  },
+  "errors": {
+    "crashTitle": "Something went sideways",
+    "crashBody": "We've sent a report so we can fix it. You can try again from here.",
+    "tryAgain": "Try again"
   }
 }
