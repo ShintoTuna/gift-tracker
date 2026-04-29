@@ -9,13 +9,15 @@ import {
   Manrope_600SemiBold,
 } from "@expo-google-fonts/manrope";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ConvexProvider, useQuery } from "convex/react";
+import { ConvexAuthProvider } from "@convex-dev/auth/react";
+import { useConvexAuth, useQuery } from "convex/react";
 import { useFonts } from "expo-font";
-import { Stack } from "expo-router";
+import { Redirect, Stack, useSegments } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 
 import { DevDock } from "@/components";
 // IMPORTANT: importing `@/i18n` runs i18next's `init()` for its
@@ -36,6 +38,14 @@ SplashScreen.preventAutoHideAsync().catch(() => {
   // called already by another part of the lifecycle.
 });
 
+// Convex Auth tokens persist in expo-secure-store across launches on
+// device. Web falls back to the provider default (memory/localStorage).
+const secureStorage = {
+  getItem: SecureStore.getItemAsync,
+  setItem: SecureStore.setItemAsync,
+  removeItem: SecureStore.deleteItemAsync,
+};
+
 // LanguageGate primes i18next from the user's persisted preference
 // before unblocking the UI. Two-tier resolution:
 //
@@ -51,6 +61,7 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 function LanguageGate({ children }: { children: ReactNode }) {
   const { i18n } = useTranslation();
   const [cacheChecked, setCacheChecked] = useState(false);
+  // userSettings.get tolerates being called pre-auth (returns null).
   const settings = useQuery(api.userSettings.get);
 
   // Step 1: read AsyncStorage cache on mount.
@@ -91,6 +102,25 @@ function LanguageGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
+// AuthGate redirects unauthenticated users to the (auth) route group,
+// and conversely keeps signed-in users out of it. `useConvexAuth()` is
+// what reads from the secure-store-backed token cache, so this is the
+// single source of truth for "who is signed in".
+function AuthGate({ children }: { children: ReactNode }) {
+  const { isLoading, isAuthenticated } = useConvexAuth();
+  const segments = useSegments();
+  const inAuthGroup = segments[0] === "(auth)";
+
+  if (isLoading) return null;
+  if (!isAuthenticated && !inAuthGroup) {
+    return <Redirect href="/(auth)/login" />;
+  }
+  if (isAuthenticated && inAuthGroup) {
+    return <Redirect href="/" />;
+  }
+  return <>{children}</>;
+}
+
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     CormorantGaramond_500Medium_Italic,
@@ -112,49 +142,59 @@ export default function RootLayout() {
   }
 
   return (
-    <ConvexProvider client={convex}>
+    <ConvexAuthProvider
+      client={convex}
+      storage={
+        Platform.OS === "ios" || Platform.OS === "android"
+          ? secureStorage
+          : undefined
+      }
+    >
       <LanguageGate>
-        <View style={{ flex: 1 }}>
-          <Stack screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="people/[id]" />
-            <Stack.Screen
-              name="people/[id]/edit"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="people/new"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="capture"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="idea/[id]"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="occasion/new"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="occasion/[id]"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="brainstorm/[personId]"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen
-              name="settings"
-              options={{ presentation: "modal" }}
-            />
-            <Stack.Screen name="design-system" />
-          </Stack>
-          <DevDock />
-        </View>
+        <AuthGate>
+          <View style={{ flex: 1 }}>
+            <Stack screenOptions={{ headerShown: false }}>
+              <Stack.Screen name="(auth)" />
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="people/[id]" />
+              <Stack.Screen
+                name="people/[id]/edit"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="people/new"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="capture"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="idea/[id]"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="occasion/new"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="occasion/[id]"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="brainstorm/[personId]"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen
+                name="settings"
+                options={{ presentation: "modal" }}
+              />
+              <Stack.Screen name="design-system" />
+            </Stack>
+            <DevDock />
+          </View>
+        </AuthGate>
       </LanguageGate>
-    </ConvexProvider>
+    </ConvexAuthProvider>
   );
 }

@@ -95,11 +95,9 @@
     "nickname": "Nickname",
     "relationship": "Relationship",
     "relationshipHint": "Free text — e.g., mom, best friend, colleague",
-    "birthDate": "Birth date",
     "interests": "Interests",
     "interestsHint": "Comma-separated",
     "interestsPlaceholder": "e.g., gardening, audiobooks, tea",
-    "notes": "Notes",
     "deleteButton": "Delete person",
     "deleteConfirmTitle": "Delete this person?",
     "deleteConfirmBody": "This will also remove their occasions and untag them from any gift ideas. This can't be undone.",
@@ -134,8 +132,6 @@
     "title": "Profile",
     "editA11y": "Edit person",
     "editPill": "Edit",
-    "about": "About",
-    "born": "Born",
     "occasions": "Occasions",
     "addOccasion": "+ Add",
     "occasionsEmpty": "No occasions yet — tap <accent>+ Add</accent> to create one.",
@@ -143,7 +139,6 @@
     "openIdeas": "Open ideas · {{count}}",
     "givenIdeas": "Given · {{count}}",
     "ideasEmpty": "No gift ideas yet. Brainstorm some below or add one from Quick Capture.",
-    "notes": "Notes",
     "brainstormCta": "Brainstorm a gift",
     "notFound": "Person not found."
   },
@@ -169,9 +164,22 @@
     "setDate": "+ Set a date",
     "clearDate": "Clear date"
   },
-  "monthDayPicker": {
-    "defaultLabel": "Date",
-    "setDate": "+ Set a date",
-    "clearDate": "Clear date"
+  "auth": {
+    "welcome": {
+      "title": "Welcome to Giftsmith",
+      "subtitle": "Capture gift ideas. Never miss the moment."
+    },
+    "continueWithApple": "Sign in with Apple",
+    "continueWithGoogle": "Continue with Google",
+    "errorTitle": "Couldn’t sign in",
+    "account": {
+      "title": "Account",
+      "signOut": "Sign out",
+      "signOutConfirm": "Sign out of Giftsmith?",
+      "delete": "Delete account",
+      "deleteConfirmTitle": "Delete your account?",
+      "deleteConfirmBody": "This permanently removes all your people, occasions, and gift ideas. This cannot be undone.",
+      "deleteConfirmCta": "Delete forever"
+    }
   }
 }

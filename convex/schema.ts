@@ -1,20 +1,20 @@
+import { authTables } from "@convex-dev/auth/server";
 import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
-// Base schemas for Giftsmith — see /docs/PRD.md §6.
-//
-// `userId` is intentionally `v.string()` (not `v.id("users")`). Auth
-// is a future step; once Convex Auth or Clerk lands, the auth
-// provider's identity becomes the canonical user ref. Keeping
-// `userId` as a string lets us swap the source of that string without
-// a schema rewrite.
+// `userId` columns on user-scoped tables stay `v.string()`. Convex
+// Auth's `Id<"users">` is a branded string at runtime, so existing
+// `q.eq("userId", userId)` filters keep working without a column-type
+// migration.
 
 export default defineSchema({
-  // Defined now so the data-model surface is stable, but unused until
-  // auth wiring lands in a later step.
+  ...authTables,
+  // Convex Auth owns the `users` table; we extend its base validator
+  // (name, email, image, phone, ...) with our custom domain fields. The
+  // index is renamed to `email` (Convex Auth's expected name) so its
+  // own lookups hit the right index.
   users: defineTable({
-    email: v.string(),
-    displayName: v.optional(v.string()),
+    ...authTables.users.validator.fields,
     subscriptionTier: v.union(
       v.literal("free"),
       v.literal("plus"),
@@ -24,7 +24,7 @@ export default defineSchema({
     acceptedTermsVersion: v.optional(v.string()),
     acceptedTermsAt: v.optional(v.number()),
     createdAt: v.number(),
-  }).index("by_email", ["email"]),
+  }).index("email", ["email"]),
 
   people: defineTable({
     userId: v.string(),
@@ -33,15 +33,6 @@ export default defineSchema({
     photoUrl: v.optional(v.string()),
     relationship: v.optional(v.string()),
     interests: v.array(v.string()),
-    // `notes` will be field-level encrypted before external testing
-    // (PRD §10, v0.3). For now it's plain text.
-    notes: v.optional(v.string()),
-    // Birth date stores month + day only; year is normalized to a
-    // 2000 sentinel at save time so the actual birth year is never
-    // collected. Display logic (formatBirthMonthDay) ignores the
-    // year. The form uses a custom MonthDayPicker that doesn't
-    // expose a year selector at all.
-    dateOfBirth: v.optional(v.number()),
     createdAt: v.number(),
     updatedAt: v.number(),
   }).index("by_user", ["userId"]),

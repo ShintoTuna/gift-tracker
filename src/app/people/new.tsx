@@ -11,13 +11,7 @@ import {
   View,
 } from "react-native";
 
-import {
-  Btn,
-  MonthDayPicker,
-  NavBar,
-  ScreenTitle,
-  TextField,
-} from "@/components";
+import { Btn, NavBar, ScreenTitle, TextField } from "@/components";
 import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
@@ -31,9 +25,7 @@ export default function NewPersonScreen() {
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [relationship, setRelationship] = useState("");
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [interestsText, setInterestsText] = useState("");
-  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
   const canSave = name.trim().length > 0 && !saving;
@@ -46,20 +38,11 @@ export default function NewPersonScreen() {
         .split(",")
         .map((s) => s.trim())
         .filter((s) => s.length > 0);
-      // MonthDayPicker emits Date with year=2000 sentinel — month
-      // and day are the only meaningful parts. Re-normalize at save
-      // time as belt-and-suspenders.
-      const dateOfBirth =
-        birthDate != null
-          ? Date.UTC(2000, birthDate.getUTCMonth(), birthDate.getUTCDate())
-          : undefined;
       await createPerson({
         name: name.trim(),
         nickname: nickname.trim() || undefined,
         relationship: relationship.trim() || undefined,
         interests,
-        notes: notes.trim() || undefined,
-        dateOfBirth,
       });
       router.back();
     } catch (err) {
@@ -121,11 +104,6 @@ export default function NewPersonScreen() {
               autoCorrect={false}
               returnKeyType="next"
             />
-            <MonthDayPicker
-              label={t("personForm.birthDate")}
-              value={birthDate}
-              onChange={setBirthDate}
-            />
             <TextField
               label={t("personForm.interests")}
               hint={t("personForm.interestsHint")}
@@ -134,16 +112,6 @@ export default function NewPersonScreen() {
               onChangeText={setInterestsText}
               autoCapitalize="none"
               autoCorrect
-              returnKeyType="next"
-            />
-            <TextField
-              label={t("personForm.notes")}
-              placeholder={t("common.optional")}
-              value={notes}
-              onChangeText={setNotes}
-              multiline
-              numberOfLines={4}
-              style={styles.notesInput}
               returnKeyType="default"
             />
 
@@ -175,10 +143,6 @@ const styles = StyleSheet.create({
   fields: {
     paddingHorizontal: spacing.xl,
     gap: spacing.lg,
-  },
-  notesInput: {
-    minHeight: 96,
-    textAlignVertical: "top",
   },
   saveBtn: {
     marginTop: spacing.md,

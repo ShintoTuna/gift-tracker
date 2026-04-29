@@ -13,13 +13,7 @@ import {
   View,
 } from "react-native";
 
-import {
-  Btn,
-  MonthDayPicker,
-  NavBar,
-  ScreenTitle,
-  TextField,
-} from "@/components";
+import { Btn, NavBar, ScreenTitle, TextField } from "@/components";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../../../convex/_generated/api";
@@ -40,9 +34,7 @@ export default function EditPersonScreen() {
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [relationship, setRelationship] = useState("");
-  const [birthDate, setBirthDate] = useState<Date | null>(null);
   const [interestsText, setInterestsText] = useState("");
-  const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
   // Initialize once the row loads. Re-init only when the route id
@@ -53,11 +45,7 @@ export default function EditPersonScreen() {
       setName(person.name);
       setNickname(person.nickname ?? "");
       setRelationship(person.relationship ?? "");
-      setBirthDate(
-        person.dateOfBirth != null ? new Date(person.dateOfBirth) : null,
-      );
       setInterestsText(person.interests.join(", "));
-      setNotes(person.notes ?? "");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [person?._id]);
@@ -100,10 +88,6 @@ export default function EditPersonScreen() {
         .split(",")
         .map((s) => s.trim())
         .filter((s) => s.length > 0);
-      const dateOfBirth =
-        birthDate != null
-          ? Date.UTC(2000, birthDate.getUTCMonth(), birthDate.getUTCDate())
-          : undefined;
       await updatePerson({
         id: personId,
         patch: {
@@ -111,8 +95,6 @@ export default function EditPersonScreen() {
           nickname: nickname.trim() || undefined,
           relationship: relationship.trim() || undefined,
           interests,
-          notes: notes.trim() || undefined,
-          dateOfBirth,
         },
       });
       router.back();
@@ -200,11 +182,6 @@ export default function EditPersonScreen() {
               autoCorrect={false}
               returnKeyType="next"
             />
-            <MonthDayPicker
-              label={t("personForm.birthDate")}
-              value={birthDate}
-              onChange={setBirthDate}
-            />
             <TextField
               label={t("personForm.interests")}
               hint={t("personForm.interestsHint")}
@@ -213,16 +190,6 @@ export default function EditPersonScreen() {
               onChangeText={setInterestsText}
               autoCapitalize="none"
               autoCorrect
-              returnKeyType="next"
-            />
-            <TextField
-              label={t("personForm.notes")}
-              placeholder={t("common.optional")}
-              value={notes}
-              onChangeText={setNotes}
-              multiline
-              numberOfLines={4}
-              style={styles.notesInput}
               returnKeyType="default"
             />
 
@@ -263,10 +230,6 @@ const styles = StyleSheet.create({
   fields: {
     paddingHorizontal: spacing.xl,
     gap: spacing.lg,
-  },
-  notesInput: {
-    minHeight: 96,
-    textAlignVertical: "top",
   },
   saveBtn: {
     marginTop: spacing.md,

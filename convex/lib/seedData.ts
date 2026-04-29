@@ -7,8 +7,6 @@ export type PersonSeed = {
   nickname?: string;
   relationship?: string;
   interests: string[];
-  notes?: string;
-  dateOfBirth?: number;
 };
 
 export type OccasionSeed = {
@@ -38,33 +36,27 @@ export const SEED_PEOPLE: PersonSeed[] = [
     name: "Sarah",
     relationship: "mom",
     interests: ["gardening", "audiobooks", "tea"],
-    notes: "Prefers practical gifts. Allergic to lavender scents.",
-    dateOfBirth: ms("1962-05-15"),
   },
   {
     name: "Alex",
     nickname: "Al",
     relationship: "best friend",
     interests: ["climbing", "espresso", "dogs"],
-    dateOfBirth: ms("1991-05-03"),
   },
   {
     name: "Jordan",
     relationship: "partner",
     interests: ["cooking", "running", "travel"],
-    dateOfBirth: ms("1992-11-23"),
   },
   {
     name: "Tom",
     relationship: "brother",
     interests: ["whiskey", "watches", "vinyl"],
-    dateOfBirth: ms("1989-02-08"),
   },
   {
     name: "Priya",
     relationship: "colleague",
     interests: ["board games", "specialty coffee", "puzzles"],
-    dateOfBirth: ms("1990-10-18"),
   },
 ];
 

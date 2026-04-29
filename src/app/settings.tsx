@@ -1,9 +1,17 @@
+import { useAuthActions } from "@convex-dev/auth/react";
 import { useMutation, useQuery } from "convex/react";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import {
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
 
-import { Card, Label, NavBar, Pill, ScreenTitle } from "@/components";
+import { Btn, Card, Label, NavBar, Pill, ScreenTitle } from "@/components";
 import {
   LANGUAGE_LABELS,
   SUPPORTED_LANGUAGES,
@@ -21,16 +29,61 @@ const CURRENCIES: { code: string; label: string }[] = [
   { code: "JPY", label: "JPY ¥" },
 ];
 
-// Modal-presented Settings screen. For now: default currency and
-// preferred language. Account / Notifications / About sections slot
-// in here as the corresponding features land.
+// Modal-presented Settings screen. Default currency + preferred
+// language + Account (signed-in email, sign out, delete account).
+// Notifications / About sections slot in here as those features land.
 export default function SettingsScreen() {
   const { t } = useTranslation();
   const settings = useQuery(api.userSettings.get);
+  const me = useQuery(api.users.me);
   const setDefaultCurrency = useMutation(api.userSettings.setDefaultCurrency);
+  const deleteAccount = useMutation(api.users.deleteAccount);
+  const { signOut } = useAuthActions();
   const { language: currentLanguage, setLanguage } = usePreferredLanguage();
 
   const currentCurrency = settings?.defaultCurrency ?? DEFAULT_CURRENCY;
+
+  const onSignOut = () => {
+    Alert.alert(
+      t("auth.account.signOutConfirm"),
+      undefined,
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("auth.account.signOut"),
+          style: "destructive",
+          onPress: async () => {
+            await signOut();
+          },
+        },
+      ],
+    );
+  };
+
+  const onDeleteAccount = () => {
+    Alert.alert(
+      t("auth.account.deleteConfirmTitle"),
+      t("auth.account.deleteConfirmBody"),
+      [
+        { text: t("common.cancel"), style: "cancel" },
+        {
+          text: t("auth.account.deleteConfirmCta"),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteAccount({});
+              await signOut();
+            } catch (err) {
+              Alert.alert(
+                t("auth.errorTitle"),
+                err instanceof Error ? err.message : String(err),
+              );
+            }
+          },
+        },
+      ],
+    );
+  };
 
   return (
     <View style={styles.root}>
@@ -97,6 +150,25 @@ export default function SettingsScreen() {
             </View>
           </Card>
         </View>
+
+        <View style={styles.section}>
+          <Label style={styles.sectionLabel}>{t("auth.account.title")}</Label>
+          <Card>
+            {me?.email ? (
+              <Text style={styles.emailText} numberOfLines={1}>
+                {me.email}
+              </Text>
+            ) : null}
+            <View style={styles.accountActions}>
+              <Btn tone="default" full onPress={onSignOut}>
+                {t("auth.account.signOut")}
+              </Btn>
+              <Btn tone="danger" full onPress={onDeleteAccount}>
+                {t("auth.account.delete")}
+              </Btn>
+            </View>
+          </Card>
+        </View>
       </ScrollView>
     </View>
   );
@@ -137,5 +209,14 @@ const styles = StyleSheet.create({
   },
   cardSpacer: {
     height: spacing.md,
+  },
+  emailText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 15,
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  accountActions: {
+    gap: spacing.sm,
   },
 });
