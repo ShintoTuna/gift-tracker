@@ -19,7 +19,7 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Platform, View } from "react-native";
 
-import { DevDock } from "@/components";
+import { DevDock, ErrorFallback } from "@/components";
 // IMPORTANT: importing `@/i18n` runs i18next's `init()` for its
 // side effect. This must happen before any child component calls
 // `useTranslation()`, which the static import order guarantees.
@@ -29,8 +29,14 @@ import {
 } from "@/i18n";
 import { convex } from "@/lib/convex";
 import { requestPermissionsAndGetToken } from "@/lib/notifications";
+import { GlobalErrorBoundary, initSentry, wrap } from "@/lib/sentry";
 
 import { api } from "../../convex/_generated/api";
+
+// Init Sentry as a module side-effect so it's live before any
+// component renders and can capture errors thrown during the very
+// first frame. No-ops when EXPO_PUBLIC_SENTRY_DSN is unset.
+initSentry();
 
 // Hold the splash up until fonts are ready. Without this, the app
 // boots in fallback fonts for a frame and then re-flows.
@@ -165,7 +171,7 @@ function AuthGate({ children }: { children: ReactNode }) {
   return <>{children}</>;
 }
 
-export default function RootLayout() {
+function RootLayout() {
   const [fontsLoaded] = useFonts({
     CormorantGaramond_500Medium_Italic,
     Manrope_400Regular,
@@ -186,60 +192,72 @@ export default function RootLayout() {
   }
 
   return (
-    <ConvexAuthProvider
-      client={convex}
-      storage={
-        Platform.OS === "ios" || Platform.OS === "android"
-          ? secureStorage
-          : undefined
-      }
+    <GlobalErrorBoundary
+      fallback={({ error, resetError }) => (
+        <ErrorFallback error={error} resetError={resetError} />
+      )}
     >
-      <LanguageGate>
-        <AuthGate>
-          <NotificationsRegistrar />
-          <View style={{ flex: 1 }}>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="people/[id]" />
-              <Stack.Screen
-                name="people/[id]/edit"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="people/new"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="capture"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="idea/[id]"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="occasion/new"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="occasion/[id]"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="brainstorm/[personId]"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen
-                name="settings"
-                options={{ presentation: "modal" }}
-              />
-              <Stack.Screen name="design-system" />
-            </Stack>
-            <DevDock />
-          </View>
-        </AuthGate>
-      </LanguageGate>
-    </ConvexAuthProvider>
+      <ConvexAuthProvider
+        client={convex}
+        storage={
+          Platform.OS === "ios" || Platform.OS === "android"
+            ? secureStorage
+            : undefined
+        }
+      >
+        <LanguageGate>
+          <AuthGate>
+            <NotificationsRegistrar />
+            <View style={{ flex: 1 }}>
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="people/[id]" />
+                <Stack.Screen
+                  name="people/[id]/edit"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="people/new"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="capture"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="idea/[id]"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="occasion/new"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="occasion/[id]"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="brainstorm/[personId]"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen
+                  name="settings"
+                  options={{ presentation: "modal" }}
+                />
+                <Stack.Screen name="design-system" />
+              </Stack>
+              <DevDock />
+            </View>
+          </AuthGate>
+        </LanguageGate>
+      </ConvexAuthProvider>
+    </GlobalErrorBoundary>
   );
 }
+
+// `Sentry.wrap()` installs the touch-event boundary (touch
+// breadcrumbs) and the React profiler. The latter is a no-op while
+// `tracesSampleRate: 0`, but the former is exactly what we want for
+// "leave breadcrumbs": every tap is recorded against the next error.
+export default wrap(RootLayout);
