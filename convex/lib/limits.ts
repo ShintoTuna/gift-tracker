@@ -45,13 +45,13 @@ export function capFor(tier: SubscriptionTier, resource: ResourceKind): number {
 // `ConvexError`'s `data` field is preserved end-to-end, so clients
 // can branch on `error.data.kind === "LimitReached"` and look up the
 // resource/limit/tier without parsing the message.
-export interface LimitReachedData {
+export type LimitReachedData = {
   kind: "LimitReached";
   resource: ResourceKind;
   limit: number;
   current: number;
   tier: SubscriptionTier;
-}
+};
 
 export function limitReached(data: Omit<LimitReachedData, "kind">): never {
   throw new ConvexError<LimitReachedData>({ kind: "LimitReached", ...data });

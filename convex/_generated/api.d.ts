@@ -11,12 +11,16 @@
 import type * as auth from "../auth.js";
 import type * as giftIdeas from "../giftIdeas.js";
 import type * as http from "../http.js";
+import type * as imageFromUrl from "../imageFromUrl.js";
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_dates from "../lib/dates.js";
+import type * as lib_limits from "../lib/limits.js";
 import type * as lib_seedData from "../lib/seedData.js";
+import type * as lib_storage from "../lib/storage.js";
 import type * as occasions from "../occasions.js";
 import type * as people from "../people.js";
 import type * as seed from "../seed.js";
+import type * as storage from "../storage.js";
 import type * as userSettings from "../userSettings.js";
 import type * as users from "../users.js";
 
@@ -30,12 +34,16 @@ declare const fullApi: ApiFromModules<{
   auth: typeof auth;
   giftIdeas: typeof giftIdeas;
   http: typeof http;
+  imageFromUrl: typeof imageFromUrl;
   "lib/auth": typeof lib_auth;
   "lib/dates": typeof lib_dates;
+  "lib/limits": typeof lib_limits;
   "lib/seedData": typeof lib_seedData;
+  "lib/storage": typeof lib_storage;
   occasions: typeof occasions;
   people: typeof people;
   seed: typeof seed;
+  storage: typeof storage;
   userSettings: typeof userSettings;
   users: typeof users;
 }>;
