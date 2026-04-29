@@ -2,8 +2,10 @@ import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import type { Doc } from "./_generated/dataModel";
-import { getCurrentUserId } from "./lib/auth";
+import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { getNextOccurrence } from "./lib/dates";
+import { capFor, limitReached } from "./lib/limits";
+import { resolveImageUrl } from "./lib/storage";
 
 // Returns the current user's people. No userId scoping argument —
 // that's resolved server-side via getCurrentUserId so callers can't
@@ -16,10 +18,16 @@ export const list = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getCurrentUserId(ctx);
-    return await ctx.db
+    const rows = await ctx.db
       .query("people")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .take(500);
+    return await Promise.all(
+      rows.map(async (p) => ({
+        ...p,
+        photoUrl: await resolveImageUrl(ctx, p.photoStorageId),
+      })),
+    );
   },
 });
 
@@ -77,6 +85,7 @@ export const listWithNextOccasion = query({
 
         return {
           ...person,
+          photoUrl: await resolveImageUrl(ctx, person.photoStorageId),
           nextOccasion,
           nextOccasionDate,
           ideaCount,
@@ -104,9 +113,11 @@ export const getById = query({
   handler: async (ctx, { id }) => {
     const userId = await getCurrentUserId(ctx);
     const row = await ctx.db.get(id);
-    // Guard against accessing other users' rows once auth lands.
-    if (row && row.userId !== userId) return null;
-    return row;
+    if (!row || row.userId !== userId) return null;
+    return {
+      ...row,
+      photoUrl: await resolveImageUrl(ctx, row.photoStorageId),
+    };
   },
 });
 
@@ -133,6 +144,12 @@ export const getProfile = query({
     const ideas = allIdeas.filter((idea) =>
       idea.taggedPeople.includes(personId),
     );
+    const ideasWithImage = await Promise.all(
+      ideas.map(async (idea) => ({
+        ...idea,
+        imageUrl: await resolveImageUrl(ctx, idea.imageStorageId),
+      })),
+    );
 
     const now = Date.now();
     const occasionsWithNext = occasions
@@ -145,9 +162,12 @@ export const getProfile = query({
       });
 
     return {
-      person,
+      person: {
+        ...person,
+        photoUrl: await resolveImageUrl(ctx, person.photoStorageId),
+      },
       occasions: occasionsWithNext,
-      ideas,
+      ideas: ideasWithImage,
     };
   },
 });
@@ -156,12 +176,28 @@ export const create = mutation({
   args: {
     name: v.string(),
     nickname: v.optional(v.string()),
-    photoUrl: v.optional(v.string()),
+    photoStorageId: v.optional(v.id("_storage")),
     relationship: v.optional(v.string()),
     interests: v.array(v.string()),
   },
   handler: async (ctx, args) => {
-    const userId = await getCurrentUserId(ctx);
+    const { userId, user } = await requireCurrentUser(ctx);
+    const cap = capFor(user.subscriptionTier, "people");
+    // Count via the indexed query bounded at cap+1 — that's the
+    // smallest read that lets us tell "at limit" from "below limit"
+    // without scanning the whole table.
+    const existing = await ctx.db
+      .query("people")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(cap + 1);
+    if (existing.length >= cap) {
+      limitReached({
+        resource: "people",
+        limit: cap,
+        current: existing.length,
+        tier: user.subscriptionTier,
+      });
+    }
     const now = Date.now();
     return await ctx.db.insert("people", {
       userId,
@@ -172,13 +208,17 @@ export const create = mutation({
   },
 });
 
+// `photoStorageId` in the patch is a tri-state: undefined means
+// "leave the field alone", a storage id means "set to this", null
+// means "clear it" (and free the underlying blob). The validator
+// uses `v.union(v.id, v.null())` to encode the explicit-clear case.
 export const update = mutation({
   args: {
     id: v.id("people"),
     patch: v.object({
       name: v.optional(v.string()),
       nickname: v.optional(v.string()),
-      photoUrl: v.optional(v.string()),
+      photoStorageId: v.optional(v.union(v.id("_storage"), v.null())),
       relationship: v.optional(v.string()),
       interests: v.optional(v.array(v.string())),
     }),
@@ -189,7 +229,24 @@ export const update = mutation({
     if (!existing || existing.userId !== userId) {
       throw new Error("Not found or not authorized");
     }
-    await ctx.db.patch(id, { ...patch, updatedAt: Date.now() });
+    const { photoStorageId: newPhoto, ...rest } = patch;
+    const dbPatch: Partial<Doc<"people">> = {
+      ...rest,
+      updatedAt: Date.now(),
+    };
+    if (newPhoto !== undefined) {
+      // Free the previous blob whenever the photo slot is being
+      // replaced (or explicitly cleared) so unreferenced uploads
+      // don't accumulate in storage.
+      if (
+        existing.photoStorageId &&
+        existing.photoStorageId !== newPhoto
+      ) {
+        await ctx.storage.delete(existing.photoStorageId);
+      }
+      dbPatch.photoStorageId = newPhoto ?? undefined;
+    }
+    await ctx.db.patch(id, dbPatch);
   },
 });
 
@@ -229,6 +286,9 @@ export const remove = mutation({
           updatedAt: Date.now(),
         });
       }
+    }
+    if (existing.photoStorageId) {
+      await ctx.storage.delete(existing.photoStorageId);
     }
     await ctx.db.delete(id);
   },

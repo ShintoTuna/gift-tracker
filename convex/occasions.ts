@@ -1,8 +1,10 @@
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
-import { getCurrentUserId } from "./lib/auth";
+import { getCurrentUserId, requireCurrentUser } from "./lib/auth";
 import { getNextOccurrence } from "./lib/dates";
+import { capFor, limitReached } from "./lib/limits";
+import { resolveImageUrl } from "./lib/storage";
 
 // Returns occasions for a single person, ordered by their stored
 // canonical date. The Calendar screen will need a separate
@@ -74,13 +76,22 @@ export const listUpcoming = query({
         .withIndex("by_person", (q) => q.eq("personId", person._id))
         .take(100);
       const ideaCount = ideaCountByPerson.get(person._id) ?? 0;
+      // Resolve once per person so back-to-back occasion rows share
+      // the same photo URL without an extra round trip each.
+      const photoUrl = await resolveImageUrl(ctx, person.photoStorageId);
+      const personWithPhoto = { ...person, photoUrl };
       for (const occ of occasions) {
         const nextDate = getNextOccurrence(occ, now);
         // Include if upcoming OR truly dateless (TBD). Skip past
         // one-offs (date set, nextDate null) — they're history, not
         // agenda items.
         if (nextDate !== null || occ.date == null) {
-          enriched.push({ occasion: occ, person, nextDate, ideaCount });
+          enriched.push({
+            occasion: occ,
+            person: personWithPhoto,
+            nextDate,
+            ideaCount,
+          });
         }
       }
     }
@@ -124,12 +135,25 @@ export const create = mutation({
     recurrence: recurrenceValidator,
   },
   handler: async (ctx, args) => {
-    const userId = await getCurrentUserId(ctx);
+    const { userId, user } = await requireCurrentUser(ctx);
     // Confirm the parent person belongs to this user before
     // allowing an occasion attached to it.
     const person = await ctx.db.get(args.personId);
     if (!person || person.userId !== userId) {
       throw new Error("Not found or not authorized");
+    }
+    const cap = capFor(user.subscriptionTier, "occasionsPerPerson");
+    const existing = await ctx.db
+      .query("occasions")
+      .withIndex("by_person", (q) => q.eq("personId", args.personId))
+      .take(cap + 1);
+    if (existing.length >= cap) {
+      limitReached({
+        resource: "occasionsPerPerson",
+        limit: cap,
+        current: existing.length,
+        tier: user.subscriptionTier,
+      });
     }
     return await ctx.db.insert("occasions", args);
   },

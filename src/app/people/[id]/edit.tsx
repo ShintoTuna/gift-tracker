@@ -13,11 +13,28 @@ import {
   View,
 } from "react-native";
 
-import { Btn, NavBar, ScreenTitle, TextField } from "@/components";
+import {
+  Btn,
+  ImagePickerField,
+  NavBar,
+  ScreenTitle,
+  TextField,
+} from "@/components";
+import { describeMutationError } from "@/lib/convexErrors";
+import { pickCompressUpload } from "@/lib/imageUpload";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
+
+// Tri-state for the photo slot: "unchanged" leaves it alone on save,
+// "set" replaces with a freshly-uploaded blob (preview keeps the
+// local URI so the form renders before the next reactive refresh),
+// "removed" clears the slot.
+type PhotoState =
+  | { kind: "unchanged" }
+  | { kind: "set"; storageId: Id<"_storage">; previewUri: string }
+  | { kind: "removed" };
 
 // Modal-presented edit screen for a person. Mirrors the add-person
 // form, pre-populated from the loaded row, plus a Delete affordance.
@@ -30,11 +47,14 @@ export default function EditPersonScreen() {
   const person = useQuery(api.people.getById, { id: personId });
   const updatePerson = useMutation(api.people.update);
   const removePerson = useMutation(api.people.remove);
+  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
 
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [relationship, setRelationship] = useState("");
   const [interestsText, setInterestsText] = useState("");
+  const [photo, setPhoto] = useState<PhotoState>({ kind: "unchanged" });
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Initialize once the row loads. Re-init only when the route id
@@ -46,9 +66,39 @@ export default function EditPersonScreen() {
       setNickname(person.nickname ?? "");
       setRelationship(person.relationship ?? "");
       setInterestsText(person.interests.join(", "));
+      setPhoto({ kind: "unchanged" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [person?._id]);
+
+  const onPickPhoto = async () => {
+    if (uploading) return;
+    setUploading(true);
+    try {
+      const result = await pickCompressUpload({
+        generateUploadUrl: () => generateUploadUrl({}),
+        square: true,
+      });
+      if (result) {
+        setPhoto({
+          kind: "set",
+          storageId: result.storageId,
+          previewUri: result.previewUri,
+        });
+      }
+    } catch (err) {
+      Alert.alert(
+        t("imagePicker.uploadFailed"),
+        err instanceof Error ? err.message : String(err),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onRemovePhoto = () => {
+    setPhoto({ kind: "removed" });
+  };
 
   if (person === undefined) {
     return (
@@ -78,7 +128,7 @@ export default function EditPersonScreen() {
     );
   }
 
-  const canSave = name.trim().length > 0 && !saving;
+  const canSave = name.trim().length > 0 && !saving && !uploading;
 
   const onSave = async () => {
     if (!canSave) return;
@@ -95,14 +145,13 @@ export default function EditPersonScreen() {
           nickname: nickname.trim() || undefined,
           relationship: relationship.trim() || undefined,
           interests,
+          ...(photo.kind === "set" && { photoStorageId: photo.storageId }),
+          ...(photo.kind === "removed" && { photoStorageId: null }),
         },
       });
       router.back();
     } catch (err) {
-      Alert.alert(
-        t("common.couldNotSave"),
-        err instanceof Error ? err.message : String(err),
-      );
+      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };
@@ -155,6 +204,20 @@ export default function EditPersonScreen() {
           <ScreenTitle>{t("personForm.editScreenTitle")}</ScreenTitle>
 
           <View style={styles.fields}>
+            <ImagePickerField
+              label={t("personForm.photo")}
+              previewUri={
+                photo.kind === "set"
+                  ? photo.previewUri
+                  : photo.kind === "removed"
+                    ? null
+                    : person.photoUrl
+              }
+              shape="circle"
+              uploading={uploading}
+              onPick={onPickPhoto}
+              onRemove={onRemovePhoto}
+            />
             <TextField
               label={t("personForm.name")}
               value={name}

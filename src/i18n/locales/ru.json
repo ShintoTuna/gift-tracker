@@ -32,12 +32,23 @@
     "screenTitle": "Записать идею",
     "ideaLabel": "Идея",
     "ideaPlaceholder": "напр., беспроводной секатор",
+    "imageLabel": "Фото",
     "sourceLabel": "Источник",
     "priceLabel": "Цена ({{currency}})",
     "descriptionLabel": "Описание",
     "saveIdea": "Сохранить идею",
     "couldNotSave": "Не удалось сохранить",
     "fabLabel": "Записать идею"
+  },
+  "imagePicker": {
+    "add": "Добавить фото",
+    "addA11y": "Добавить фото",
+    "change": "Изменить фото",
+    "changeA11y": "Изменить фото",
+    "remove": "Убрать",
+    "uploadFailed": "Не удалось загрузить фото",
+    "fetchFromSource": "Взять изображение со страницы",
+    "fetchFromSourceFailed": "Не удалось получить изображение со страницы"
   },
   "people": {
     "title": "Люди",
@@ -97,6 +108,7 @@
     "newScreenTitle": "Кого добавляем?",
     "newSubtitle": "Тот, кого хотите запомнить",
     "editScreenTitle": "Редактировать человека",
+    "photo": "Фото",
     "name": "Имя",
     "nickname": "Прозвище",
     "relationship": "Отношения",
@@ -185,7 +197,24 @@
       "delete": "Удалить аккаунт",
       "deleteConfirmTitle": "Удалить аккаунт?",
       "deleteConfirmBody": "Это безвозвратно удалит всех людей, события и идеи подарков. Это нельзя отменить.",
-      "deleteConfirmCta": "Удалить навсегда"
+      "deleteConfirmCta": "Удалить навсегда",
+      "usageTitle": "Использование",
+      "usagePeople": "Люди · {{used}} / {{total}}",
+      "usageGiftIdeas": "Идеи подарков · {{used}} / {{total}}"
     }
+  },
+  "limits": {
+    "people_one": "Достигнут лимит этого тарифа: {{count}} человек.",
+    "people_few": "Достигнут лимит этого тарифа: {{count}} человека.",
+    "people_many": "Достигнут лимит этого тарифа: {{count}} человек.",
+    "people_other": "Достигнут лимит этого тарифа: {{count}} человека.",
+    "giftIdeas_one": "Достигнут лимит этого тарифа: {{count}} идея подарка.",
+    "giftIdeas_few": "Достигнут лимит этого тарифа: {{count}} идеи подарков.",
+    "giftIdeas_many": "Достигнут лимит этого тарифа: {{count}} идей подарков.",
+    "giftIdeas_other": "Достигнут лимит этого тарифа: {{count}} идеи подарков.",
+    "occasionsPerPerson_one": "У каждого человека может быть до {{count}} события.",
+    "occasionsPerPerson_few": "У каждого человека может быть до {{count}} событий.",
+    "occasionsPerPerson_many": "У каждого человека может быть до {{count}} событий.",
+    "occasionsPerPerson_other": "У каждого человека может быть до {{count}} события."
   }
 }

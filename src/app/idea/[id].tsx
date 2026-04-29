@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -16,6 +16,7 @@ import {
 
 import {
   Btn,
+  ImagePickerField,
   Label,
   NavBar,
   PeoplePicker,
@@ -24,6 +25,8 @@ import {
   TextField,
 } from "@/components";
 import type { IdeaStatus } from "@/components/IdeaCard";
+import { describeMutationError } from "@/lib/convexErrors";
+import { pickCompressUpload } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
@@ -35,6 +38,13 @@ const STATUS_KEY: Record<IdeaStatus, "ideaForm.statusOpen" | "ideaForm.statusGiv
   idea: "ideaForm.statusOpen",
   given: "ideaForm.statusGiven",
 };
+
+// Same tri-state shape as the person edit form. See the comment in
+// src/app/people/[id]/edit.tsx for the rationale.
+type ImageState =
+  | { kind: "unchanged" }
+  | { kind: "set"; storageId: Id<"_storage">; previewUri: string }
+  | { kind: "removed" };
 
 // Modal-presented edit screen for a single gift idea. Mirrors the
 // Capture form (Idea / Source / Price / People / Description) and
@@ -48,6 +58,8 @@ export default function EditIdeaScreen() {
   const people = useQuery(api.people.list);
   const updateIdea = useMutation(api.giftIdeas.update);
   const removeIdea = useMutation(api.giftIdeas.remove);
+  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const fetchImageFromUrl = useAction(api.imageFromUrl.fetchFromUrl);
   const defaultCurrency = useDefaultCurrency();
 
   const [title, setTitle] = useState("");
@@ -56,6 +68,8 @@ export default function EditIdeaScreen() {
   const [description, setDescription] = useState("");
   const [taggedIds, setTaggedIds] = useState<Id<"people">[]>([]);
   const [status, setStatus] = useState<IdeaStatus>("idea");
+  const [image, setImage] = useState<ImageState>({ kind: "unchanged" });
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
   // Initialize form once the idea loads. Re-init only when the route
@@ -71,9 +85,59 @@ export default function EditIdeaScreen() {
       setDescription(idea.description ?? "");
       setTaggedIds(idea.taggedPeople);
       setStatus(idea.status);
+      setImage({ kind: "unchanged" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idea?._id]);
+
+  const onPickImage = async () => {
+    if (uploading) return;
+    setUploading(true);
+    try {
+      const result = await pickCompressUpload({
+        generateUploadUrl: () => generateUploadUrl({}),
+      });
+      if (result) {
+        setImage({
+          kind: "set",
+          storageId: result.storageId,
+          previewUri: result.previewUri,
+        });
+      }
+    } catch (err) {
+      Alert.alert(
+        t("imagePicker.uploadFailed"),
+        err instanceof Error ? err.message : String(err),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onRemoveImage = () => {
+    setImage({ kind: "removed" });
+  };
+
+  const onFetchImageFromSource = async () => {
+    const url = sourceUrl.trim();
+    if (!url || uploading) return;
+    setUploading(true);
+    try {
+      const result = await fetchImageFromUrl({ url });
+      setImage({
+        kind: "set",
+        storageId: result.storageId,
+        previewUri: result.previewUrl ?? "",
+      });
+    } catch (err) {
+      Alert.alert(
+        t("imagePicker.fetchFromSourceFailed"),
+        err instanceof Error ? err.message : String(err),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
 
   if (idea === undefined) {
     return (
@@ -103,7 +167,12 @@ export default function EditIdeaScreen() {
     );
   }
 
-  const canSave = title.trim().length > 0 && !saving;
+  const canSave = title.trim().length > 0 && !saving && !uploading;
+  const hasImage =
+    image.kind === "set" ||
+    (image.kind === "unchanged" && !!idea.imageUrl);
+  const showFetchFromSource =
+    sourceUrl.trim().length > 0 && !uploading && !hasImage;
 
   const onSave = async () => {
     if (!canSave) return;
@@ -127,14 +196,13 @@ export default function EditIdeaScreen() {
             priceEstimate !== undefined ? defaultCurrency : undefined,
           taggedPeople: taggedIds,
           status,
+          ...(image.kind === "set" && { imageStorageId: image.storageId }),
+          ...(image.kind === "removed" && { imageStorageId: null }),
         },
       });
       router.back();
     } catch (err) {
-      Alert.alert(
-        t("common.couldNotSave"),
-        err instanceof Error ? err.message : String(err),
-      );
+      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };
@@ -179,6 +247,33 @@ export default function EditIdeaScreen() {
           <ScreenTitle>{t("ideaForm.editScreenTitle")}</ScreenTitle>
 
           <View style={styles.fields}>
+            <View>
+              <ImagePickerField
+                label={t("capture.imageLabel")}
+                previewUri={
+                  image.kind === "set"
+                    ? image.previewUri
+                    : image.kind === "removed"
+                      ? null
+                      : idea.imageUrl
+                }
+                shape="square"
+                uploading={uploading}
+                onPick={onPickImage}
+                onRemove={onRemoveImage}
+              />
+              {showFetchFromSource && (
+                <Pressable
+                  onPress={onFetchImageFromSource}
+                  hitSlop={6}
+                  style={styles.fetchFromSource}
+                >
+                  <Text style={styles.fetchFromSourceText}>
+                    {t("imagePicker.fetchFromSource")}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
             <TextField
               label={t("capture.ideaLabel")}
               value={title}
@@ -311,5 +406,14 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  fetchFromSource: {
+    marginTop: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  fetchFromSourceText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 13,
+    color: colors.brass,
   },
 });

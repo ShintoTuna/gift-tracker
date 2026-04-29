@@ -11,10 +11,19 @@ import {
   View,
 } from "react-native";
 
-import { Btn, NavBar, ScreenTitle, TextField } from "@/components";
+import {
+  Btn,
+  ImagePickerField,
+  NavBar,
+  ScreenTitle,
+  TextField,
+} from "@/components";
+import { describeMutationError } from "@/lib/convexErrors";
+import { pickCompressUpload } from "@/lib/imageUpload";
 import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
+import type { Id } from "../../../convex/_generated/dataModel";
 
 // Modal-presented form. NavBar X dismisses; primary brass Save runs
 // the people.create mutation and pops back. List updates reactively
@@ -22,13 +31,46 @@ import { api } from "../../../convex/_generated/api";
 export default function NewPersonScreen() {
   const { t } = useTranslation();
   const createPerson = useMutation(api.people.create);
+  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [relationship, setRelationship] = useState("");
   const [interestsText, setInterestsText] = useState("");
+  const [photoStorageId, setPhotoStorageId] = useState<Id<"_storage"> | null>(
+    null,
+  );
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const canSave = name.trim().length > 0 && !saving;
+  const canSave = name.trim().length > 0 && !saving && !uploading;
+
+  const onPickPhoto = async () => {
+    if (uploading) return;
+    setUploading(true);
+    try {
+      const result = await pickCompressUpload({
+        generateUploadUrl: () => generateUploadUrl({}),
+        square: true,
+      });
+      if (result) {
+        setPhotoStorageId(result.storageId);
+        setPhotoPreview(result.previewUri);
+      }
+    } catch (err) {
+      Alert.alert(
+        t("imagePicker.uploadFailed"),
+        err instanceof Error ? err.message : String(err),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onRemovePhoto = () => {
+    setPhotoStorageId(null);
+    setPhotoPreview(null);
+  };
 
   const onSave = async () => {
     if (!canSave) return;
@@ -41,15 +83,13 @@ export default function NewPersonScreen() {
       await createPerson({
         name: name.trim(),
         nickname: nickname.trim() || undefined,
+        photoStorageId: photoStorageId ?? undefined,
         relationship: relationship.trim() || undefined,
         interests,
       });
       router.back();
     } catch (err) {
-      Alert.alert(
-        t("common.couldNotSave"),
-        err instanceof Error ? err.message : String(err),
-      );
+      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };
@@ -75,6 +115,14 @@ export default function NewPersonScreen() {
           </ScreenTitle>
 
           <View style={styles.fields}>
+            <ImagePickerField
+              label={t("personForm.photo")}
+              previewUri={photoPreview}
+              shape="circle"
+              uploading={uploading}
+              onPick={onPickPhoto}
+              onRemove={photoPreview ? onRemovePhoto : undefined}
+            />
             <TextField
               label={t("personForm.name")}
               placeholder={t("common.required")}

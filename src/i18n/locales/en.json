@@ -32,12 +32,23 @@
     "screenTitle": "Capture an idea",
     "ideaLabel": "Idea",
     "ideaPlaceholder": "e.g., Cordless gardening shears",
+    "imageLabel": "Photo",
     "sourceLabel": "Source",
     "priceLabel": "Price ({{currency}})",
     "descriptionLabel": "Description",
     "saveIdea": "Save idea",
     "couldNotSave": "Could not save",
     "fabLabel": "Capture an idea"
+  },
+  "imagePicker": {
+    "add": "Add photo",
+    "addA11y": "Add photo",
+    "change": "Change photo",
+    "changeA11y": "Change photo",
+    "remove": "Remove",
+    "uploadFailed": "Couldn't upload photo",
+    "fetchFromSource": "Use image from source",
+    "fetchFromSourceFailed": "Couldn't fetch image from source"
   },
   "people": {
     "title": "People",
@@ -91,6 +102,7 @@
     "newScreenTitle": "Who are we adding?",
     "newSubtitle": "Someone you want to remember",
     "editScreenTitle": "Edit person",
+    "photo": "Photo",
     "name": "Name",
     "nickname": "Nickname",
     "relationship": "Relationship",
@@ -179,7 +191,18 @@
       "delete": "Delete account",
       "deleteConfirmTitle": "Delete your account?",
       "deleteConfirmBody": "This permanently removes all your people, occasions, and gift ideas. This cannot be undone.",
-      "deleteConfirmCta": "Delete forever"
+      "deleteConfirmCta": "Delete forever",
+      "usageTitle": "Usage",
+      "usagePeople": "People · {{used}} / {{total}}",
+      "usageGiftIdeas": "Gift ideas · {{used}} / {{total}}"
     }
+  },
+  "limits": {
+    "people_one": "You've reached this plan's limit of {{count}} person.",
+    "people_other": "You've reached this plan's limit of {{count}} people.",
+    "giftIdeas_one": "You've reached this plan's limit of {{count}} gift idea.",
+    "giftIdeas_other": "You've reached this plan's limit of {{count}} gift ideas.",
+    "occasionsPerPerson_one": "Each person can have up to {{count}} occasion.",
+    "occasionsPerPerson_other": "Each person can have up to {{count}} occasions."
   }
 }

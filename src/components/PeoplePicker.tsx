@@ -14,6 +14,7 @@ type Person = {
   name: string;
   nickname?: string;
   relationship?: string;
+  photoUrl?: string | null;
 };
 
 type Props = {
@@ -119,6 +120,7 @@ export function PeoplePicker({
             <PersonSuggestRow
               key={p._id}
               initial={p.name[0]?.toUpperCase() ?? "?"}
+              imageUrl={p.photoUrl}
               name={p.name}
               relationship={p.relationship}
               onPress={() => add(p._id)}

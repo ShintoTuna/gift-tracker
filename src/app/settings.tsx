@@ -36,6 +36,7 @@ export default function SettingsScreen() {
   const { t } = useTranslation();
   const settings = useQuery(api.userSettings.get);
   const me = useQuery(api.users.me);
+  const usage = useQuery(api.users.getUsage);
   const setDefaultCurrency = useMutation(api.userSettings.setDefaultCurrency);
   const deleteAccount = useMutation(api.users.deleteAccount);
   const { signOut } = useAuthActions();
@@ -159,6 +160,22 @@ export default function SettingsScreen() {
                 {me.email}
               </Text>
             ) : null}
+            {usage ? (
+              <View style={styles.usageBlock}>
+                <Text style={styles.usageRow}>
+                  {t("auth.account.usagePeople", {
+                    used: usage.people.current,
+                    total: usage.people.limit,
+                  })}
+                </Text>
+                <Text style={styles.usageRow}>
+                  {t("auth.account.usageGiftIdeas", {
+                    used: usage.giftIdeas.current,
+                    total: usage.giftIdeas.limit,
+                  })}
+                </Text>
+              </View>
+            ) : null}
             <View style={styles.accountActions}>
               <Btn tone="default" full onPress={onSignOut}>
                 {t("auth.account.signOut")}
@@ -215,6 +232,15 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.text,
     marginBottom: spacing.md,
+  },
+  usageBlock: {
+    gap: 4,
+    marginBottom: spacing.md,
+  },
+  usageRow: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.text3,
   },
   accountActions: {
     gap: spacing.sm,

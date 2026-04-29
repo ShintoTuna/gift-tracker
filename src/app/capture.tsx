@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "convex/react";
+import { useAction, useMutation, useQuery } from "convex/react";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -6,20 +6,25 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
+  Text,
   View,
 } from "react-native";
 
 import {
   Btn,
+  ImagePickerField,
   NavBar,
   PeoplePicker,
   ScreenTitle,
   TextField,
 } from "@/components";
+import { describeMutationError } from "@/lib/convexErrors";
+import { pickCompressUpload } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
-import { colors, spacing } from "@/theme/tokens";
+import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
@@ -34,6 +39,8 @@ export default function CaptureScreen() {
   const { t } = useTranslation();
   const people = useQuery(api.people.list);
   const createIdea = useMutation(api.giftIdeas.create);
+  const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const fetchImageFromUrl = useAction(api.imageFromUrl.fetchFromUrl);
   const defaultCurrency = useDefaultCurrency();
 
   const [title, setTitle] = useState("");
@@ -41,9 +48,61 @@ export default function CaptureScreen() {
   const [priceText, setPriceText] = useState("");
   const [description, setDescription] = useState("");
   const [taggedIds, setTaggedIds] = useState<Id<"people">[]>([]);
+  const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
+    null,
+  );
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const canSave = title.trim().length > 0 && !saving;
+  const canSave = title.trim().length > 0 && !saving && !uploading;
+
+  const onPickImage = async () => {
+    if (uploading) return;
+    setUploading(true);
+    try {
+      const result = await pickCompressUpload({
+        generateUploadUrl: () => generateUploadUrl({}),
+      });
+      if (result) {
+        setImageStorageId(result.storageId);
+        setImagePreview(result.previewUri);
+      }
+    } catch (err) {
+      Alert.alert(
+        t("imagePicker.uploadFailed"),
+        err instanceof Error ? err.message : String(err),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const onRemoveImage = () => {
+    setImageStorageId(null);
+    setImagePreview(null);
+  };
+
+  const onFetchImageFromSource = async () => {
+    const url = sourceUrl.trim();
+    if (!url || uploading) return;
+    setUploading(true);
+    try {
+      const result = await fetchImageFromUrl({ url });
+      setImageStorageId(result.storageId);
+      setImagePreview(result.previewUrl ?? null);
+    } catch (err) {
+      Alert.alert(
+        t("imagePicker.fetchFromSourceFailed"),
+        err instanceof Error ? err.message : String(err),
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const showFetchFromSource =
+    sourceUrl.trim().length > 0 && !imagePreview && !uploading;
 
   const onSave = async () => {
     if (!canSave) return;
@@ -59,6 +118,7 @@ export default function CaptureScreen() {
       await createIdea({
         title: title.trim(),
         description: description.trim() || undefined,
+        imageStorageId: imageStorageId ?? undefined,
         sourceUrl: sourceUrl.trim() || undefined,
         priceEstimate,
         // Currency only attaches when there's actually a price; an
@@ -69,10 +129,7 @@ export default function CaptureScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(
-        t("capture.couldNotSave"),
-        err instanceof Error ? err.message : String(err),
-      );
+      Alert.alert(t("capture.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };
@@ -108,6 +165,28 @@ export default function CaptureScreen() {
               autoCorrect
               returnKeyType="next"
             />
+
+            <View>
+              <ImagePickerField
+                label={t("capture.imageLabel")}
+                previewUri={imagePreview}
+                shape="square"
+                uploading={uploading}
+                onPick={onPickImage}
+                onRemove={imagePreview ? onRemoveImage : undefined}
+              />
+              {showFetchFromSource && (
+                <Pressable
+                  onPress={onFetchImageFromSource}
+                  hitSlop={6}
+                  style={styles.fetchFromSource}
+                >
+                  <Text style={styles.fetchFromSourceText}>
+                    {t("imagePicker.fetchFromSource")}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
 
             <TextField
               label={t("capture.sourceLabel")}
@@ -183,5 +262,14 @@ const styles = StyleSheet.create({
   },
   saveBtn: {
     marginTop: spacing.md,
+  },
+  fetchFromSource: {
+    marginTop: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  fetchFromSourceText: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 13,
+    color: colors.brass,
   },
 });

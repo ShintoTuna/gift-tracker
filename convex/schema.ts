@@ -30,7 +30,9 @@ export default defineSchema({
     userId: v.string(),
     name: v.string(),
     nickname: v.optional(v.string()),
-    photoUrl: v.optional(v.string()),
+    // Convex File Storage handle. Queries resolve it to a download URL
+    // before returning rows to the client (see convex/lib/storage.ts).
+    photoStorageId: v.optional(v.id("_storage")),
     relationship: v.optional(v.string()),
     interests: v.array(v.string()),
     createdAt: v.number(),
@@ -65,7 +67,7 @@ export default defineSchema({
     userId: v.string(),
     title: v.string(),
     description: v.optional(v.string()),
-    imageUrl: v.optional(v.string()),
+    imageStorageId: v.optional(v.id("_storage")),
     sourceUrl: v.optional(v.string()),
     priceEstimate: v.optional(v.number()),
     currency: v.optional(v.string()),
