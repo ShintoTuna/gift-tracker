@@ -61,7 +61,47 @@ export default defineSchema({
     // src/i18n/index.ts (e.g. "en", "ru"). Optional because new
     // installs default to the device locale via expo-localization.
     preferredLanguage: v.optional(v.string()),
+    // Push-notification prefs. All optional — pre-Step-18 rows have
+    // none of these and the cron skips users with `enabled !== true`.
+    notificationsEnabled: v.optional(v.boolean()),
+    // Arbitrary positive integers (e.g. [1, 7, 30]). The Settings
+    // screen lets the user add/remove freely; server caps to ≤10.
+    notificationDaysAhead: v.optional(v.array(v.number())),
+    // Minutes since local midnight, 0..1439.
+    notificationTimeOfDayMinutes: v.optional(v.number()),
+    // IANA timezone (e.g. "Europe/Berlin"); captured from device on
+    // first opt-in. The cron uses it to map "user's 9am" to the right
+    // UTC hour.
+    notificationTimezone: v.optional(v.string()),
   }).index("by_user", ["userId"]),
+
+  // One row per device that has opted in. Multiple rows per user are
+  // expected (phone + iPad). Pruned on Expo `DeviceNotRegistered`.
+  pushTokens: defineTable({
+    userId: v.string(),
+    token: v.string(),
+    platform: v.union(v.literal("ios"), v.literal("android")),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_token", ["token"]),
+
+  // Dedupe ledger so a yearly birthday's "7 days ahead" reminder
+  // doesn't re-send within the same year. Keyed on the target
+  // occurrence date, so next year's reminder for the same occasion
+  // is a different row.
+  notificationLog: defineTable({
+    userId: v.string(),
+    occasionId: v.id("occasions"),
+    occurrenceDate: v.number(),
+    daysAhead: v.number(),
+    sentAt: v.number(),
+  }).index("by_user_occasion", [
+    "userId",
+    "occasionId",
+    "occurrenceDate",
+    "daysAhead",
+  ]),
 
   giftIdeas: defineTable({
     userId: v.string(),

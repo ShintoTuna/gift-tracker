@@ -69,6 +69,43 @@ export function usePreferredLanguage(): {
   return { language, setLanguage };
 }
 
-// Future candidates that will land here as features arrive:
-// - DEFAULT_REMINDER_DAYS_AHEAD (notifications threshold)
-// - PREFERRED_AI_MODEL          (Claude Haiku vs Sonnet)
+// Default seed for a fresh notification opt-in. The user is free to
+// rewrite this list to anything (1..365, up to 10 entries) via the
+// Settings screen. Lives here so the registrar component and the
+// settings screen agree on the same default.
+export const DEFAULT_REMINDER_DAYS_AHEAD: number[] = [1, 3, 7];
+export const DEFAULT_REMINDER_TIME_OF_DAY_MINUTES = 9 * 60; // 09:00
+
+export type NotificationPrefs = {
+  enabled: boolean;
+  daysAhead: number[];
+  timeOfDayMinutes: number | null;
+  timezone: string | null;
+};
+
+// Reactive accessor for the user's notification prefs. Mirrors the
+// shape returned by `api.notifications.getNotificationPrefs`. Read
+// returns null while the query is loading or pre-auth (the registrar
+// + settings screen treat null as "not yet known" rather than "off").
+export function useNotificationPrefs(): {
+  prefs: NotificationPrefs | null;
+  setPrefs: (patch: Partial<NotificationPrefs>) => Promise<void>;
+} {
+  const prefs = useQuery(api.notifications.getNotificationPrefs);
+  const setNotificationPrefs = useMutation(
+    api.notifications.setNotificationPrefs,
+  );
+  const setPrefs = useCallback(
+    async (patch: Partial<NotificationPrefs>) => {
+      await setNotificationPrefs({
+        enabled: patch.enabled,
+        daysAhead: patch.daysAhead,
+        timeOfDayMinutes:
+          patch.timeOfDayMinutes === null ? undefined : patch.timeOfDayMinutes,
+        timezone: patch.timezone === null ? undefined : patch.timezone,
+      });
+    },
+    [setNotificationPrefs],
+  );
+  return { prefs: prefs ?? null, setPrefs };
+}

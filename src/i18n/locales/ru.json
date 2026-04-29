@@ -24,7 +24,36 @@
     "defaultCurrency": "Валюта по умолчанию",
     "defaultCurrencyHint": "Используется при сохранении цены у идеи.",
     "language": "Язык",
-    "languageHint": "Применяется во всём приложении."
+    "languageHint": "Применяется во всём приложении.",
+    "notifications": {
+      "title": "Уведомления",
+      "hint": "Напоминания о ближайших событиях.",
+      "masterToggle": "Push-уведомления",
+      "permissionDenied": "Включите уведомления в настройках iOS, чтобы получать напоминания.",
+      "daysAhead": "Напоминать",
+      "daysAheadHint": "Добавьте любое число дней. Мы пришлём напоминание для каждого.",
+      "daysAheadPill_one": "за {{count}} день",
+      "daysAheadPill_few": "за {{count}} дня",
+      "daysAheadPill_many": "за {{count}} дней",
+      "daysAheadPill_other": "за {{count}} дня",
+      "daysAheadInputPlaceholder": "Дней до события",
+      "daysAheadAdd": "Добавить",
+      "daysAheadInvalid": "Введите целое число от 1 до 365.",
+      "daysAheadDuplicate": "Это значение уже есть в списке.",
+      "daysAheadMax": "До 10 напоминаний на событие.",
+      "daysAheadRemoveA11y": "Удалить напоминание за {{count}} день",
+      "timeOfDay": "Время дня",
+      "timeOfDayHint": "Мы пришлём напоминание примерно в это время."
+    }
+  },
+  "push": {
+    "title": "{{personName}} · {{occasionTitle}}",
+    "bodyTomorrow": "{{occasionTitle}} ({{personName}}) — завтра.",
+    "bodyToday": "{{occasionTitle}} ({{personName}}) — сегодня.",
+    "bodyInDays_one": "{{occasionTitle}} ({{personName}}) через {{count}} день.",
+    "bodyInDays_few": "{{occasionTitle}} ({{personName}}) через {{count}} дня.",
+    "bodyInDays_many": "{{occasionTitle}} ({{personName}}) через {{count}} дней.",
+    "bodyInDays_other": "{{occasionTitle}} ({{personName}}) через {{count}} дня."
   },
   "capture": {
     "title": "Быстрая запись",

@@ -77,6 +77,21 @@ export const deleteAccount = mutation({
       await ctx.db.delete(p._id);
     }
 
+    // Step 18: drop the user's push tokens and reminder ledger before
+    // the settings row goes (settings hold the notification prefs, but
+    // tokens + log are separate tables).
+    const tokens = await ctx.db
+      .query("pushTokens")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    for (const t of tokens) await ctx.db.delete(t._id);
+
+    const logs = await ctx.db
+      .query("notificationLog")
+      .withIndex("by_user_occasion", (q) => q.eq("userId", userId))
+      .collect();
+    for (const l of logs) await ctx.db.delete(l._id);
+
     const settings = await ctx.db
       .query("userSettings")
       .withIndex("by_user", (q) => q.eq("userId", userId))

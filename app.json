@@ -49,6 +49,12 @@
           "photosPermission": "Giftsmith uses your photos so you can attach images to people and gift ideas.",
           "cameraPermission": "Giftsmith uses your camera so you can snap photos of people and gift ideas."
         }
+      ],
+      [
+        "expo-notifications",
+        {
+          "color": "#C8A45A"
+        }
       ]
     ],
     "experiments": {
