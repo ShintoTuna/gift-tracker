@@ -1,13 +1,13 @@
-import { DMSerifDisplay_400Regular } from "@expo-google-fonts/dm-serif-display";
+import { CormorantGaramond_500Medium_Italic } from "@expo-google-fonts/cormorant-garamond";
 import {
-  IBMPlexMono_400Regular,
-  IBMPlexMono_500Medium,
-} from "@expo-google-fonts/ibm-plex-mono";
+  JetBrainsMono_400Regular,
+  JetBrainsMono_500Medium,
+} from "@expo-google-fonts/jetbrains-mono";
 import {
-  WorkSans_400Regular,
-  WorkSans_500Medium,
-  WorkSans_600SemiBold,
-} from "@expo-google-fonts/work-sans";
+  Manrope_400Regular,
+  Manrope_500Medium,
+  Manrope_600SemiBold,
+} from "@expo-google-fonts/manrope";
 import { ConvexProvider } from "convex/react";
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
@@ -27,12 +27,12 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
-    DMSerifDisplay_400Regular,
-    WorkSans_400Regular,
-    WorkSans_500Medium,
-    WorkSans_600SemiBold,
-    IBMPlexMono_400Regular,
-    IBMPlexMono_500Medium,
+    CormorantGaramond_500Medium_Italic,
+    Manrope_400Regular,
+    Manrope_500Medium,
+    Manrope_600SemiBold,
+    JetBrainsMono_400Regular,
+    JetBrainsMono_500Medium,
   });
 
   useEffect(() => {
