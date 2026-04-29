@@ -111,6 +111,30 @@ export default defineSchema({
     "daysAhead",
   ]),
 
+  // GDPR Article 17 — third-party data subject deletion requests.
+  // Stores incoming requests from non-users who appear in someone's
+  // gift tracker without consent. Admin reviews via Convex dashboard
+  // and runs `convex/admin.ts` mutations to redact matches across all
+  // users, then closes the request out. The row stays for audit even
+  // after the underlying people/ideas are gone.
+  thirdPartyDeletionRequests: defineTable({
+    requesterEmail: v.string(),
+    // Free-form identifying info from the email body — names,
+    // relationships, anything the requester provided. Admin uses it
+    // to drive `admin.previewMatches` and decide what to redact.
+    subjectInfo: v.string(),
+    status: v.union(
+      v.literal("pending"),
+      v.literal("processing"),
+      v.literal("completed"),
+      v.literal("rejected"),
+    ),
+    receivedAt: v.number(),
+    handledAt: v.optional(v.number()),
+    handlerNotes: v.optional(v.string()),
+    redactedPeopleCount: v.optional(v.number()),
+  }).index("by_status", ["status"]),
+
   giftIdeas: defineTable({
     userId: v.string(),
     title: v.string(),

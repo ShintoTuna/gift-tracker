@@ -228,7 +228,8 @@
     "step2Body": "Spot something they'd love? Snap it now and tag it to them.",
     "step3Title": "Get reminded in time",
     "step3Body": "Birthdays, anniversaries, custom occasions — we'll nudge you ahead of time.",
-    "cta": "Get started"
+    "cta": "Get started",
+    "recoveryNote": "Heads up: your data is tied to your Apple or Google sign-in. Keep that account safe — there's no separate recovery email yet."
   },
   "auth": {
     "welcome": {
@@ -248,7 +249,11 @@
       "deleteConfirmCta": "Delete forever",
       "usageTitle": "Usage",
       "usagePeople": "People · {{used}} / {{total}}",
-      "usageGiftIdeas": "Gift ideas · {{used}} / {{total}}"
+      "usageGiftIdeas": "Gift ideas · {{used}} / {{total}}",
+      "linkedLabel": "Signed in with",
+      "linkedApple": "Apple",
+      "linkedGoogle": "Google",
+      "linkedHint": "Your data is tied to this account. Keep it safe — losing access means losing your gifts."
     }
   },
   "limits": {
@@ -257,7 +262,11 @@
     "giftIdeas_one": "You've reached this plan's limit of {{count}} gift idea.",
     "giftIdeas_other": "You've reached this plan's limit of {{count}} gift ideas.",
     "occasionsPerPerson_one": "Each person can have up to {{count}} occasion.",
-    "occasionsPerPerson_other": "Each person can have up to {{count}} occasions."
+    "occasionsPerPerson_other": "Each person can have up to {{count}} occasions.",
+    "sheetTitle": "Plan limit reached",
+    "sheetUsage": "Currently using {{current}} of {{limit}}.",
+    "sheetUpgrade": "Upgrade (coming soon)",
+    "sheetDismiss": "Got it"
   },
   "errors": {
     "crashTitle": "Something went sideways",

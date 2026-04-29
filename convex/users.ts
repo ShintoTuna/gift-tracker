@@ -7,13 +7,23 @@ import { LIMITS } from "./lib/limits";
 
 // Light "current user" surface for the Settings → Account section.
 // Returns null when unauthenticated so the UI can render skeletons /
-// fall back without throwing.
+// fall back without throwing. `linkedProviders` is the set of OAuth
+// providers tied to this account ("apple" | "google"), surfaced so the
+// Account card can show the user how they sign in — important since
+// losing access to that provider currently means losing the account.
 export const me = query({
   args: {},
   handler: async (ctx) => {
     const userId = await getAuthUserId(ctx);
     if (userId === null) return null;
-    return await ctx.db.get(userId);
+    const user = await ctx.db.get(userId);
+    if (!user) return null;
+    const accounts = await ctx.db
+      .query("authAccounts")
+      .withIndex("userIdAndProvider", (q) => q.eq("userId", userId))
+      .collect();
+    const linkedProviders = Array.from(new Set(accounts.map((a) => a.provider))).sort();
+    return { ...user, linkedProviders };
   },
 });
 

@@ -3,7 +3,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -21,7 +20,7 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
-import { describeMutationError } from "@/lib/convexErrors";
+import { useLimitErrorSheet } from "@/lib/useLimitErrorSheet";
 import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
@@ -36,6 +35,7 @@ export default function NewOccasionScreen() {
   const { t } = useTranslation();
   const { personId } = useLocalSearchParams<{ personId: string }>();
   const createOccasion = useMutation(api.occasions.create);
+  const { handleError, sheet: limitSheet } = useLimitErrorSheet();
 
   const [title, setTitle] = useState("");
   const [date, setDate] = useState<Date | null>(null);
@@ -58,7 +58,7 @@ export default function NewOccasionScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
+      handleError(err, t("common.couldNotSave"));
       setSaving(false);
     }
   };
@@ -137,6 +137,7 @@ export default function NewOccasionScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      {limitSheet}
     </View>
   );
 }

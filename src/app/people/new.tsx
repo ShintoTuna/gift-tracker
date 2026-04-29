@@ -18,8 +18,8 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
-import { describeMutationError } from "@/lib/convexErrors";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
+import { useLimitErrorSheet } from "@/lib/useLimitErrorSheet";
 import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
@@ -32,6 +32,7 @@ export default function NewPersonScreen() {
   const { t } = useTranslation();
   const createPerson = useMutation(api.people.create);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
+  const { handleError, sheet: limitSheet } = useLimitErrorSheet();
   const [name, setName] = useState("");
   const [nickname, setNickname] = useState("");
   const [relationship, setRelationship] = useState("");
@@ -90,7 +91,7 @@ export default function NewPersonScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
+      handleError(err, t("common.couldNotSave"));
       setSaving(false);
     }
   };
@@ -176,6 +177,7 @@ export default function NewPersonScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      {limitSheet}
     </View>
   );
 }

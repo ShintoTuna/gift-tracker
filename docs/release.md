@@ -32,6 +32,41 @@ npx eas init
 npx eas build:configure
 ```
 
+## Environment variables (required before first prod build)
+
+The app reads `EXPO_PUBLIC_*` values at build time and bakes them into
+the JS bundle. If they're missing, the production build will silently
+point at nothing (or worse, at your dev Convex deployment).
+
+Set these once per EAS environment. Profile names in `eas.json`
+(`development` / `preview` / `production`) match EAS environment names,
+so values auto-apply on `eas build --profile <name>`.
+
+```sh
+# Production — points at the prod Convex deployment.
+npx eas env:create \
+  --environment production \
+  --name EXPO_PUBLIC_CONVEX_URL \
+  --value https://<your-prod-deployment>.convex.cloud \
+  --visibility plaintext
+
+npx eas env:create \
+  --environment production \
+  --name EXPO_PUBLIC_SENTRY_DSN \
+  --value https://<key>@<org>.ingest.sentry.io/<project> \
+  --visibility plaintext
+
+# Repeat for preview if you want a separate staging Convex deployment.
+# Repeat for development only if simulator builds need different values
+# than `.env.local`.
+```
+
+Verify with `npx eas env:list --environment production`. Re-run
+`eas env:create` with `--force` to overwrite an existing value.
+
+**Do not commit these to `eas.json` or `.env.local`** — store them in
+EAS so the secrets don't end up in the repo.
+
 ## First TestFlight build
 
 ```sh

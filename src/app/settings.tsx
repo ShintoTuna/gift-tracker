@@ -213,6 +213,23 @@ export default function SettingsScreen() {
                 {me.email}
               </Text>
             ) : null}
+            {me?.linkedProviders && me.linkedProviders.length > 0 ? (
+              <View style={styles.linkedBlock}>
+                <Text style={styles.fieldLabel}>
+                  {t("auth.account.linkedLabel")}{" "}
+                  <Text style={styles.linkedValue}>
+                    {me.linkedProviders
+                      .map((p) =>
+                        t(`auth.account.linked${p.charAt(0).toUpperCase()}${p.slice(1)}`, {
+                          defaultValue: p,
+                        }),
+                      )
+                      .join(", ")}
+                  </Text>
+                </Text>
+                <Text style={styles.fieldHint}>{t("auth.account.linkedHint")}</Text>
+              </View>
+            ) : null}
             {usage ? (
               <View style={styles.usageBlock}>
                 <Text style={styles.usageRow}>
@@ -633,6 +650,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: colors.text,
     marginBottom: spacing.md,
+  },
+  linkedBlock: {
+    marginBottom: spacing.md,
+  },
+  linkedValue: {
+    fontFamily: fonts.bodySemiBold,
+    color: colors.brass,
   },
   usageBlock: {
     gap: 4,
