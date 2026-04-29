@@ -58,6 +58,7 @@ export default function WelcomeScreen() {
       </View>
 
       <View style={styles.actions}>
+        <Text style={styles.recoveryNote}>{t("welcome.recoveryNote")}</Text>
         <Btn tone="primary" full onPress={onContinue}>
           {t("welcome.cta")}
         </Btn>
@@ -162,5 +163,14 @@ const styles = StyleSheet.create({
   },
   actions: {
     paddingTop: spacing.lg,
+    gap: spacing.md,
+  },
+  recoveryNote: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.text3,
+    lineHeight: 18,
+    textAlign: "center",
+    paddingHorizontal: spacing.md,
   },
 });

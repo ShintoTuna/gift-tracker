@@ -238,7 +238,8 @@
     "step2Body": "Заметили что-то подходящее? Сохраните и привяжите к человеку.",
     "step3Title": "Получайте напоминания заранее",
     "step3Body": "Дни рождения, годовщины, любые события — напомним вовремя.",
-    "cta": "Начать"
+    "cta": "Начать",
+    "recoveryNote": "Важно: данные привязаны к вашему входу через Apple или Google. Берегите эту учётную запись — отдельной почты для восстановления пока нет."
   },
   "auth": {
     "welcome": {
@@ -258,7 +259,11 @@
       "deleteConfirmCta": "Удалить навсегда",
       "usageTitle": "Использование",
       "usagePeople": "Люди · {{used}} / {{total}}",
-      "usageGiftIdeas": "Идеи подарков · {{used}} / {{total}}"
+      "usageGiftIdeas": "Идеи подарков · {{used}} / {{total}}",
+      "linkedLabel": "Вход выполнен через",
+      "linkedApple": "Apple",
+      "linkedGoogle": "Google",
+      "linkedHint": "Данные привязаны к этой учётной записи. Берегите её — потеряете доступ, потеряете подарки."
     }
   },
   "limits": {
@@ -273,7 +278,11 @@
     "occasionsPerPerson_one": "У каждого человека может быть до {{count}} события.",
     "occasionsPerPerson_few": "У каждого человека может быть до {{count}} событий.",
     "occasionsPerPerson_many": "У каждого человека может быть до {{count}} событий.",
-    "occasionsPerPerson_other": "У каждого человека может быть до {{count}} события."
+    "occasionsPerPerson_other": "У каждого человека может быть до {{count}} события.",
+    "sheetTitle": "Достигнут лимит тарифа",
+    "sheetUsage": "Сейчас используется {{current}} из {{limit}}.",
+    "sheetUpgrade": "Обновить тариф (скоро)",
+    "sheetDismiss": "Понятно"
   },
   "errors": {
     "crashTitle": "Что-то пошло не так",

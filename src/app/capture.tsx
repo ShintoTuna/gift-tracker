@@ -21,9 +21,9 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
-import { describeMutationError } from "@/lib/convexErrors";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
+import { useLimitErrorSheet } from "@/lib/useLimitErrorSheet";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../convex/_generated/api";
@@ -42,6 +42,7 @@ export default function CaptureScreen() {
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
   const fetchImageFromUrl = useAction(api.imageFromUrl.fetchFromUrl);
   const defaultCurrency = useDefaultCurrency();
+  const { handleError, sheet: limitSheet } = useLimitErrorSheet();
 
   const [title, setTitle] = useState("");
   const [sourceUrl, setSourceUrl] = useState("");
@@ -130,7 +131,7 @@ export default function CaptureScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(t("capture.couldNotSave"), describeMutationError(err, t));
+      handleError(err, t("capture.couldNotSave"));
       setSaving(false);
     }
   };
@@ -242,6 +243,7 @@ export default function CaptureScreen() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      {limitSheet}
     </View>
   );
 }
