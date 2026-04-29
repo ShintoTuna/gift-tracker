@@ -1,21 +1,14 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
+
 import type { MutationCtx, QueryCtx } from "../_generated/server";
 
-// Hardcoded dev identity. When auth (Convex Auth or Clerk) lands,
-// this becomes:
-//
-//   const identity = await ctx.auth.getUserIdentity();
-//   if (!identity) throw new Error("Unauthenticated");
-//   return identity.tokenIdentifier;
-//
-// Per `convex/_generated/ai/guidelines.md`, prefer `tokenIdentifier`
-// over `subject` for ownership lookups — it's the canonical stable
-// identity key for a Convex auth subject. Every server-side reference
-// to a user goes through this helper, so the swap is one file.
-const DEV_USER_ID = "dev-user-1";
-
+// `getAuthUserId` returns `Id<"users"> | null`. The branded `Id` is a
+// string at runtime, so existing `q.eq("userId", userId)` calls keep
+// working unchanged.
 export async function getCurrentUserId(
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  _ctx: QueryCtx | MutationCtx,
+  ctx: QueryCtx | MutationCtx,
 ): Promise<string> {
-  return DEV_USER_ID;
+  const userId = await getAuthUserId(ctx);
+  if (userId === null) throw new Error("Unauthenticated");
+  return userId;
 }

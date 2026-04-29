@@ -46,18 +46,6 @@ export function formatDateLine(opts: {
   return i18n.t("format.dateLine", { title: opts.title, suffix });
 }
 
-// "May 15" — month + day only, year intentionally ignored. Birth
-// dates are stored with year=2000 sentinel for privacy; this helper
-// extracts only the parts we surface.
-export function formatBirthMonthDay(ms?: number): string | null {
-  if (ms == null) return null;
-  return new Intl.DateTimeFormat(i18n.language, {
-    month: "long",
-    day: "numeric",
-    timeZone: "UTC",
-  }).format(new Date(ms));
-}
-
 // "October 2026" / "October 2026 г." (depending on locale). For
 // Calendar agenda section headers grouped by year+month. Caller
 // passes a year-month key in "YYYY-MM" format.

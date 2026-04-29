@@ -101,11 +101,9 @@
     "nickname": "Прозвище",
     "relationship": "Отношения",
     "relationshipHint": "Свободный текст — напр., мама, лучший друг, коллега",
-    "birthDate": "Дата рождения",
     "interests": "Интересы",
     "interestsHint": "Через запятую",
     "interestsPlaceholder": "напр., садоводство, аудиокниги, чай",
-    "notes": "Заметки",
     "deleteButton": "Удалить человека",
     "deleteConfirmTitle": "Удалить этого человека?",
     "deleteConfirmBody": "Это также удалит его события и снимет его с идей подарков. Это нельзя отменить.",
@@ -140,8 +138,6 @@
     "title": "Профиль",
     "editA11y": "Редактировать человека",
     "editPill": "Изменить",
-    "about": "О человеке",
-    "born": "Род.",
     "occasions": "События",
     "addOccasion": "+ Добавить",
     "occasionsEmpty": "Пока нет событий — нажмите <accent>+ Добавить</accent>, чтобы создать.",
@@ -149,7 +145,6 @@
     "openIdeas": "Открытые идеи · {{count}}",
     "givenIdeas": "Подарено · {{count}}",
     "ideasEmpty": "Пока нет идей подарков. Придумайте ниже или добавьте через быструю запись.",
-    "notes": "Заметки",
     "brainstormCta": "Придумать подарок",
     "notFound": "Человек не найден."
   },
@@ -175,9 +170,22 @@
     "setDate": "+ Указать дату",
     "clearDate": "Очистить дату"
   },
-  "monthDayPicker": {
-    "defaultLabel": "Дата",
-    "setDate": "+ Указать дату",
-    "clearDate": "Очистить дату"
+  "auth": {
+    "welcome": {
+      "title": "Добро пожаловать в Giftsmith",
+      "subtitle": "Запоминайте идеи подарков. Не упустите момент."
+    },
+    "continueWithApple": "Войти через Apple",
+    "continueWithGoogle": "Войти через Google",
+    "errorTitle": "Не удалось войти",
+    "account": {
+      "title": "Аккаунт",
+      "signOut": "Выйти",
+      "signOutConfirm": "Выйти из Giftsmith?",
+      "delete": "Удалить аккаунт",
+      "deleteConfirmTitle": "Удалить аккаунт?",
+      "deleteConfirmBody": "Это безвозвратно удалит всех людей, события и идеи подарков. Это нельзя отменить.",
+      "deleteConfirmCta": "Удалить навсегда"
+    }
   }
 }

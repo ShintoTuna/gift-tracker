@@ -159,8 +159,6 @@ export const create = mutation({
     photoUrl: v.optional(v.string()),
     relationship: v.optional(v.string()),
     interests: v.array(v.string()),
-    notes: v.optional(v.string()),
-    dateOfBirth: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await getCurrentUserId(ctx);
@@ -183,8 +181,6 @@ export const update = mutation({
       photoUrl: v.optional(v.string()),
       relationship: v.optional(v.string()),
       interests: v.optional(v.array(v.string())),
-      notes: v.optional(v.string()),
-      dateOfBirth: v.optional(v.number()),
     }),
   },
   handler: async (ctx, { id, patch }) => {

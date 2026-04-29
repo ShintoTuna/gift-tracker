@@ -1,16 +1,18 @@
+import { getAuthUserId } from "@convex-dev/auth/server";
 import { v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import { getCurrentUserId } from "./lib/auth";
 
 // Returns the current user's settings row, or `null` if none exists
-// yet. Callers should fall back to defaults from src/lib/settings.ts
-// when null. We don't auto-create the row on first read so the
-// query stays reactive to actual writes only.
+// yet (or the user isn't signed in — the LanguageGate runs this query
+// at app boot before the auth gate kicks in). Callers should fall
+// back to defaults from src/lib/settings.ts when null.
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    const userId = await getCurrentUserId(ctx);
+    const userId = await getAuthUserId(ctx);
+    if (userId === null) return null;
     return await ctx.db
       .query("userSettings")
       .withIndex("by_user", (q) => q.eq("userId", userId))
