@@ -52,12 +52,12 @@ export const radii = {
 // the weight is loaded under a name). Components reference these
 // instead of asking for { fontFamily, fontWeight } pairs.
 export const fonts = {
-  serif: "DMSerifDisplay_400Regular",
-  body: "WorkSans_400Regular",
-  bodyMedium: "WorkSans_500Medium",
-  bodySemiBold: "WorkSans_600SemiBold",
-  mono: "IBMPlexMono_400Regular",
-  monoMedium: "IBMPlexMono_500Medium",
+  serif: "CormorantGaramond_500Medium_Italic",
+  body: "Manrope_400Regular",
+  bodyMedium: "Manrope_500Medium",
+  bodySemiBold: "Manrope_600SemiBold",
+  mono: "JetBrainsMono_400Regular",
+  monoMedium: "JetBrainsMono_500Medium",
 } as const;
 
 export type Colors = typeof colors;
