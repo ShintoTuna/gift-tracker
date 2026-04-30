@@ -1,0 +1,252 @@
+/* Giftsmith marketing site — Midnight Garden tokens
+   Source of truth: design/design-system/system.jsx */
+
+:root {
+  --mg-bg:        #0F1A16;
+  --mg-surface:   #16241E;
+  --mg-surface-2: #1C2D26;
+  --mg-border:    #213830;
+  --mg-border-2:  #2A4338;
+  --mg-text:      #E8E1CF;
+  --mg-text-2:    #A8B5A8;
+  --mg-text-3:    #8A9A8F;
+  --mg-brass:     #C8A45A;
+  --mg-brass-dim: #A08735;
+  --mg-claret:    #A04545;
+  --mg-fern:      #5A8A6A;
+
+  --serif: "DM Serif Display", Georgia, serif;
+  --sans:  "Work Sans", system-ui, -apple-system, sans-serif;
+  --mono:  "IBM Plex Mono", ui-monospace, "SF Mono", monospace;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--mg-bg);
+  color: var(--mg-text);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a { color: var(--mg-brass); text-decoration: none; }
+a:hover { color: var(--mg-brass-dim); }
+
+::selection { background: rgba(200,164,90,0.35); color: var(--mg-text); }
+
+/* ── Layout shell ─────────────────────────── */
+.container {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 0 22px;
+}
+
+.nav {
+  border-bottom: 1px solid var(--mg-border);
+}
+.nav-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  padding: 22px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.brand {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--mg-text);
+  letter-spacing: -0.2px;
+}
+.brand a { color: inherit; }
+.nav-links {
+  display: flex;
+  gap: 24px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.nav-links a { color: var(--mg-text-3); }
+.nav-links a:hover { color: var(--mg-text); }
+
+.footer {
+  border-top: 1px solid var(--mg-border);
+  margin-top: 64px;
+  padding: 32px 22px 48px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mg-text-3);
+}
+.footer-inner {
+  max-width: 920px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.footer-inner a { color: var(--mg-text-3); }
+.footer-inner a:hover { color: var(--mg-text); }
+
+/* ── Eyebrow / labels ─────────────────────── */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mg-text-3);
+}
+.eyebrow.brass { color: var(--mg-brass); }
+.eyebrow.claret { color: var(--mg-claret); }
+.eyebrow.fern { color: var(--mg-fern); }
+
+/* ── Typography ───────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--serif);
+  color: var(--mg-text);
+  font-weight: normal;
+  margin: 0;
+}
+h1 {
+  font-size: 56px;
+  line-height: 1.0;
+  letter-spacing: -0.8px;
+}
+h2 {
+  font-size: 32px;
+  line-height: 1.1;
+  letter-spacing: -0.4px;
+  margin-top: 48px;
+  margin-bottom: 16px;
+}
+h3 {
+  font-size: 22px;
+  font-style: italic;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+p { margin: 0 0 16px; color: var(--mg-text-2); max-width: 68ch; }
+p.lead {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--mg-text-2);
+  margin-top: 18px;
+  max-width: 56ch;
+}
+
+ul, ol { color: var(--mg-text-2); padding-left: 20px; max-width: 68ch; }
+li { margin-bottom: 6px; }
+li::marker { color: var(--mg-text-3); }
+
+strong { color: var(--mg-text); font-weight: 600; }
+em { color: var(--mg-text); }
+
+/* ── Hero ─────────────────────────────────── */
+.hero {
+  padding: 80px 22px 64px;
+  border-bottom: 1px solid var(--mg-border);
+}
+.hero-inner { max-width: 920px; margin: 0 auto; }
+.hero h1 { margin-top: 16px; }
+.hero .ctas {
+  margin-top: 32px;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ──────────────────────────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 22px;
+  border-radius: 14px;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid var(--mg-border);
+  background: var(--mg-surface);
+  color: var(--mg-text-2);
+  transition: background 120ms, color 120ms, border-color 120ms;
+}
+.btn:hover { color: var(--mg-text); border-color: var(--mg-border-2); }
+.btn-primary {
+  background: var(--mg-brass);
+  color: var(--mg-bg);
+  border-color: var(--mg-brass);
+}
+.btn-primary:hover {
+  background: var(--mg-brass-dim);
+  border-color: var(--mg-brass-dim);
+  color: var(--mg-bg);
+}
+
+/* ── Cards ────────────────────────────────── */
+.card {
+  background: var(--mg-surface);
+  border: 1px solid var(--mg-border);
+  border-radius: 14px;
+  padding: 22px;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+  margin-top: 32px;
+}
+.feature-grid .card .eyebrow { display: block; margin-bottom: 10px; }
+.feature-grid .card h3 {
+  font-size: 20px;
+  font-style: normal;
+  margin: 0 0 8px;
+}
+.feature-grid .card p { font-size: 14px; margin: 0; }
+
+/* ── Page (legal/support) ─────────────────── */
+.page {
+  padding: 64px 22px 32px;
+}
+.page-inner { max-width: 720px; margin: 0 auto; }
+.page h1 { font-size: 40px; }
+.page .updated {
+  margin-top: 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--mg-text-3);
+}
+
+.draft-banner {
+  margin: 24px 0 32px;
+  padding: 14px 18px;
+  background: var(--mg-bg);
+  border: 1px dashed var(--mg-claret);
+  border-radius: 12px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--mg-text-2);
+  line-height: 1.55;
+}
+.draft-banner strong { color: var(--mg-claret); }
+
+/* ── Responsive ───────────────────────────── */
+@media (max-width: 640px) {
+  h1 { font-size: 40px; }
+  h2 { font-size: 26px; }
+  .hero { padding: 56px 22px 48px; }
+  .page h1 { font-size: 32px; }
+}
