@@ -1,6 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Sentry from "@sentry/react-native";
-import Constants from "expo-constants";
 
 // Sentry crash + error reporting.
 //
@@ -33,10 +32,10 @@ function applyInit() {
     // RN red-screen.
     enabled: !__DEV__,
     environment: __DEV__ ? "development" : "production",
-    // Tie events to the binary version (matches `runtimeVersion` in
-    // app.json's "appVersion" policy). Source maps uploaded by the
-    // Sentry expo plugin index against the same value.
-    release: Constants.expoConfig?.version,
+    // `release` / `dist` deliberately omitted: the SDK derives
+    // `<bundleId>@<version>+<build>` from native build metadata, which
+    // is also what the expo plugin tags uploaded source maps with.
+    // Setting `release` here desyncs the two and breaks symbolication.
 
     // --- Free-tier guardrails ------------------------------------
     // No performance tracing, profiling, or replay. Each is its own

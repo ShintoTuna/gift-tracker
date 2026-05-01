@@ -56,7 +56,13 @@
           "color": "#C8A45A"
         }
       ],
-      "@sentry/react-native/expo"
+      [
+        "@sentry/react-native/expo",
+        {
+          "organization": "shintotuna",
+          "project": "giftsmith"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
