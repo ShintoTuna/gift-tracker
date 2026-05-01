@@ -243,8 +243,9 @@ function RootLayout() {
                   name="capture"
                   options={{ presentation: "modal" }}
                 />
+                <Stack.Screen name="idea/[id]" />
                 <Stack.Screen
-                  name="idea/[id]"
+                  name="idea/[id]/edit"
                   options={{ presentation: "modal" }}
                 />
                 <Stack.Screen

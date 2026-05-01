@@ -37,8 +37,8 @@ export const list = query({
 });
 
 // Enriched query for the People list screen: every person plus the
-// computed next upcoming occasion (or null) plus the count of open
-// gift ideas tagged to them ("open" = status !== "given"). Sorted
+// computed next upcoming occasion (or null) plus the count of active
+// gift ideas tagged to them. Archived ideas don't count. Sorted
 // ascending by next-occurrence date; people with no upcoming
 // occasion sink to the bottom.
 //
@@ -83,7 +83,7 @@ export const listWithNextOccasion = query({
 
         const ideaCount = allIdeas.filter(
           (idea) =>
-            idea.taggedPeople.includes(person._id) && idea.status !== "given",
+            idea.taggedPeople.includes(person._id) && idea.status === "active",
         ).length;
 
         const hasDatelessOccasion = occasions.some((o) => o.date == null);
@@ -127,9 +127,11 @@ export const getById = query({
 });
 
 // Single-shot profile fetch: person + their occasions (sorted by
-// next-upcoming) + their gift ideas. One subscription on the client
-// instead of three. Returns null if the person doesn't exist or
-// belongs to another user.
+// next-upcoming) + their gift ideas split into `considered` (tagged,
+// no giving yet to this person) and `given` (one row per idea given
+// to this person, with the most-recent giving date and occasion).
+// One subscription on the client instead of three. Returns null if
+// the person doesn't exist or belongs to another user.
 export const getProfile = query({
   args: { personId: v.id("people") },
   handler: async (ctx, { personId }) => {
@@ -142,18 +144,81 @@ export const getProfile = query({
       .withIndex("by_person", (q) => q.eq("personId", personId))
       .take(100);
 
+    const allPeople = await ctx.db
+      .query("people")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .take(500);
+    const initialByPersonId = new Map<string, string>();
+    for (const p of allPeople) {
+      initialByPersonId.set(p._id, p.name[0]?.toUpperCase() ?? "?");
+    }
+
     const allIdeas = await ctx.db
       .query("giftIdeas")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .take(1000);
-    const ideas = allIdeas.filter((idea) =>
+    const taggedIdeas = allIdeas.filter((idea) =>
       idea.taggedPeople.includes(personId),
     );
-    const ideasWithImage = await Promise.all(
-      ideas.map(async (idea) => ({
-        ...idea,
-        imageUrl: await resolveImageUrl(ctx, idea.imageStorageId),
-      })),
+    const ideaById = new Map<string, (typeof allIdeas)[number]>();
+    for (const idea of allIdeas) {
+      ideaById.set(idea._id, idea);
+    }
+
+    // Givings to this person, reduced to one entry per idea (most
+    // recent). Drives the "Given to {name}" section.
+    const givings = await ctx.db
+      .query("giftGivings")
+      .withIndex("by_user_person", (q) =>
+        q.eq("userId", userId).eq("personId", personId),
+      )
+      .take(1000);
+    const latestGivingByIdea = new Map<string, (typeof givings)[number]>();
+    for (const g of givings) {
+      const prev = latestGivingByIdea.get(g.giftIdeaId);
+      if (!prev || g.givenAt > prev.givenAt) {
+        latestGivingByIdea.set(g.giftIdeaId, g);
+      }
+    }
+    const givenIdeaRows = await Promise.all(
+      [...latestGivingByIdea.values()]
+        .sort((a, b) => b.givenAt - a.givenAt)
+        .map(async (g) => {
+          const idea = ideaById.get(g.giftIdeaId);
+          if (!idea) return null;
+          const occasion = g.occasionId
+            ? await ctx.db.get(g.occasionId)
+            : null;
+          return {
+            ...idea,
+            imageUrl: await resolveImageUrl(ctx, idea.imageStorageId),
+            taggedPeopleInitials: idea.taggedPeople
+              .map((id) => initialByPersonId.get(id))
+              .filter((s): s is string => s != null),
+            latestGivenAt: g.givenAt,
+            latestOccasionTitle: occasion?.title ?? null,
+          };
+        }),
+    );
+    const givenIdeas = givenIdeaRows.filter(
+      (r): r is NonNullable<typeof r> => r !== null,
+    );
+    // Idea is "considered" for this person if they're tagged AND the
+    // idea is active AND there's no giving to this person yet.
+    const givenIdeaIds = new Set(latestGivingByIdea.keys());
+    const consideredRaw = taggedIdeas.filter(
+      (idea) => idea.status === "active" && !givenIdeaIds.has(idea._id),
+    );
+    const consideredIdeas = await Promise.all(
+      consideredRaw
+        .sort((a, b) => b.updatedAt - a.updatedAt)
+        .map(async (idea) => ({
+          ...idea,
+          imageUrl: await resolveImageUrl(ctx, idea.imageStorageId),
+          taggedPeopleInitials: idea.taggedPeople
+            .map((id) => initialByPersonId.get(id))
+            .filter((s): s is string => s != null),
+        })),
     );
 
     const now = Date.now();
@@ -172,7 +237,8 @@ export const getProfile = query({
         photoUrl: await resolveImageUrl(ctx, person.photoStorageId),
       },
       occasions: occasionsWithNext,
-      ideas: ideasWithImage,
+      consideredIdeas,
+      givenIdeas,
     };
   },
 });
@@ -313,6 +379,17 @@ export const remove = mutation({
           updatedAt: Date.now(),
         });
       }
+    }
+    // Drop any giving history referencing this person — once the
+    // person is gone there's no profile to surface the giving on.
+    const givings = await ctx.db
+      .query("giftGivings")
+      .withIndex("by_user_person", (q) =>
+        q.eq("userId", userId).eq("personId", id),
+      )
+      .collect();
+    for (const g of givings) {
+      await ctx.db.delete(g._id);
     }
     if (existing.photoStorageId) {
       await ctx.storage.delete(existing.photoStorageId);

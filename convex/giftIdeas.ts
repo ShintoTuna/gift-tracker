@@ -60,7 +60,7 @@ export const listByPerson = query({
 
 export const listByStatus = query({
   args: {
-    status: v.union(v.literal("idea"), v.literal("given")),
+    status: v.union(v.literal("active"), v.literal("archived")),
   },
   handler: async (ctx, { status }) => {
     const userId = await getCurrentUserId(ctx);
@@ -74,11 +74,11 @@ export const listByStatus = query({
   },
 });
 
-// Capture mutation. Defaults `status` to "idea" — the capture flow is
-// sub-10s so a status picker would be friction. Status transitions
-// (planned → purchased → given) happen later via the Backlog and
-// Profile screens. Empty `taggedPeople` is allowed: the user can
-// capture now and tag the right person later in Backlog.
+// Capture mutation. Defaults `status` to "active" — the capture flow
+// is sub-10s so a status picker would be friction. Archiving and
+// per-person givings happen later via the idea detail screen. Empty
+// `taggedPeople` is allowed: the user can capture now and tag the
+// right person later in Backlog.
 export const create = mutation({
   args: {
     title: v.string(),
@@ -117,7 +117,7 @@ export const create = mutation({
     return await ctx.db.insert("giftIdeas", {
       userId,
       ...args,
-      status: "idea",
+      status: "active",
       createdAt: now,
       updatedAt: now,
     });
@@ -154,7 +154,7 @@ export const update = mutation({
       currency: v.optional(v.string()),
       taggedPeople: v.optional(v.array(v.id("people"))),
       status: v.optional(
-        v.union(v.literal("idea"), v.literal("given")),
+        v.union(v.literal("active"), v.literal("archived")),
       ),
     }),
   },
@@ -193,7 +193,8 @@ export const update = mutation({
 
 // Named `remove` because `delete` is a reserved word in TypeScript
 // (matches the convention from convex/people.ts). Hard delete; no
-// soft-delete or trash UX in MVP.
+// soft-delete or trash UX in MVP. Cascades to giftGivings rows
+// referencing this idea.
 export const remove = mutation({
   args: { id: v.id("giftIdeas") },
   handler: async (ctx, { id }) => {
@@ -201,6 +202,13 @@ export const remove = mutation({
     const existing = await ctx.db.get(id);
     if (!existing || existing.userId !== userId) {
       throw new Error("Not found or not authorized");
+    }
+    const givings = await ctx.db
+      .query("giftGivings")
+      .withIndex("by_giftIdea", (q) => q.eq("giftIdeaId", id))
+      .collect();
+    for (const g of givings) {
+      await ctx.db.delete(g._id);
     }
     if (existing.imageStorageId) {
       await ctx.storage.delete(existing.imageStorageId);

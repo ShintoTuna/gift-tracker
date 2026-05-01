@@ -201,21 +201,16 @@ export default function DesignSystemScreen() {
         <Section title="IdeaCard">
           <IdeaCard
             title="Cordless gardening shears"
-            source="stihl.com"
-            price="€129"
-            status="idea"
+            description="Stihl GTA 26 — battery powered, lightweight"
           />
           <IdeaCard
             title="Knife sharpening workshop"
-            source="Half-day, BYO knives"
-            price="€95"
+            description="Half-day, BYO knives"
             peopleInitials={["S", "J"]}
-            status="idea"
           />
           <IdeaCard
             title="Audiobook subscription (annual)"
-            price="€80"
-            status="given"
+            caption="Given · 15 May 2025 · Birthday"
           />
         </Section>
 

@@ -22,11 +22,17 @@ export type GiftIdeaSeed = {
   priceEstimate?: number;
   currency?: string;
   taggedPersonNames: string[];
-  status: "idea" | "given";
-  givenToPersonName?: string;
-  givenAt?: number;
-  // For matching against the seeded occasions when status === "given".
-  givenForOccasionTitle?: string;
+  status: "active" | "archived";
+  // Optional list of givings to seed alongside the idea. Matches
+  // against the seeded occasions by `(personName, occasionTitle)`
+  // for the recipient lookup.
+  givings?: GiftIdeaGivingSeed[];
+};
+
+export type GiftIdeaGivingSeed = {
+  personName: string;
+  givenAt: number;
+  occasionTitle?: string;
 };
 
 const ms = (iso: string): number => new Date(iso).getTime();
@@ -95,7 +101,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 129,
     currency: "USD",
     taggedPersonNames: ["Sarah"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Climbing chalk bag",
@@ -103,7 +109,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 30,
     currency: "USD",
     taggedPersonNames: ["Alex"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Pasta-making class for two",
@@ -111,7 +117,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 180,
     currency: "USD",
     taggedPersonNames: ["Jordan"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Whiskey decanter set",
@@ -119,7 +125,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 145,
     currency: "USD",
     taggedPersonNames: ["Tom"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Blue Note vinyl reissue collection",
@@ -127,17 +133,21 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 220,
     currency: "USD",
     taggedPersonNames: ["Tom"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Audiobook subscription (annual)",
     priceEstimate: 80,
     currency: "USD",
     taggedPersonNames: ["Sarah"],
-    status: "given",
-    givenToPersonName: "Sarah",
-    givenAt: ms("2025-05-15"),
-    givenForOccasionTitle: "Birthday",
+    status: "active",
+    givings: [
+      {
+        personName: "Sarah",
+        givenAt: ms("2025-05-15"),
+        occasionTitle: "Birthday",
+      },
+    ],
   },
   {
     title: "Knife sharpening workshop",
@@ -145,7 +155,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 95,
     currency: "USD",
     taggedPersonNames: ["Jordan", "Sarah"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Wireless noise-cancelling headphones",
@@ -154,7 +164,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 350,
     currency: "USD",
     taggedPersonNames: ["Priya"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Wingspan board game expansion",
@@ -162,7 +172,7 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 45,
     currency: "USD",
     taggedPersonNames: ["Priya"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Acaia Pearl espresso scale",
@@ -170,17 +180,21 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 165,
     currency: "USD",
     taggedPersonNames: ["Alex"],
-    status: "idea",
+    status: "active",
   },
   {
     title: "Tea sampler — single estate",
     priceEstimate: 42,
     currency: "USD",
     taggedPersonNames: ["Sarah"],
-    status: "given",
-    givenToPersonName: "Sarah",
-    givenAt: ms("2025-12-25"),
-    givenForOccasionTitle: "Christmas",
+    status: "active",
+    givings: [
+      {
+        personName: "Sarah",
+        givenAt: ms("2025-12-25"),
+        occasionTitle: "Christmas",
+      },
+    ],
   },
   {
     title: "Leather travel journal",
@@ -188,6 +202,6 @@ export const SEED_GIFT_IDEAS: GiftIdeaSeed[] = [
     priceEstimate: 55,
     currency: "USD",
     taggedPersonNames: ["Jordan"],
-    status: "idea",
+    status: "active",
   },
 ];

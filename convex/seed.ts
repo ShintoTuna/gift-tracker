@@ -17,7 +17,14 @@ export const seedDevData = mutation({
   handler: async (ctx) => {
     const userId = await getCurrentUserId(ctx);
 
-    // 1. Wipe gift ideas (own userId, no FKs to follow).
+    // 1. Wipe gift ideas + their giving history.
+    const oldGivings = await ctx.db
+      .query("giftGivings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    for (const g of oldGivings) {
+      await ctx.db.delete(g._id);
+    }
     const oldIdeas = await ctx.db
       .query("giftIdeas")
       .withIndex("by_user", (q) => q.eq("userId", userId))
@@ -64,8 +71,8 @@ export const seedDevData = mutation({
     // 4. Insert occasions keyed to person ids.
     let occasionsCount = 0;
     // Lookup map keyed by title — used in the next pass to resolve
-    // `givenForOccasionTitle` on "given" gift ideas back to a real
-    // occasion id.
+    // each seeded giving's `occasionTitle` back to a real occasion
+    // id.
     const occasionIdByPersonAndTitle = new Map<
       string,
       Map<string, Id<"occasions">>
@@ -87,24 +94,16 @@ export const seedDevData = mutation({
       occasionIdByPersonAndTitle.set(personName, byTitle);
     }
 
-    // 5. Insert gift ideas, resolving tagged-people names to ids and
-    //    given-for-occasion to the matching seeded occasion.
+    // 5. Insert gift ideas, plus any seeded givings as separate
+    //    `giftGivings` rows.
+    let givingsCount = 0;
     for (const seed of SEED_GIFT_IDEAS) {
       const taggedPeople: Id<"people">[] = [];
       for (const name of seed.taggedPersonNames) {
         const id = personIdByName.get(name);
         if (id) taggedPeople.push(id);
       }
-      const givenTo = seed.givenToPersonName
-        ? personIdByName.get(seed.givenToPersonName)
-        : undefined;
-      const givenForOccasionId =
-        seed.givenToPersonName && seed.givenForOccasionTitle
-          ? occasionIdByPersonAndTitle
-              .get(seed.givenToPersonName)
-              ?.get(seed.givenForOccasionTitle)
-          : undefined;
-      await ctx.db.insert("giftIdeas", {
+      const giftIdeaId = await ctx.db.insert("giftIdeas", {
         userId,
         title: seed.title,
         description: seed.description,
@@ -113,18 +112,34 @@ export const seedDevData = mutation({
         currency: seed.currency,
         taggedPeople,
         status: seed.status,
-        givenTo,
-        givenAt: seed.givenAt,
-        givenForOccasionId,
         createdAt: now,
         updatedAt: now,
       });
+      for (const giving of seed.givings ?? []) {
+        const personId = personIdByName.get(giving.personName);
+        if (!personId) continue;
+        const occasionId = giving.occasionTitle
+          ? occasionIdByPersonAndTitle
+              .get(giving.personName)
+              ?.get(giving.occasionTitle)
+          : undefined;
+        await ctx.db.insert("giftGivings", {
+          userId,
+          giftIdeaId,
+          personId,
+          givenAt: giving.givenAt,
+          occasionId,
+          createdAt: now,
+        });
+        givingsCount += 1;
+      }
     }
 
     return {
       peopleCount: SEED_PEOPLE.length,
       occasionsCount,
       giftIdeasCount: SEED_GIFT_IDEAS.length,
+      givingsCount,
     };
   },
 });
