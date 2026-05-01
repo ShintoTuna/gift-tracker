@@ -146,16 +146,32 @@ export default defineSchema({
     // A gift idea is tagged to one or more people, not to an
     // occasion (PRD §6 design note).
     taggedPeople: v.array(v.id("people")),
-    // Two-state for now (open idea vs. given). The enum shape stays
-    // so a future status (e.g. "wrapped", "delivered") can land
-    // without a schema-shape change — just a new literal.
-    status: v.union(v.literal("idea"), v.literal("given")),
-    givenTo: v.optional(v.id("people")),
-    givenAt: v.optional(v.number()),
-    givenForOccasionId: v.optional(v.id("occasions")),
+    // Lifecycle of the idea itself — `active` (still in play) or
+    // `archived` (kept for history but not surfaced in the main
+    // list). Whether the idea has been *given* is a per-person
+    // record on `giftGivings`, not a property of the idea, so
+    // giving doesn't archive the idea.
+    status: v.union(v.literal("active"), v.literal("archived")),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
     .index("by_user_status", ["userId", "status"]),
+
+  // History of givings: one row per (idea, person, date). Multiple
+  // rows for the same (idea, person) pair are allowed — the same
+  // idea can be given to the same person more than once over time.
+  giftGivings: defineTable({
+    userId: v.string(),
+    giftIdeaId: v.id("giftIdeas"),
+    personId: v.id("people"),
+    givenAt: v.number(),
+    occasionId: v.optional(v.id("occasions")),
+    note: v.optional(v.string()),
+    createdAt: v.number(),
+  })
+    .index("by_user", ["userId"])
+    .index("by_giftIdea", ["giftIdeaId"])
+    .index("by_user_person", ["userId", "personId"])
+    .index("by_user_idea_person", ["userId", "giftIdeaId", "personId"]),
 });

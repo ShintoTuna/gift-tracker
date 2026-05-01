@@ -11,6 +11,7 @@
 import type * as admin from "../admin.js";
 import type * as auth from "../auth.js";
 import type * as crons from "../crons.js";
+import type * as giftGivings from "../giftGivings.js";
 import type * as giftIdeas from "../giftIdeas.js";
 import type * as http from "../http.js";
 import type * as imageFromUrl from "../imageFromUrl.js";
@@ -39,6 +40,7 @@ declare const fullApi: ApiFromModules<{
   admin: typeof admin;
   auth: typeof auth;
   crons: typeof crons;
+  giftGivings: typeof giftGivings;
   giftIdeas: typeof giftIdeas;
   http: typeof http;
   imageFromUrl: typeof imageFromUrl;

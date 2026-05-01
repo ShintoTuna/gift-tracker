@@ -20,19 +20,29 @@ import {
 } from "@/components";
 import {
   formatOccasionLine,
-  formatPrice,
   formatRelativeDays,
-  shortenSource,
 } from "@/lib/format";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../../../convex/_generated/api";
 import type { Id } from "../../../../convex/_generated/dataModel";
 
-type ProfileData = NonNullable<
-  ReturnType<typeof useQuery<typeof api.people.getProfile>>
->;
-type PersonDoc = ProfileData["person"];
+const dateFormatter = new Intl.DateTimeFormat(undefined, {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+function formatGivenCaption(
+  t: (key: string, vars?: Record<string, unknown>) => string,
+  givenAt: number,
+  occasionTitle: string | null,
+): string {
+  const date = dateFormatter.format(new Date(givenAt));
+  return occasionTitle
+    ? t("profile.givenCaptionWithOccasion", { date, occasion: occasionTitle })
+    : t("profile.givenCaption", { date });
+}
 
 export default function ProfileScreen() {
   const { t } = useTranslation();
@@ -69,9 +79,12 @@ export default function ProfileScreen() {
     );
   }
 
-  const { person, occasions, ideas } = profile;
-  const openIdeas = ideas.filter((i) => i.status !== "given");
-  const givenIdeas = ideas.filter((i) => i.status === "given");
+  const { person, occasions, consideredIdeas, givenIdeas } = profile;
+  const openIdea = (ideaId: Id<"giftIdeas">) =>
+    router.push({
+      pathname: "/idea/[id]",
+      params: { id: ideaId },
+    });
 
   return (
     <View style={styles.root}>
@@ -205,34 +218,34 @@ export default function ProfileScreen() {
           </View>
         )}
 
-        {/* Open ideas */}
-        {openIdeas.length > 0 && (
+        {/* Considered for {name} — tagged, not yet given to this person */}
+        {consideredIdeas.length > 0 && (
           <View style={styles.section}>
             <Label style={styles.sectionLabel}>
-              {t("profile.openIdeas", { count: openIdeas.length })}
+              {t("profile.consideredIdeas", {
+                count: consideredIdeas.length,
+              })}
             </Label>
             <View style={styles.cardStack}>
-              {openIdeas.map((idea) => (
+              {consideredIdeas.map((idea) => (
                 <IdeaCard
                   key={idea._id}
                   title={idea.title}
-                  source={shortenSource(idea.sourceUrl)}
-                  price={formatPrice(idea.priceEstimate, idea.currency)}
-                  peopleInitials={
-                    idea.taggedPeople.length > 1
-                      ? buildInitials(idea.taggedPeople, person)
-                      : undefined
-                  }
+                  description={idea.description}
+                  peopleInitials={otherInitials(
+                    idea.taggedPeopleInitials,
+                    person.name,
+                  )}
                   imageUrl={idea.imageUrl}
                   placeholderSeed={idea._id}
-                  status={idea.status}
+                  onPress={() => openIdea(idea._id)}
                 />
               ))}
             </View>
           </View>
         )}
 
-        {/* Given history */}
+        {/* Given to {name} — one row per idea, most recent giving */}
         {givenIdeas.length > 0 && (
           <View style={styles.section}>
             <Label style={styles.sectionLabel}>
@@ -243,11 +256,15 @@ export default function ProfileScreen() {
                 <IdeaCard
                   key={idea._id}
                   title={idea.title}
-                  source={shortenSource(idea.sourceUrl)}
-                  price={formatPrice(idea.priceEstimate, idea.currency)}
+                  description={idea.description}
                   imageUrl={idea.imageUrl}
                   placeholderSeed={idea._id}
-                  status={idea.status}
+                  caption={formatGivenCaption(
+                    t,
+                    idea.latestGivenAt,
+                    idea.latestOccasionTitle,
+                  )}
+                  onPress={() => openIdea(idea._id)}
                 />
               ))}
             </View>
@@ -255,7 +272,7 @@ export default function ProfileScreen() {
         )}
 
         {/* Empty-state hint when there's nothing yet */}
-        {openIdeas.length === 0 && givenIdeas.length === 0 && (
+        {consideredIdeas.length === 0 && givenIdeas.length === 0 && (
           <View style={styles.section}>
             <Card>
               <Text style={styles.cardMeta}>{t("profile.ideasEmpty")}</Text>
@@ -269,17 +286,21 @@ export default function ProfileScreen() {
 
 // AvatarStack initials excluding the current profile person — show
 // "this idea is also for ..." rather than redundant self-reference.
-// Falls back to the raw ID-letter when name lookup isn't available
-// (the profile query only returns ids for taggedPeople, not the
-// people themselves).
-function buildInitials(
-  taggedPeople: readonly string[],
-  currentPerson: PersonDoc,
-): string[] {
-  // Without a denormalized lookup we can't render other people's
-  // initials accurately, so collapse to a placeholder count for now.
-  const others = taggedPeople.filter((id) => id !== currentPerson._id);
-  return others.map(() => "•");
+// Returns undefined when there's no one else to show, so the card
+// drops the avatar slot entirely.
+function otherInitials(
+  taggedInitials: readonly string[],
+  currentName: string,
+): string[] | undefined {
+  const currentInitial = currentName[0]?.toUpperCase() ?? "?";
+  // Drop a single occurrence of the current person's initial. With a
+  // denormalized initials list we can't perfectly distinguish two
+  // people who share an initial — best-effort is good enough for an
+  // avatar stack.
+  const filtered = [...taggedInitials];
+  const idx = filtered.indexOf(currentInitial);
+  if (idx >= 0) filtered.splice(idx, 1);
+  return filtered.length > 0 ? filtered : undefined;
 }
 
 const styles = StyleSheet.create({

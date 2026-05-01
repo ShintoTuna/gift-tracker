@@ -139,9 +139,8 @@
   "backlog": {
     "title": "Подарки",
     "search": "Поиск идей",
-    "filterAll": "Все",
-    "filterOpen": "Открытые",
-    "filterGiven": "Подарено",
+    "filterActive": "Активные",
+    "filterArchived": "Архив",
     "emptyNone": "Пока нет идей. Нажмите кнопку +, чтобы записать первую.",
     "emptyCta": "Записать первую идею",
     "emptySearch": "По запросу «{{query}}» ничего не найдено.",
@@ -166,12 +165,30 @@
     "deleteConfirmBody": "Это также удалит его события и снимет его с идей подарков. Это нельзя отменить.",
     "notFound": "Человек не найден."
   },
+  "ideaView": {
+    "title": "Идея",
+    "editPill": "Изменить",
+    "editA11y": "Редактировать идею",
+    "openSourceA11y": "Открыть ссылку на источник",
+    "descriptionLabel": "Описание",
+    "peopleLabel": "Привязанные люди"
+  },
   "ideaForm": {
     "editTitle": "Редактировать идею",
     "editScreenTitle": "Редактировать идею",
     "status": "Статус",
-    "statusOpen": "Открыта",
-    "statusGiven": "Подарено",
+    "statusActive": "Активна",
+    "statusArchived": "В архиве",
+    "givingsTitle": "Дарения",
+    "givingsEmpty": "Ещё никому не подарено. Добавьте дарение, чтобы отметить, кому и когда.",
+    "addGiving": "+ Добавить дарение",
+    "saveGiving": "Сохранить дарение",
+    "removeGiving": "Удалить дарение",
+    "removeGivingConfirm": "Удалить это дарение?",
+    "givingPerson": "Кому",
+    "givingDate": "Когда",
+    "givingOccasion": "Событие",
+    "givingNoOccasion": "Без события",
     "deleteButton": "Удалить идею",
     "deleteConfirmTitle": "Удалить эту идею подарка?",
     "notFound": "Идея не найдена."
@@ -199,17 +216,15 @@
     "addOccasion": "+ Добавить",
     "occasionsEmpty": "Пока нет событий — нажмите <accent>+ Добавить</accent>, чтобы создать.",
     "interests": "Интересы",
-    "openIdeas": "Открытые идеи · {{count}}",
+    "consideredIdeas": "В планах · {{count}}",
     "givenIdeas": "Подарено · {{count}}",
+    "givenCaption": "Подарено · {{date}}",
+    "givenCaptionWithOccasion": "Подарено · {{date}} · {{occasion}}",
     "ideasEmpty": "Пока нет идей подарков. Добавьте через быструю запись.",
     "notFound": "Человек не найден."
   },
   "brainstorm": {
     "stubTitle": "Идеи для {{personId}}"
-  },
-  "ideaCard": {
-    "statusOpen": "Открыта",
-    "statusGiven": "Подарено"
   },
   "personPicker": {
     "label": "Для",

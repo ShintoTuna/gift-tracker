@@ -56,11 +56,12 @@ export const listUpcoming = query({
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .take(1000);
 
-    // Pre-roll the open-idea count per person so each agenda row can
-    // surface "n ideas" without a separate per-row pass.
+    // Pre-roll the active-idea count per person so each agenda row
+    // can surface "n ideas" without a separate per-row pass. Archived
+    // ideas are kept for history but don't count toward this agenda.
     const ideaCountByPerson = new Map<string, number>();
     for (const idea of allIdeas) {
-      if (idea.status === "given") continue;
+      if (idea.status !== "active") continue;
       for (const personId of idea.taggedPeople) {
         ideaCountByPerson.set(
           personId,
@@ -186,9 +187,9 @@ export const update = mutation({
 });
 
 // Named `remove` because `delete` is a reserved word in TypeScript.
-// Hard delete; gift ideas referencing this occasion via
-// `givenForOccasionId` are left dangling (we don't have a UX yet
-// that surfaces the linkage, so cascading isn't useful for MVP).
+// Hard delete. `giftGivings` rows referencing this occasion are
+// detached (occasionId cleared) so they don't dangle to a deleted
+// occasion id.
 export const remove = mutation({
   args: { id: v.id("occasions") },
   handler: async (ctx, { id }) => {
@@ -198,6 +199,15 @@ export const remove = mutation({
     const person = await ctx.db.get(occ.personId);
     if (!person || person.userId !== userId) {
       throw new Error("Not authorized");
+    }
+    const givings = await ctx.db
+      .query("giftGivings")
+      .withIndex("by_user", (q) => q.eq("userId", userId))
+      .collect();
+    for (const g of givings) {
+      if (g.occasionId === id) {
+        await ctx.db.patch(g._id, { occasionId: undefined });
+      }
     }
     await ctx.db.delete(id);
   },

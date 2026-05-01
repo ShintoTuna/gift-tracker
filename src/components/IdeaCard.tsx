@@ -1,6 +1,5 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { thumbColorForSeed } from "@/lib/seedColor";
@@ -8,20 +7,16 @@ import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { AvatarStack } from "./AvatarStack";
 import { Card } from "./Card";
-import { Pill } from "./Pill";
-
-export type IdeaStatus = "idea" | "given";
 
 type Props = {
   title: string;
-  source?: string;
-  // Pre-formatted price string (use src/lib/format.ts → formatPrice).
-  price?: string;
+  // Description preview (2-line ellipsis). Falls back gracefully when
+  // omitted or empty.
+  description?: string;
   // Initials of all tagged people. Stack omitted if undefined or empty.
   peopleInitials?: string[];
-  occasion?: string;
-  // When set, replaces the placeholder thumbnail with the uploaded
-  // image. Falls back to the muted placeholder when null/undefined.
+  // Replaces the placeholder thumbnail with the uploaded image.
+  // Falls back to the muted placeholder when null/undefined.
   imageUrl?: string | null;
   // Stable seed for the placeholder thumb's color. Same seed → same
   // color, so a row's tile keeps its hue across renders without us
@@ -29,39 +24,30 @@ type Props = {
   // falls back to the title (used by the design-system preview where
   // there's no row id).
   placeholderSeed?: string;
-  // Two states for now. "given" gets the fern Pill plus dimmed
-  // strikethrough title; "idea" uses the default tone.
-  status: IdeaStatus;
+  // Optional caption rendered below the description (e.g.
+  // `Given · 24 Dec 2024 · Christmas` on the profile-given list).
+  caption?: string;
   onPress?: () => void;
-};
-
-const STATUS_KEY: Record<IdeaStatus, "ideaCard.statusOpen" | "ideaCard.statusGiven"> = {
-  idea: "ideaCard.statusOpen",
-  given: "ideaCard.statusGiven",
 };
 
 // Composed gift-idea card. Used on the Profile screen, the Backlog
 // screen, and the Brainstorm result list (post-launch).
 //
-// When no `imageUrl` is supplied, the 60px thumbnail falls back to
-// a deterministic placeholder: a Midnight Garden palette color
-// chosen by hashing `placeholderSeed`, with a subtle diagonal sheen
-// for depth (mimicking the 4% diagonal stripe in the web design
-// without needing react-native-svg).
+// Layout: 60px thumbnail · title + description preview · avatar stack.
+// Status, source URL, price, and occasion live on the detail screen
+// rather than the card; keeping the card visual to title + image +
+// who-it's-for makes scanning the list practical.
 export function IdeaCard({
   title,
-  source,
-  price,
+  description,
   peopleInitials,
-  occasion,
   imageUrl,
   placeholderSeed,
-  status,
+  caption,
   onPress,
 }: Props) {
-  const { t } = useTranslation();
-  const isGiven = status === "given";
   const placeholderColor = thumbColorForSeed(placeholderSeed ?? title);
+  const trimmedDescription = description?.trim();
   const content = (
     <Card>
       <View style={styles.row}>
@@ -83,32 +69,25 @@ export function IdeaCard({
           </View>
         )}
         <View style={styles.middle}>
-          <Text
-            style={[styles.title, isGiven && styles.titleGiven]}
-            numberOfLines={2}
-          >
+          <Text style={styles.title} numberOfLines={1}>
             {title}
           </Text>
-          {source != null && (
-            <Text style={styles.source} numberOfLines={1}>
-              {source}
+          {trimmedDescription ? (
+            <Text style={styles.description} numberOfLines={2}>
+              {trimmedDescription}
             </Text>
-          )}
-          {(peopleInitials?.length || occasion) && (
-            <View style={styles.metaRow}>
-              {peopleInitials && peopleInitials.length > 0 && (
-                <AvatarStack initials={peopleInitials} />
-              )}
-              {occasion && <Text style={styles.occasion}>{occasion}</Text>}
-            </View>
-          )}
+          ) : null}
+          {caption ? (
+            <Text style={styles.caption} numberOfLines={1}>
+              {caption}
+            </Text>
+          ) : null}
         </View>
-        <View style={styles.right}>
-          {price ? <Text style={styles.price}>{price}</Text> : null}
-          <Pill tone={isGiven ? "fern" : "default"}>
-            {t(STATUS_KEY[status])}
-          </Pill>
-        </View>
+        {peopleInitials && peopleInitials.length > 0 ? (
+          <View style={styles.right}>
+            <AvatarStack initials={peopleInitials} />
+          </View>
+        ) : null}
       </View>
     </Card>
   );
@@ -131,6 +110,7 @@ export function IdeaCard({
 const styles = StyleSheet.create({
   row: {
     flexDirection: "row",
+    alignItems: "center",
     gap: spacing.md,
   },
   thumb: {
@@ -152,36 +132,21 @@ const styles = StyleSheet.create({
     color: colors.text,
     lineHeight: 19,
   },
-  titleGiven: {
-    textDecorationLine: "line-through",
-    opacity: 0.6,
-  },
-  source: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text3,
-    marginTop: 3,
-  },
-  metaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: spacing.md,
-    marginTop: spacing.sm,
-  },
-  occasion: {
+  description: {
     fontFamily: fonts.body,
     fontSize: 13,
     color: colors.text2,
+    marginTop: 3,
+    lineHeight: 18,
+  },
+  caption: {
+    fontFamily: fonts.body,
+    fontSize: 12,
+    color: colors.text3,
+    marginTop: 4,
   },
   right: {
-    alignItems: "flex-end",
-    gap: spacing.sm,
     flexShrink: 0,
-  },
-  price: {
-    fontFamily: fonts.serif,
-    fontSize: 16,
-    color: colors.text,
   },
   pressed: {
     opacity: 0.7,

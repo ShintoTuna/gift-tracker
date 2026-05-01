@@ -15,33 +15,32 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Btn, IdeaCard, Pill, ScreenTitle } from "@/components";
-import { formatPrice, shortenSource } from "@/lib/format";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
-type Filter = "all" | "open" | "given";
+type Filter = "active" | "archived";
 // Filter pill values are stable IDs; the displayed label is built
 // from `t("backlog.filter*")` at render time so language switches
 // pick up immediately.
-const FILTERS: { value: Filter; key: "filterAll" | "filterOpen" | "filterGiven" }[] = [
-  { value: "all", key: "filterAll" },
-  { value: "open", key: "filterOpen" },
-  { value: "given", key: "filterGiven" },
+const FILTERS: { value: Filter; key: "filterActive" | "filterArchived" }[] = [
+  { value: "active", key: "filterActive" },
+  { value: "archived", key: "filterArchived" },
 ];
 
 // User-facing label is "Gifts" (file stays `backlog.tsx` — internal
 // shorthand that pairs with the schema/concept).
 //
 // Lists every captured idea; tap a card to edit at /idea/[id].
-// Status filter pills at the top: All / Open (idea | planned |
-// purchased) / Given.
+// Status filter pills at the top: Active (still in play) / Archived
+// (kept for history). "Given" is now a per-person concept so it no
+// longer hides ideas from this list.
 export default function GiftsScreen() {
   const { t } = useTranslation();
   const ideas = useQuery(api.giftIdeas.listByUser);
   const people = useQuery(api.people.list);
-  const [filter, setFilter] = useState<Filter>("all");
+  const [filter, setFilter] = useState<Filter>("active");
   const [search, setSearch] = useState("");
   const [refreshing, setRefreshing] = useState(false);
 
@@ -66,11 +65,7 @@ export default function GiftsScreen() {
   const filtered = useMemo(() => {
     if (!ideas) return [];
     let result = [...ideas].sort((a, b) => b.updatedAt - a.updatedAt);
-    if (filter === "given") {
-      result = result.filter((i) => i.status === "given");
-    } else if (filter === "open") {
-      result = result.filter((i) => i.status !== "given");
-    }
+    result = result.filter((i) => i.status === filter);
     const q = search.trim().toLowerCase();
     if (q.length > 0) {
       result = result.filter((i) => {
@@ -175,12 +170,10 @@ export default function GiftsScreen() {
                 <IdeaCard
                   key={idea._id}
                   title={idea.title}
-                  source={shortenSource(idea.sourceUrl)}
-                  price={formatPrice(idea.priceEstimate, idea.currency)}
+                  description={idea.description}
                   peopleInitials={initials.length > 0 ? initials : undefined}
                   imageUrl={idea.imageUrl}
                   placeholderSeed={idea._id}
-                  status={idea.status}
                   onPress={() =>
                     router.push({
                       pathname: "/idea/[id]",

@@ -31,7 +31,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 
 // Quick Capture — the headline PRD feature. Sub-10s flow:
 // title → save. Person tagging is optional (capture now, tag later
-// in Backlog). Status defaults to "idea" server-side.
+// in Backlog). Status defaults to "active" server-side.
 //
 // The Save button lives at the end of the ScrollView (not in a fixed
 // footer) so the iOS keyboard accessory bar never collides with it.
@@ -129,7 +129,10 @@ export default function CaptureScreen() {
           priceEstimate !== undefined ? defaultCurrency : undefined,
         taggedPeople: taggedIds,
       });
-      router.back();
+      // Land on the gifts list so the new idea is visible at the top
+      // — `replace` so the back stack doesn't preserve the (now-empty)
+      // capture form.
+      router.replace("/(tabs)/backlog");
     } catch (err) {
       handleError(err, t("capture.couldNotSave"));
       setSaving(false);

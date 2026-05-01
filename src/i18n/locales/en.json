@@ -129,9 +129,8 @@
   "backlog": {
     "title": "Gifts",
     "search": "Search ideas",
-    "filterAll": "All",
-    "filterOpen": "Open",
-    "filterGiven": "Given",
+    "filterActive": "Active",
+    "filterArchived": "Archived",
     "emptyNone": "No ideas captured yet. Tap the + button to capture your first.",
     "emptyCta": "Capture your first idea",
     "emptySearch": "No ideas match “{{query}}”.",
@@ -156,12 +155,30 @@
     "deleteConfirmBody": "This will also remove their occasions and untag them from any gift ideas. This can't be undone.",
     "notFound": "Person not found."
   },
+  "ideaView": {
+    "title": "Idea",
+    "editPill": "Edit",
+    "editA11y": "Edit idea",
+    "openSourceA11y": "Open source link",
+    "descriptionLabel": "Description",
+    "peopleLabel": "Tagged people"
+  },
   "ideaForm": {
     "editTitle": "Edit idea",
     "editScreenTitle": "Edit idea",
     "status": "Status",
-    "statusOpen": "Open",
-    "statusGiven": "Given",
+    "statusActive": "Active",
+    "statusArchived": "Archived",
+    "givingsTitle": "Givings",
+    "givingsEmpty": "Not given yet. Add a giving to track when you gave this idea away.",
+    "addGiving": "+ Add giving",
+    "saveGiving": "Save giving",
+    "removeGiving": "Remove giving",
+    "removeGivingConfirm": "Remove this giving?",
+    "givingPerson": "To",
+    "givingDate": "When",
+    "givingOccasion": "Occasion",
+    "givingNoOccasion": "No occasion",
     "deleteButton": "Delete idea",
     "deleteConfirmTitle": "Delete this gift idea?",
     "notFound": "Idea not found."
@@ -189,17 +206,15 @@
     "addOccasion": "+ Add",
     "occasionsEmpty": "No occasions yet — tap <accent>+ Add</accent> to create one.",
     "interests": "Interests",
-    "openIdeas": "Open ideas · {{count}}",
+    "consideredIdeas": "Considered · {{count}}",
     "givenIdeas": "Given · {{count}}",
+    "givenCaption": "Given · {{date}}",
+    "givenCaptionWithOccasion": "Given · {{date}} · {{occasion}}",
     "ideasEmpty": "No gift ideas yet. Add one from Quick Capture.",
     "notFound": "Person not found."
   },
   "brainstorm": {
     "stubTitle": "Brainstorm for {{personId}}"
-  },
-  "ideaCard": {
-    "statusOpen": "Open",
-    "statusGiven": "Given"
   },
   "personPicker": {
     "label": "For",
