@@ -14,4 +14,15 @@ crons.cron(
   {},
 );
 
+// Daily at 04:00 UTC — off-peak, off the top-of-hour push fan-out.
+// Sweeps expired Convex Auth rows (`authSessions` + their refresh
+// tokens, `authVerificationCodes`, stale `authVerifiers`). The library
+// itself doesn't clean these up — see authCleanup.ts for the why.
+crons.cron(
+  "auth cleanup sweep",
+  "0 4 * * *",
+  internal.authCleanup.runSweep,
+  {},
+);
+
 export default crons;

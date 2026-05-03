@@ -11,6 +11,7 @@
 import type * as ResendOTP from "../ResendOTP.js";
 import type * as admin from "../admin.js";
 import type * as auth from "../auth.js";
+import type * as authCleanup from "../authCleanup.js";
 import type * as crons from "../crons.js";
 import type * as giftGivings from "../giftGivings.js";
 import type * as giftIdeas from "../giftIdeas.js";
@@ -42,6 +43,7 @@ declare const fullApi: ApiFromModules<{
   ResendOTP: typeof ResendOTP;
   admin: typeof admin;
   auth: typeof auth;
+  authCleanup: typeof authCleanup;
   crons: typeof crons;
   giftGivings: typeof giftGivings;
   giftIdeas: typeof giftIdeas;
