@@ -2,9 +2,17 @@ import Apple from "@auth/core/providers/apple";
 import Google from "@auth/core/providers/google";
 import { convexAuth } from "@convex-dev/auth/server";
 
-// Email/password is intentionally absent — Giftsmith ships with Apple +
-// Google OAuth only. Apple is required by App Store guidelines whenever
-// a third-party social login (Google) is offered.
+import { ResendOTP } from "./ResendOTP";
+
+// Three providers, all surfaced on the login screen:
+//   * Apple — required by App Store rules whenever any third-party
+//     social login is offered.
+//   * Google — second OAuth path.
+//   * ResendOTP — emailed 8-digit code, the no-third-party-account
+//     fallback. Same flow handles signup and signin: a fresh email
+//     hits `createOrUpdateUser` with `existingUserId === undefined`
+//     and inserts a new row; a returning email reuses the existing
+//     row.
 //
 // Apple's `name` is shared by the IdP only on the very first sign-in,
 // so we capture it in the `profile` callback and stash it on the user
@@ -27,6 +35,7 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
       },
     }),
     Google,
+    ResendOTP,
   ],
   callbacks: {
     async createOrUpdateUser(ctx, args) {

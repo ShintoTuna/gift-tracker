@@ -7,10 +7,16 @@ import { LIMITS } from "./lib/limits";
 
 // Light "current user" surface for the Settings → Account section.
 // Returns null when unauthenticated so the UI can render skeletons /
-// fall back without throwing. `linkedProviders` is the set of OAuth
-// providers tied to this account ("apple" | "google"), surfaced so the
+// fall back without throwing. `linkedProviders` is the set of providers
+// tied to this account ("apple" | "google" | "email"), surfaced so the
 // Account card can show the user how they sign in — important since
 // losing access to that provider currently means losing the account.
+// The Resend OTP provider's internal id is "resend-otp"; we expose it
+// as "email" so the UI's i18n key lookup (`auth.account.linkedEmail`)
+// stays straightforward.
+const PROVIDER_DISPLAY_ID: Record<string, string> = {
+  "resend-otp": "email",
+};
 export const me = query({
   args: {},
   handler: async (ctx) => {
@@ -22,7 +28,9 @@ export const me = query({
       .query("authAccounts")
       .withIndex("userIdAndProvider", (q) => q.eq("userId", userId))
       .collect();
-    const linkedProviders = Array.from(new Set(accounts.map((a) => a.provider))).sort();
+    const linkedProviders = Array.from(
+      new Set(accounts.map((a) => PROVIDER_DISPLAY_ID[a.provider] ?? a.provider)),
+    ).sort();
     return { ...user, linkedProviders };
   },
 });

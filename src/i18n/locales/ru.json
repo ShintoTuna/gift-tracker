@@ -263,6 +263,25 @@
     },
     "continueWithApple": "Войти через Apple",
     "continueWithGoogle": "Войти через Google",
+    "continueWithEmail": "Войти по email",
+    "email": {
+      "title": "Вход по email",
+      "subtitle": "Мы пришлём код для входа на вашу почту.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "sendCodeCta": "Отправить код",
+      "codeLabel": "Код подтверждения",
+      "codePlaceholder": "Код из 8 цифр",
+      "codeSentTo": "Код отправлен на {{email}}. Проверьте почту.",
+      "signInCta": "Войти",
+      "resendCode": "Отправить ещё раз",
+      "useDifferentEmail": "Указать другой email",
+      "errors": {
+        "invalidEmail": "Введите корректный email.",
+        "invalidCode": "Код не подошёл. Попробуйте снова или запросите новый.",
+        "sendFailed": "Не удалось отправить код. Попробуйте через минуту."
+      }
+    },
     "errorTitle": "Не удалось войти",
     "account": {
       "title": "Аккаунт",
@@ -278,6 +297,7 @@
       "linkedLabel": "Вход выполнен через",
       "linkedApple": "Apple",
       "linkedGoogle": "Google",
+      "linkedEmail": "Email",
       "linkedHint": "Данные привязаны к этой учётной записи. Берегите её — потеряете доступ, потеряете подарки."
     }
   },
