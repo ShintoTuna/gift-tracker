@@ -1,5 +1,6 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { makeRedirectUri } from "expo-auth-session";
+import { router } from "expo-router";
 import { openAuthSessionAsync } from "expo-web-browser";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -117,6 +118,25 @@ export default function LoginScreen() {
             </Text>
           )}
         </Pressable>
+
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={t("auth.continueWithEmail")}
+          onPress={() => {
+            if (pending !== null) return;
+            // replace (not push) so the (auth) stack only ever holds
+            // one screen — otherwise AuthGate's post-signin Redirect
+            // has to dismiss two screens, which causes a useSegments
+            // flicker and a Maximum-update-depth loop.
+            router.replace("/(auth)/email");
+          }}
+          style={({ pressed }) => [
+            styles.emailBtn,
+            pressed && styles.emailPressed,
+          ]}
+        >
+          <Text style={styles.emailText}>{t("auth.continueWithEmail")}</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -187,6 +207,23 @@ const styles = StyleSheet.create({
   },
   googleText: {
     color: "#1F1F1F",
+    fontFamily: fonts.bodySemiBold,
+    fontSize: 16,
+  },
+  emailBtn: {
+    backgroundColor: "transparent",
+    borderColor: colors.border2,
+    borderWidth: 1,
+    borderRadius: radii.lg,
+    paddingVertical: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emailPressed: {
+    backgroundColor: colors.surface,
+  },
+  emailText: {
+    color: colors.text,
     fontFamily: fonts.bodySemiBold,
     fontSize: 16,
   },

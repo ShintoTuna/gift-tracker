@@ -253,6 +253,25 @@
     },
     "continueWithApple": "Sign in with Apple",
     "continueWithGoogle": "Continue with Google",
+    "continueWithEmail": "Continue with email",
+    "email": {
+      "title": "Sign in with email",
+      "subtitle": "We'll email you a code to sign in.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "sendCodeCta": "Send code",
+      "codeLabel": "Verification code",
+      "codePlaceholder": "8-digit code",
+      "codeSentTo": "Code sent to {{email}}. Check your inbox.",
+      "signInCta": "Sign in",
+      "resendCode": "Resend code",
+      "useDifferentEmail": "Use a different email",
+      "errors": {
+        "invalidEmail": "Enter a valid email address.",
+        "invalidCode": "That code didn't work. Try again or resend.",
+        "sendFailed": "Couldn't send the code. Try again in a moment."
+      }
+    },
     "errorTitle": "Couldn’t sign in",
     "account": {
       "title": "Account",
@@ -268,6 +287,7 @@
       "linkedLabel": "Signed in with",
       "linkedApple": "Apple",
       "linkedGoogle": "Google",
+      "linkedEmail": "Email",
       "linkedHint": "Your data is tied to this account. Keep it safe — losing access means losing your gifts."
     }
   },
