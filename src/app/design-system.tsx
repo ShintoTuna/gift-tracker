@@ -1,4 +1,4 @@
-import { useMutation } from "convex/react";
+import { useAction } from "convex/react";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
@@ -29,7 +29,7 @@ type SeedResult = {
 // /design-system. Delete or hide behind a dev flag once real screens
 // are using all the atoms in production.
 export default function DesignSystemScreen() {
-  const seedDevData = useMutation(api.seed.seedDevData);
+  const seedDevData = useAction(api.seed.seedDevData);
   const [seeding, setSeeding] = useState(false);
   const [seedResult, setSeedResult] = useState<SeedResult | null>(null);
   const [seedError, setSeedError] = useState<string | null>(null);

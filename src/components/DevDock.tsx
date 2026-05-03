@@ -1,4 +1,4 @@
-import { useMutation } from "convex/react";
+import { useAction } from "convex/react";
 import { router } from "expo-router";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
@@ -24,7 +24,7 @@ function DevDockInner() {
   const [hidden, setHidden] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
 
-  const seedDevData = useMutation(api.seed.seedDevData);
+  const seedDevData = useAction(api.seed.seedDevData);
 
   if (hidden) return null;
 
