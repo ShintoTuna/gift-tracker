@@ -26,6 +26,7 @@ import type * as notifications from "../notifications.js";
 import type * as occasions from "../occasions.js";
 import type * as people from "../people.js";
 import type * as seed from "../seed.js";
+import type * as seedInternal from "../seedInternal.js";
 import type * as storage from "../storage.js";
 import type * as userSettings from "../userSettings.js";
 import type * as users from "../users.js";
@@ -55,6 +56,7 @@ declare const fullApi: ApiFromModules<{
   occasions: typeof occasions;
   people: typeof people;
   seed: typeof seed;
+  seedInternal: typeof seedInternal;
   storage: typeof storage;
   userSettings: typeof userSettings;
   users: typeof users;

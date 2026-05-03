@@ -36,6 +36,14 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 
+# Playwright MCP scratch
+.playwright-mcp/
+
+# Raw simulator captures — device-specific, regenerable from the
+# `xcrun simctl status_bar` + ⌘S workflow described in
+# scripts/build-screenshots.mjs.
+marketing/screenshots/raw/
+
 app-example
 
 # generated native folders
