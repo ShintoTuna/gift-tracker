@@ -32,33 +32,76 @@ npx eas init
 npx eas build:configure
 ```
 
-## Environment variables (required before first prod build)
+## Convex environments
 
-The app reads `EXPO_PUBLIC_*` values at build time and bakes them into
-the JS bundle. If they're missing, the production build will silently
-point at nothing (or worse, at your dev Convex deployment).
+We run two Convex deployments under the same project:
 
-Set these once per EAS environment. Profile names in `eas.json`
-(`development` / `preview` / `production`) match EAS environment names,
-so values auto-apply on `eas build --profile <name>`.
+| EAS profile | Convex deployment | Notes |
+| --- | --- | --- |
+| local dev (`expo start`) | `dev:energized-akita-584` | Driven by `.env.local`, written by `npx convex dev`. |
+| `development` (sim build) | `dev:energized-akita-584` | Same as local. |
+| `preview` (internal devices) | `dev:energized-akita-584` | Stages on dev so we don't run a third deployment. |
+| `production` (TestFlight + App Store) | prod deployment | Only ever updated via `npx convex deploy`. |
+
+The app code reads a single env var, `EXPO_PUBLIC_CONVEX_URL`, baked
+into the JS bundle at build time. The `production` EAS environment
+overrides it to point at prod; other profiles fall back to
+`.env.local` (dev).
+
+### Backend secrets on the prod deployment
+
+Each Convex deployment has its own server-side env vars (set in the
+Convex dashboard, not in any file in this repo). The prod deployment
+needs:
+
+- `AUTH_RESEND_KEY` — same Resend API key as dev; the verified
+  sender `noreply@mail.giftsmith.app` works for both.
+- `AUTH_APPLE_ID`, `AUTH_APPLE_SECRET` — same Apple Sign In Service
+  ID / signing key as dev (we reuse one OAuth credential per
+  provider; see "OAuth return URLs" below).
+- `AUTH_GOOGLE_ID`, `AUTH_GOOGLE_SECRET` — same Google OAuth
+  client ID / secret as dev.
+- `JWT_PRIVATE_KEY`, `JWKS` — generate fresh for prod with
+  `npx @convex-dev/auth --prod`. **Do not** copy from dev.
+
+### OAuth return URLs
+
+Convex Auth posts back to `<CONVEX_SITE_URL>/api/auth/callback/<provider>`,
+and `CONVEX_SITE_URL` is per-deployment. Both consoles must list the
+prod `*.convex.site` host alongside the dev one:
+
+- **Apple Developer** → Identifiers → Services ID → "Return URLs":
+  add `https://<prod>.convex.site/api/auth/callback/apple`.
+- **Google Cloud Console** → APIs & Services → Credentials → OAuth
+  2.0 client → "Authorized redirect URIs": add
+  `https://<prod>.convex.site/api/auth/callback/google`.
+
+The app-side redirect (`giftsmith://`) is already allow-listed in
+`convex/auth.ts` and is environment-agnostic.
+
+## EAS environment variables
+
+Set these once. Profile names in `eas.json`
+(`development` / `preview` / `production`) match EAS environment
+names, so values auto-apply on `eas build --profile <name>`. Leave
+`development` / `preview` unset so they fall through to `.env.local`.
 
 ```sh
-# Production — points at the prod Convex deployment.
+# Production Convex URL. Required.
 npx eas env:create \
   --environment production \
   --name EXPO_PUBLIC_CONVEX_URL \
   --value https://<your-prod-deployment>.convex.cloud \
   --visibility plaintext
 
+# Optional: separate Sentry DSN. Reusing the dev DSN is fine — the
+# app already tags errors with environment via __DEV__
+# (see src/lib/sentry.ts).
 npx eas env:create \
   --environment production \
   --name EXPO_PUBLIC_SENTRY_DSN \
   --value https://<key>@<org>.ingest.sentry.io/<project> \
   --visibility plaintext
-
-# Repeat for preview if you want a separate staging Convex deployment.
-# Repeat for development only if simulator builds need different values
-# than `.env.local`.
 ```
 
 Verify with `npx eas env:list --environment production`. Re-run
@@ -70,6 +113,11 @@ EAS so the secrets don't end up in the repo.
 ## First TestFlight build
 
 ```sh
+# Push the current convex/ schema + functions to prod. EAS doesn't
+# touch Convex — if you skip this, the prod build talks to a stale
+# backend and crashes at runtime.
+npx convex deploy
+
 # Production iOS build. First run prompts for Apple Developer
 # credentials and generates a provisioning profile. Build runs on
 # Expo's cloud — typically 10-20 minutes.
@@ -94,7 +142,10 @@ After Apple processes the build (10-30 min), you'll see it in TestFlight. Add yo
 For subsequent builds:
 
 ```sh
-# Bump version automatically; previous builds stay on TestFlight.
+# Always deploy convex/ to prod first, then build the JS bundle
+# against it. Skipping `convex deploy` ships an app that
+# expects a schema/function the prod backend doesn't have.
+npx convex deploy
 npx eas build --platform ios --profile production
 npx eas submit --platform ios --profile production
 ```
@@ -121,4 +172,3 @@ npx eas build --platform ios --profile development
 - Privacy policy URL (App Store requires one)
 - App Store screenshots (5.5" and 6.7" devices minimum)
 - App description, keywords, support URL
-- Convex production deployment (`npx convex deploy --prod`); update `EXPO_PUBLIC_CONVEX_URL` in production builds via EAS environment variables
