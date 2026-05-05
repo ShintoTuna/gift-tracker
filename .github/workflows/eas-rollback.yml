@@ -9,9 +9,11 @@
 # Required GitHub repository secret:
 #   EXPO_TOKEN — same token eas-update.yml uses
 #
-# Note: doesn't run `npm ci`. The rollback marker is metadata-only —
-# no JS bundling, no native context needed — so we skip the install
-# step to keep incident response under a minute.
+# `eas update:roll-back-to-embedded` shells out to `npx expo config`
+# under the hood (to read the runtimeVersion policy + plugin list), so
+# the project's deps have to be installed even though no JS is being
+# bundled. The npm ci step adds ~90s; that's the cost of running the
+# rollback through EAS rather than poking the manifest server directly.
 
 name: EAS Rollback to Embedded
 
@@ -65,6 +67,16 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        # `eas update:roll-back-to-embedded` runs `npx expo config`
+        # internally, which can't resolve plugins like expo-router
+        # without the workspace deps installed. An earlier draft of
+        # this workflow skipped npm ci on the assumption that a
+        # rollback marker is metadata-only — that assumption was
+        # wrong, and the previous run died with "Failed to resolve
+        # plugin for module 'expo-router'".
+        run: npm ci
 
       - name: Resolve rollback message + runtime version
         id: meta
