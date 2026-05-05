@@ -172,9 +172,20 @@ function AuthGate({ children }: { children: ReactNode }) {
   }
 
   // Authenticated. The welcome gate needs `settings` resolved; while
-  // the query is in-flight (`undefined`) we hold rendering rather
+  // the query is in-flight (`undefined`) we hold the redirect rather
   // than risk a flash of the tabs followed by a redirect to /welcome.
-  if (settings === undefined) return null;
+  //
+  // Important: when we're still inside the (auth) group (i.e. we just
+  // completed sign-in and are about to redirect to /welcome or /),
+  // keep rendering the auth screen instead of unmounting to `null`.
+  // Otherwise the OAuth spinner vanishes into a blank black frame for
+  // however long the WS takes to re-auth with the new token and
+  // redeliver this query — on a fresh Google sign-up that gap is
+  // long enough that the user perceives a crash and force-quits.
+  if (settings === undefined) {
+    if (inAuthGroup) return <>{children}</>;
+    return null;
+  }
   const hasSeenWelcome = settings?.hasSeenWelcome === true;
 
   if (inAuthGroup) {
