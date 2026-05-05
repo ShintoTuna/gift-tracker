@@ -1,6 +1,6 @@
 # Publishes an EAS Update (OTA) so JS-only fixes can ship without
-# a full native rebuild. Runs after CI on master, and on demand via
-# workflow_dispatch.
+# a full native rebuild. Manual-only — trigger from the Actions tab
+# (or `gh workflow run eas-update.yml`).
 #
 # Required GitHub repository secrets:
 #   EXPO_TOKEN              — EAS access token (Expo dashboard → Access Tokens)
@@ -21,10 +21,6 @@
 name: EAS Update
 
 on:
-  workflow_run:
-    workflows: ["CI"]
-    types: [completed]
-    branches: [master]
   workflow_dispatch:
     inputs:
       branch:
@@ -41,8 +37,6 @@ on:
 
 jobs:
   publish:
-    # Skip on a failed CI run. Manual dispatches always run.
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -61,20 +55,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Resolve update branch + message
+      - name: Resolve update message
         id: meta
         env:
-          DISPATCH_BRANCH: ${{ inputs.branch }}
           DISPATCH_MESSAGE: ${{ inputs.message }}
         run: |
-          BRANCH="${DISPATCH_BRANCH:-production}"
           if [ -n "$DISPATCH_MESSAGE" ]; then
             MESSAGE="$DISPATCH_MESSAGE"
           else
-            # Latest commit on master at the time the workflow runs.
+            # Latest commit on the dispatched ref.
             MESSAGE="$(git log -1 --pretty=%s)"
           fi
-          echo "branch=$BRANCH" >> "$GITHUB_OUTPUT"
           # Multi-line-safe message passing.
           {
             echo "message<<EOF"
@@ -89,6 +80,6 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
         run: |
           eas update \
-            --branch "${{ steps.meta.outputs.branch }}" \
+            --branch "${{ inputs.branch }}" \
             --message "${{ steps.meta.outputs.message }}" \
             --non-interactive
