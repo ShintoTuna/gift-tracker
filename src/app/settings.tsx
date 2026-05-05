@@ -274,10 +274,12 @@ function AboutSection() {
   const { enabled: errorReportsEnabled, setEnabled: setErrorReportsEnabled } =
     useErrorReportsEnabled();
 
-  const version = Application.nativeApplicationVersion;
-  const build = Application.nativeBuildVersion;
-  const versionLabel =
-    version && build ? `${version} (${build})` : version ?? "—";
+  // The semver `version` from app.json is the user-facing release
+  // number we bump per release. The native build number
+  // (CFBundleVersion / versionCode) is auto-incremented by EAS and
+  // isn't useful for end users, so it stays out of the UI — App
+  // Store Connect, EAS, and Sentry release names already carry it.
+  const versionLabel = Application.nativeApplicationVersion ?? "—";
 
   // Surface which JS bundle is actually running. `isEmbeddedLaunch`
   // is true when we're on the bundle that shipped inside the binary
