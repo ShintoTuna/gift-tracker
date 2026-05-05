@@ -52,6 +52,32 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
 
+      - name: Verify required secrets
+        # Fail fast if EXPO_PUBLIC_CONVEX_URL is missing — without it
+        # the OTA bundle would crash at module load (ConvexReactClient
+        # rejects undefined URL), which kills the JS engine before any
+        # UI or Sentry can mount. That's exactly how we shipped the
+        # black-screen incident; refuse to publish in that state.
+        # Sentry-related secrets are warnings, not errors: missing DSN
+        # / auth token degrade observability but don't break the app.
+        env:
+          EXPO_PUBLIC_CONVEX_URL: ${{ secrets.EXPO_PUBLIC_CONVEX_URL }}
+          EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        run: |
+          fail=0
+          if [ -z "${EXPO_PUBLIC_CONVEX_URL:-}" ]; then
+            echo "::error::EXPO_PUBLIC_CONVEX_URL secret is not set or empty. Refusing to publish — bundle would crash at module load."
+            fail=1
+          fi
+          if [ -z "${EXPO_PUBLIC_SENTRY_DSN:-}" ]; then
+            echo "::warning::EXPO_PUBLIC_SENTRY_DSN is not set. JS errors in the OTA bundle won't be captured to Sentry."
+          fi
+          if [ -z "${SENTRY_AUTH_TOKEN:-}" ]; then
+            echo "::warning::SENTRY_AUTH_TOKEN is not set. Source maps won't upload — production stack traces will be Hermes-minified."
+          fi
+          exit $fail
+
       - name: Install dependencies
         run: npm ci
 
@@ -75,6 +101,9 @@ jobs:
 
       - name: Publish update
         env:
+          # expo-cli (the inner exporter EAS spawns) doesn't honour
+          # `--non-interactive`; it wants `CI=1` to suppress prompts.
+          CI: "1"
           EXPO_PUBLIC_CONVEX_URL: ${{ secrets.EXPO_PUBLIC_CONVEX_URL }}
           EXPO_PUBLIC_SENTRY_DSN: ${{ secrets.EXPO_PUBLIC_SENTRY_DSN }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -82,4 +111,5 @@ jobs:
           eas update \
             --branch "${{ inputs.branch }}" \
             --message "${{ steps.meta.outputs.message }}" \
+            --platform ios \
             --non-interactive

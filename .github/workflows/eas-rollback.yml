@@ -1,0 +1,88 @@
+# Panic-button rollback for OTA. Publishes a rollback-to-embedded
+# marker on the chosen EAS Update branch + platform; clients revert
+# to the bundle that shipped inside the binary on next cold launch.
+#
+# Use this when an OTA bundle has broken the app and we need users
+# unstuck before we ship a corrected update. After rolling back, fix
+# the underlying issue, re-publish via eas-update.yml.
+#
+# Required GitHub repository secret:
+#   EXPO_TOKEN — same token eas-update.yml uses
+#
+# Note: doesn't run `npm ci`. The rollback marker is metadata-only —
+# no JS bundling, no native context needed — so we skip the install
+# step to keep incident response under a minute.
+
+name: EAS Rollback to Embedded
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: EAS Update branch to roll back
+        required: true
+        default: production
+        type: choice
+        options:
+          - production
+          - preview
+      platform:
+        description: Platform to roll back
+        required: true
+        default: ios
+        type: choice
+        options:
+          - ios
+          - android
+          - all
+      confirm:
+        description: Type ROLLBACK (uppercase) to confirm
+        required: true
+        type: string
+      message:
+        description: Optional rollback message (e.g. issue link)
+        required: false
+
+jobs:
+  rollback:
+    # Refuse to run without explicit confirmation. Keeps an idle
+    # tab/finger-slip from rolling production back by accident.
+    if: ${{ inputs.confirm == 'ROLLBACK' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Resolve rollback message
+        id: meta
+        env:
+          DISPATCH_MESSAGE: ${{ inputs.message }}
+        run: |
+          if [ -n "$DISPATCH_MESSAGE" ]; then
+            MESSAGE="$DISPATCH_MESSAGE"
+          else
+            MESSAGE="Rollback to embedded — ${{ inputs.branch }}/${{ inputs.platform }}, triggered by ${{ github.actor }}"
+          fi
+          {
+            echo "message<<EOF"
+            echo "$MESSAGE"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Publish rollback marker
+        run: |
+          eas update:rollback-to-embedded \
+            --branch "${{ inputs.branch }}" \
+            --platform "${{ inputs.platform }}" \
+            --message "${{ steps.meta.outputs.message }}" \
+            --non-interactive
