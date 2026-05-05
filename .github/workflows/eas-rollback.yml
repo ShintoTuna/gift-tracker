@@ -80,9 +80,36 @@ jobs:
           } >> "$GITHUB_OUTPUT"
 
       - name: Publish rollback marker
+        # In EAS CLI 18.x the subcommand is `eas update:roll-back-to-embedded`
+        # with hyphens between `roll`, `back`, `to`, `embedded` — not the
+        # condensed `rollback-to-embedded` that an earlier draft of this
+        # workflow used (and that just bricked an incident response with
+        # "command not found"). The hyphenated form is what `eas update --help`
+        # documents in v18.x.
+        #
+        # Fall through to the legacy `--rollback-to-embedded` flag form on
+        # `eas update` if the subcommand is also unrecognised — older CLIs
+        # carried it as a flag — and dump `eas update --help` on total
+        # failure so the next person reading the log can see the actual
+        # subcommand list.
         run: |
-          eas update:rollback-to-embedded \
-            --branch "${{ inputs.branch }}" \
-            --platform "${{ inputs.platform }}" \
-            --message "${{ steps.meta.outputs.message }}" \
-            --non-interactive
+          set -o pipefail
+          MESSAGE='${{ steps.meta.outputs.message }}'
+          if eas update:roll-back-to-embedded \
+              --branch "${{ inputs.branch }}" \
+              --platform "${{ inputs.platform }}" \
+              --message "$MESSAGE" \
+              --non-interactive; then
+            echo "Rolled back via eas update:roll-back-to-embedded."
+          elif eas update \
+              --branch "${{ inputs.branch }}" \
+              --platform "${{ inputs.platform }}" \
+              --message "$MESSAGE" \
+              --non-interactive \
+              --rollback-to-embedded; then
+            echo "Rolled back via eas update --rollback-to-embedded (legacy flag)."
+          else
+            echo "::error::Both rollback forms failed. Dumping eas update --help so we can see what commands actually exist on this CLI version:"
+            eas update --help || true
+            exit 1
+          fi
