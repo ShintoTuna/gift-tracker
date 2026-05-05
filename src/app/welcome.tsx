@@ -1,5 +1,6 @@
 import { useMutation } from "convex/react";
 import { router } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,13 +18,29 @@ import { api } from "../../convex/_generated/api";
 export default function WelcomeScreen() {
   const { t } = useTranslation();
   const markSeen = useMutation(api.userSettings.markWelcomeSeen);
+  const [busy, setBusy] = useState(false);
 
-  const onContinue = () => {
-    // Fire-and-forget — Convex retries transient failures and the
-    // AuthGate will redirect away the moment the optimistic update
-    // resolves. Worst case (offline) the screen reappears on next
-    // launch, which is acceptable.
-    void markSeen({});
+  const onContinue = async () => {
+    if (busy) return;
+    setBusy(true);
+    // Await the mutation before navigating. Two reasons:
+    //   1. `void markSeen({})` left the promise unhandled — a
+    //      rejection (network blip, transient auth context) bubbled
+    //      to Hermes and could kill the JS engine, which the OS
+    //      reports as a process termination with no Sentry event.
+    //   2. Navigating before `hasSeenWelcome` propagates to the
+    //      AuthGate's userSettings subscription causes the gate to
+    //      bounce us straight back to /welcome ("not seen yet"),
+    //      mounting + unmounting (tabs) in a tight loop. Awaiting
+    //      means by the time we replace, the gate sees the updated
+    //      flag.
+    try {
+      await markSeen({});
+    } catch {
+      // Couldn't persist (truly offline / server error). Drop the
+      // user into the app anyway — the AuthGate will re-prompt the
+      // welcome screen on next sign-in, which is acceptable.
+    }
     router.replace("/");
   };
 
@@ -59,7 +76,7 @@ export default function WelcomeScreen() {
 
       <View style={styles.actions}>
         <Text style={styles.recoveryNote}>{t("welcome.recoveryNote")}</Text>
-        <Btn tone="primary" full onPress={onContinue}>
+        <Btn tone="primary" full onPress={onContinue} disabled={busy}>
           {t("welcome.cta")}
         </Btn>
       </View>

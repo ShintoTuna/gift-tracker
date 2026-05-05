@@ -46,6 +46,8 @@
     "about": {
       "title": "About",
       "version": "Version",
+      "update": "Update",
+      "updateEmbedded": "embedded",
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
       "feedback": "Send feedback",

@@ -3,6 +3,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "convex/react";
 import * as Application from "expo-application";
 import { router } from "expo-router";
+import * as Updates from "expo-updates";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
@@ -278,6 +279,17 @@ function AboutSection() {
   const versionLabel =
     version && build ? `${version} (${build})` : version ?? "—";
 
+  // Surface which JS bundle is actually running. `isEmbeddedLaunch`
+  // is true when we're on the bundle that shipped inside the binary
+  // (no OTA applied yet, or OTA disabled in dev). When false, an EAS
+  // Update has been delivered and we show its short id so the
+  // installer can verify a fresh OTA actually landed instead of
+  // guessing from the native version alone.
+  const updateLabel =
+    Updates.isEmbeddedLaunch || !Updates.updateId
+      ? t("settings.about.updateEmbedded")
+      : Updates.updateId.slice(0, 8);
+
   const openExternal = (url: string) => {
     void Linking.openURL(url).catch(() => {
       Alert.alert(t("settings.about.openFailed"));
@@ -297,6 +309,10 @@ function AboutSection() {
         <View style={styles.aboutRow}>
           <Text style={styles.fieldLabel}>{t("settings.about.version")}</Text>
           <Text style={styles.aboutValue}>{versionLabel}</Text>
+        </View>
+        <View style={styles.aboutRow}>
+          <Text style={styles.fieldLabel}>{t("settings.about.update")}</Text>
+          <Text style={styles.aboutValue}>{updateLabel}</Text>
         </View>
       </Card>
 
