@@ -13,6 +13,7 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useFonts } from "expo-font";
 import { Redirect, Stack, useSegments } from "expo-router";
+import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
@@ -28,7 +29,6 @@ import {
 } from "@/i18n";
 import { convex } from "@/lib/convex";
 import { requestPermissionsAndGetToken } from "@/lib/notifications";
-import { chunkedSecureStorage } from "@/lib/secureStorage";
 import { GlobalErrorBoundary, initSentry, wrap } from "@/lib/sentry";
 
 import { api } from "../../convex/_generated/api";
@@ -48,13 +48,11 @@ SplashScreen.preventAutoHideAsync().catch(() => {
 
 // Convex Auth tokens persist in expo-secure-store across launches on
 // device. Web falls back to the provider default (memory/localStorage).
-//
-// We use a chunked adapter rather than calling SecureStore directly:
-// Convex Auth's combined JWT + refresh-token write can exceed
-// expo-secure-store's per-value cap (~2 KB on Android), which throws
-// natively from the JS bridge and tears down the app process. The
-// chunked adapter splits values across multiple SecureStore keys.
-const secureStorage = chunkedSecureStorage;
+const secureStorage = {
+  getItem: SecureStore.getItemAsync,
+  setItem: SecureStore.setItemAsync,
+  removeItem: SecureStore.deleteItemAsync,
+};
 
 // LanguageGate primes i18next from the user's persisted preference
 // before unblocking the UI. Two-tier resolution:
@@ -174,20 +172,9 @@ function AuthGate({ children }: { children: ReactNode }) {
   }
 
   // Authenticated. The welcome gate needs `settings` resolved; while
-  // the query is in-flight (`undefined`) we hold the redirect rather
+  // the query is in-flight (`undefined`) we hold rendering rather
   // than risk a flash of the tabs followed by a redirect to /welcome.
-  //
-  // Important: when we're still inside the (auth) group (i.e. we just
-  // completed sign-in and are about to redirect to /welcome or /),
-  // keep rendering the auth screen instead of unmounting to `null`.
-  // Otherwise the OAuth spinner vanishes into a blank black frame for
-  // however long the WS takes to re-auth with the new token and
-  // redeliver this query — on a fresh Google sign-up that gap is
-  // long enough that the user perceives a crash and force-quits.
-  if (settings === undefined) {
-    if (inAuthGroup) return <>{children}</>;
-    return null;
-  }
+  if (settings === undefined) return null;
   const hasSeenWelcome = settings?.hasSeenWelcome === true;
 
   if (inAuthGroup) {
