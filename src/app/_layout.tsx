@@ -247,8 +247,9 @@ function RootLayout() {
                   contentStyle: isDesktop
                     ? {
                         width: "100%",
-                        maxWidth: 640,
+                        maxWidth: 600,
                         alignSelf: "center",
+                        backgroundColor: colors.bg,
                       }
                     : undefined,
                 }}
@@ -257,7 +258,14 @@ function RootLayout() {
                 <Stack.Screen
                   name="(tabs)"
                   options={
-                    isDesktop ? { contentStyle: { width: "100%" } } : undefined
+                    isDesktop
+                      ? {
+                          contentStyle: {
+                            width: "100%",
+                            backgroundColor: colors.bg,
+                          },
+                        }
+                      : undefined
                   }
                 />
                 <Stack.Screen name="people/[id]" />
@@ -338,7 +346,10 @@ const frameStyles = StyleSheet.create({
       : null),
   },
   innerDesktop: {
-    maxWidth: 1200,
+    // Sidebar (232) + content (~600). Anything wider just adds dead
+    // space inside the frame; users prefer the gray gutters to live
+    // outside the app shell, not between the sidebar and content.
+    maxWidth: 832,
   },
 });
 
