@@ -1,4 +1,3 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useAction, useMutation, useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -27,6 +26,7 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
+import DateTimePicker from "@/components/internal/DateTimePicker";
 import { describeMutationError } from "@/lib/convexErrors";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";

@@ -1,5 +1,4 @@
 import { useQuery } from "convex/react";
-import { SymbolView } from "expo-symbols";
 import { router } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
 import { Trans, useTranslation } from "react-i18next";
@@ -15,7 +14,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { Btn, Label, PersonRow, Pill, ScreenTitle } from "@/components";
+import { Btn, Icon, Label, PersonRow, Pill, ScreenTitle } from "@/components";
 import { formatDateLine } from "@/lib/format";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
@@ -227,12 +226,7 @@ function PeopleHeader({ sub }: { sub?: string }) {
           accessibilityRole="button"
           accessibilityLabel={t("people.openSettingsA11y")}
         >
-          <SymbolView
-            name="gearshape"
-            size={22}
-            tintColor={colors.text2}
-            resizeMode="scaleAspectFit"
-          />
+          <Icon name="gearshape" size={22} color={colors.text2} />
         </Pressable>
       }
       trailing={

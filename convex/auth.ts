@@ -56,9 +56,20 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
     async redirect({ redirectTo }) {
       // Lock down where Convex Auth is allowed to send the user after
       // OAuth completes. exp:// (Expo dev) and giftsmith:// (production
-      // build, matches `scheme` in app.json) are the only valid schemes.
-      const allowed = ["exp://", "giftsmith://"];
-      if (!allowed.some((p) => redirectTo.startsWith(p))) {
+      // build, matches `scheme` in app.json) cover native; the web
+      // build redirects back to localhost in dev or to `WEB_SITE_URL`
+      // in prod (set in the Convex dashboard env).
+      const allowedNative = ["exp://", "giftsmith://"];
+      const allowedWebOrigins = [
+        "http://localhost:8081",
+        "http://localhost:19006",
+        process.env.WEB_SITE_URL,
+      ].filter((s): s is string => typeof s === "string" && s.length > 0);
+      const okNative = allowedNative.some((p) => redirectTo.startsWith(p));
+      const okWeb = allowedWebOrigins.some((origin) =>
+        redirectTo.startsWith(origin),
+      );
+      if (!okNative && !okWeb) {
         throw new Error(`Invalid redirectTo URI ${redirectTo}`);
       }
       return redirectTo;

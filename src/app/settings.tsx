@@ -1,5 +1,4 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "convex/react";
 import * as Application from "expo-application";
 import { router } from "expo-router";
@@ -19,6 +18,7 @@ import {
 } from "react-native";
 
 import { Btn, Card, Label, NavBar, Pill, ScreenTitle } from "@/components";
+import DateTimePicker from "@/components/internal/DateTimePicker";
 import {
   LANGUAGE_LABELS,
   SUPPORTED_LANGUAGES,

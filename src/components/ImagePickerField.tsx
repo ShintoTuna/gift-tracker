@@ -70,6 +70,10 @@ export function ImagePickerField({
           else if (idx === 1) onPick("library");
         },
       );
+    } else if (Platform.OS === "web") {
+      // The browser file dialog already lets mobile users pick
+      // between camera and library, so skip our own sheet.
+      onPick("library");
     } else {
       setAndroidSheetOpen(true);
     }
@@ -135,7 +139,7 @@ export function ImagePickerField({
           )}
         </View>
       </View>
-      {Platform.OS !== "ios" && (
+      {Platform.OS === "android" && (
         <ImageSourceSheet
           visible={androidSheetOpen}
           onSelect={handleAndroidSelect}

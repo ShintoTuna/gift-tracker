@@ -1,9 +1,10 @@
-import { SymbolView } from "expo-symbols";
 import { router } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet } from "react-native";
 
 import { colors } from "@/theme/tokens";
+
+import { Icon } from "./Icon";
 
 // Floating brass primary "+" button anchored bottom-right of the tab
 // screens. Opens the Quick Capture modal — the headline product
@@ -24,13 +25,7 @@ export function CaptureFab() {
       accessibilityRole="button"
       accessibilityLabel={t("capture.fabLabel")}
     >
-      <SymbolView
-        name="plus"
-        tintColor={colors.bg}
-        weight="semibold"
-        size={26}
-        resizeMode="scaleAspectFit"
-      />
+      <Icon name="plus" color={colors.bg} weight="semibold" size={26} />
     </Pressable>
   );
 }
