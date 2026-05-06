@@ -94,9 +94,14 @@ export default function CaptureScreen() {
       setImageStorageId(result.storageId);
       setImagePreview(result.previewUrl ?? null);
     } catch (err) {
+      // Surface a friendly hint instead of the raw Convex error —
+      // many retailers block scrapers outright (Amazon, Cloudflare-
+      // fronted shops) and "Source returned 403" means nothing to
+      // the user. Still log the technical reason for debugging.
+      console.warn("fetchImageFromUrl failed", err);
       notify(
         t("imagePicker.fetchFromSourceFailed"),
-        err instanceof Error ? err.message : String(err),
+        t("imagePicker.fetchFromSourceHint"),
       );
     } finally {
       setUploading(false);
