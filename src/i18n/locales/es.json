@@ -197,13 +197,7 @@
     "recurrence": "Repetición",
     "recurrenceYearly": "Anual",
     "recurrenceOneOff": "Única vez",
-    "template": {
-      "birthday": "Cumpleaños",
-      "anniversary": "Aniversario",
-      "newYear": "Año Nuevo",
-      "christmas": "Navidad",
-      "mothersDay": "Día de la Madre"
-    },
+    "templates": "Cumpleaños, Aniversario, Navidad, Día de la Madre, Día del Padre",
     "deleteButton": "Eliminar evento",
     "deleteConfirmTitle": "¿Eliminar este evento?",
     "notFound": "Evento no encontrado."

@@ -25,15 +25,10 @@ import { colors, spacing } from "@/theme/tokens";
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
 
-// Quick-fill templates for the title field. Tapping a pill replaces
-// whatever's in the input. Localised via occasionForm.template.<key>.
-const TITLE_TEMPLATES = [
-  "birthday",
-  "anniversary",
-  "newYear",
-  "christmas",
-  "mothersDay",
-] as const;
+// Quick-fill templates for the title field. The list is locale-driven
+// (occasionForm.templates is a comma-separated string) so each language
+// can ship the occasions that are culturally relevant — e.g. 8 марта /
+// 23 февраля in Russian rather than translating Mother's Day literally.
 
 // Modal-presented "new occasion" form. Reached via the Profile
 // screen's "+ Add" affordance, which passes the parent `personId`
@@ -52,6 +47,11 @@ export default function NewOccasionScreen() {
   const [saving, setSaving] = useState(false);
 
   const canSave = title.trim().length > 0 && !saving;
+
+  const titleTemplates = t("occasionForm.templates")
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
 
   const onSave = async () => {
     if (!canSave) return;
@@ -102,22 +102,19 @@ export default function NewOccasionScreen() {
                 returnKeyType="next"
               />
               <View style={styles.templates}>
-                {TITLE_TEMPLATES.map((key) => {
-                  const label = t(`occasionForm.template.${key}`);
-                  return (
-                    <Pressable
-                      key={key}
-                      onPress={() => setTitle(label)}
-                      hitSlop={4}
-                      accessibilityRole="button"
-                      accessibilityLabel={label}
-                    >
-                      <Pill tone="default" dashed>
-                        {label}
-                      </Pill>
-                    </Pressable>
-                  );
-                })}
+                {titleTemplates.map((label) => (
+                  <Pressable
+                    key={label}
+                    onPress={() => setTitle(label)}
+                    hitSlop={4}
+                    accessibilityRole="button"
+                    accessibilityLabel={label}
+                  >
+                    <Pill tone="default" dashed>
+                      {label}
+                    </Pill>
+                  </Pressable>
+                ))}
               </View>
             </View>
 

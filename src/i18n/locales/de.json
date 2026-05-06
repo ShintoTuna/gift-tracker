@@ -197,13 +197,7 @@
     "recurrence": "Wiederholung",
     "recurrenceYearly": "Jährlich",
     "recurrenceOneOff": "Einmalig",
-    "template": {
-      "birthday": "Geburtstag",
-      "anniversary": "Jahrestag",
-      "newYear": "Neujahr",
-      "christmas": "Weihnachten",
-      "mothersDay": "Muttertag"
-    },
+    "templates": "Geburtstag, Hochzeitstag, Weihnachten, Muttertag, Vatertag",
     "deleteButton": "Anlass löschen",
     "deleteConfirmTitle": "Diesen Anlass löschen?",
     "notFound": "Anlass nicht gefunden."
