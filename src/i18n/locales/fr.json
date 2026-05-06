@@ -88,7 +88,8 @@
     "chooseFromLibrary": "Choisir dans la galerie",
     "uploadFailed": "Impossible d'envoyer la photo",
     "fetchFromSource": "Utiliser l'image de la source",
-    "fetchFromSourceFailed": "Impossible de récupérer l'image de la source"
+    "fetchFromSourceFailed": "Impossible de récupérer l'image de la source",
+    "fetchFromSourceHint": "Certains sites bloquent la récupération d'images. Choisissez une photo manuellement."
   },
   "people": {
     "title": "Personnes",
@@ -196,6 +197,13 @@
     "recurrence": "Récurrence",
     "recurrenceYearly": "Annuel",
     "recurrenceOneOff": "Unique",
+    "template": {
+      "birthday": "Anniversaire",
+      "anniversary": "Anniversaire de mariage",
+      "newYear": "Nouvel An",
+      "christmas": "Noël",
+      "mothersDay": "Fête des Mères"
+    },
     "deleteButton": "Supprimer l'événement",
     "deleteConfirmTitle": "Supprimer cet événement ?",
     "notFound": "Événement introuvable."
@@ -206,13 +214,18 @@
     "editPill": "Modifier",
     "occasions": "Événements",
     "addOccasion": "+ Ajouter",
-    "occasionsEmpty": "Aucun événement — touchez <accent>+ Ajouter</accent> pour en créer un.",
+    "addOccasionCta": "Ajouter un événement",
+    "occasionsEmptyHeadline": "Aucun événement pour l'instant",
+    "occasionsEmptyBody": "Ajoutez un anniversaire, un anniversaire de mariage ou toute autre date dont vous voulez vous souvenir.",
     "interests": "Centres d'intérêt",
     "consideredIdeas": "À considérer · {{count}}",
     "givenIdeas": "Offerts · {{count}}",
     "givenCaption": "Offert · {{date}}",
     "givenCaptionWithOccasion": "Offert · {{date}} · {{occasion}}",
-    "ideasEmpty": "Aucune idée de cadeau pour l'instant. Ajoutez-en une depuis Capture rapide.",
+    "addIdea": "+ Ajouter une idée",
+    "addIdeaCta": "Ajouter une idée de cadeau",
+    "ideasEmptyHeadline": "Aucune idée de cadeau pour l'instant",
+    "ideasEmptyBody": "Capturez une idée maintenant et souvenez-vous-en pour la prochaine occasion.",
     "notFound": "Personne introuvable."
   },
   "brainstorm": {

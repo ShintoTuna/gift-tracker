@@ -88,7 +88,8 @@
     "chooseFromLibrary": "Elegir de la galería",
     "uploadFailed": "No se pudo subir la foto",
     "fetchFromSource": "Usar la imagen de la fuente",
-    "fetchFromSourceFailed": "No se pudo obtener la imagen de la fuente"
+    "fetchFromSourceFailed": "No se pudo obtener la imagen de la fuente",
+    "fetchFromSourceHint": "Algunos sitios bloquean la obtención de imágenes. Elige una foto manualmente."
   },
   "people": {
     "title": "Personas",
@@ -196,6 +197,13 @@
     "recurrence": "Repetición",
     "recurrenceYearly": "Anual",
     "recurrenceOneOff": "Única vez",
+    "template": {
+      "birthday": "Cumpleaños",
+      "anniversary": "Aniversario",
+      "newYear": "Año Nuevo",
+      "christmas": "Navidad",
+      "mothersDay": "Día de la Madre"
+    },
     "deleteButton": "Eliminar evento",
     "deleteConfirmTitle": "¿Eliminar este evento?",
     "notFound": "Evento no encontrado."
@@ -206,13 +214,18 @@
     "editPill": "Editar",
     "occasions": "Eventos",
     "addOccasion": "+ Añadir",
-    "occasionsEmpty": "Aún no hay eventos — toca <accent>+ Añadir</accent> para crear uno.",
+    "addOccasionCta": "Añadir un evento",
+    "occasionsEmptyHeadline": "Aún no hay eventos",
+    "occasionsEmptyBody": "Añade un cumpleaños, un aniversario o cualquier fecha que quieras recordar.",
     "interests": "Intereses",
     "consideredIdeas": "En consideración · {{count}}",
     "givenIdeas": "Regalados · {{count}}",
     "givenCaption": "Regalado · {{date}}",
     "givenCaptionWithOccasion": "Regalado · {{date}} · {{occasion}}",
-    "ideasEmpty": "Aún no hay ideas de regalo. Añade una desde Captura rápida.",
+    "addIdea": "+ Añadir idea",
+    "addIdeaCta": "Añadir una idea de regalo",
+    "ideasEmptyHeadline": "Aún no hay ideas de regalo",
+    "ideasEmptyBody": "Captura una idea ahora y recuérdala para la próxima ocasión.",
     "notFound": "Persona no encontrada."
   },
   "brainstorm": {

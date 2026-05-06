@@ -88,7 +88,8 @@
     "chooseFromLibrary": "Aus Galerie wählen",
     "uploadFailed": "Foto konnte nicht hochgeladen werden",
     "fetchFromSource": "Bild aus der Quelle verwenden",
-    "fetchFromSourceFailed": "Bild aus der Quelle konnte nicht geladen werden"
+    "fetchFromSourceFailed": "Bild aus der Quelle konnte nicht geladen werden",
+    "fetchFromSourceHint": "Manche Seiten blockieren das Abrufen von Bildern. Bitte wähle ein Foto manuell aus."
   },
   "people": {
     "title": "Personen",
@@ -196,6 +197,13 @@
     "recurrence": "Wiederholung",
     "recurrenceYearly": "Jährlich",
     "recurrenceOneOff": "Einmalig",
+    "template": {
+      "birthday": "Geburtstag",
+      "anniversary": "Jahrestag",
+      "newYear": "Neujahr",
+      "christmas": "Weihnachten",
+      "mothersDay": "Muttertag"
+    },
     "deleteButton": "Anlass löschen",
     "deleteConfirmTitle": "Diesen Anlass löschen?",
     "notFound": "Anlass nicht gefunden."
@@ -206,13 +214,18 @@
     "editPill": "Bearbeiten",
     "occasions": "Anlässe",
     "addOccasion": "+ Hinzufügen",
-    "occasionsEmpty": "Noch keine Anlässe — tippe auf <accent>+ Hinzufügen</accent>, um einen anzulegen.",
+    "addOccasionCta": "Anlass hinzufügen",
+    "occasionsEmptyHeadline": "Noch keine Anlässe",
+    "occasionsEmptyBody": "Füge einen Geburtstag, Jahrestag oder ein beliebiges Datum hinzu, das du dir merken möchtest.",
     "interests": "Interessen",
     "consideredIdeas": "In Überlegung · {{count}}",
     "givenIdeas": "Verschenkt · {{count}}",
     "givenCaption": "Verschenkt · {{date}}",
     "givenCaptionWithOccasion": "Verschenkt · {{date}} · {{occasion}}",
-    "ideasEmpty": "Noch keine Geschenkideen. Lege eine über Schnell erfassen an.",
+    "addIdea": "+ Idee",
+    "addIdeaCta": "Geschenkidee hinzufügen",
+    "ideasEmptyHeadline": "Noch keine Geschenkideen",
+    "ideasEmptyBody": "Erfasse jetzt eine Idee und denk beim nächsten Anlass daran.",
     "notFound": "Person nicht gefunden."
   },
   "brainstorm": {
