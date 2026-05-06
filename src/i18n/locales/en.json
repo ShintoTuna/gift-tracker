@@ -196,6 +196,13 @@
     "recurrence": "Recurrence",
     "recurrenceYearly": "Yearly",
     "recurrenceOneOff": "One-off",
+    "template": {
+      "birthday": "Birthday",
+      "anniversary": "Anniversary",
+      "newYear": "New Year",
+      "christmas": "Christmas",
+      "mothersDay": "Mother's Day"
+    },
     "deleteButton": "Delete occasion",
     "deleteConfirmTitle": "Delete this occasion?",
     "notFound": "Occasion not found."
@@ -206,13 +213,18 @@
     "editPill": "Edit",
     "occasions": "Occasions",
     "addOccasion": "+ Add",
-    "occasionsEmpty": "No occasions yet — tap <accent>+ Add</accent> to create one.",
+    "addOccasionCta": "Add an occasion",
+    "occasionsEmptyHeadline": "No occasions yet",
+    "occasionsEmptyBody": "Add a birthday, anniversary, or any date you want to remember.",
     "interests": "Interests",
     "consideredIdeas": "Considered · {{count}}",
     "givenIdeas": "Given · {{count}}",
     "givenCaption": "Given · {{date}}",
     "givenCaptionWithOccasion": "Given · {{date}} · {{occasion}}",
-    "ideasEmpty": "No gift ideas yet. Add one from Quick Capture.",
+    "addIdea": "+ Add idea",
+    "addIdeaCta": "Add a gift idea",
+    "ideasEmptyHeadline": "No gift ideas yet",
+    "ideasEmptyBody": "Capture an idea now and remember it for the next occasion.",
     "notFound": "Person not found."
   },
   "brainstorm": {

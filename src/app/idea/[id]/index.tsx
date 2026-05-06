@@ -1,6 +1,5 @@
 import { useQuery } from "convex/react";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { router, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,7 +14,6 @@ import {
 
 import { Avatar, Card, Label, NavBar, Pill } from "@/components";
 import { formatPrice, shortenSource } from "@/lib/format";
-import { thumbColorForSeed } from "@/lib/seedColor";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
 import { api } from "../../../../convex/_generated/api";
@@ -69,7 +67,6 @@ export default function ViewIdeaScreen() {
     );
   }
 
-  const placeholderColor = thumbColorForSeed(idea._id);
   const taggedPeople = (people ?? []).filter((p) =>
     idea.taggedPeople.includes(p._id),
   );
@@ -110,28 +107,16 @@ export default function ViewIdeaScreen() {
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
       >
-        {/* Hero image — full-width square so the captured photo is
-            the visual anchor of the screen. Falls back to the same
-            deterministic placeholder used on the card. */}
-        <View style={styles.heroWrap}>
-          {idea.imageUrl ? (
+        {idea.imageUrl ? (
+          <View style={styles.heroWrap}>
             <Image
               source={{ uri: idea.imageUrl }}
               style={styles.hero}
               contentFit="cover"
               transition={120}
             />
-          ) : (
-            <View style={[styles.hero, { backgroundColor: placeholderColor }]}>
-              <LinearGradient
-                colors={["rgba(255,255,255,0.07)", "rgba(0,0,0,0.18)"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={StyleSheet.absoluteFill}
-              />
-            </View>
-          )}
-        </View>
+          </View>
+        ) : null}
 
         <View style={styles.body}>
           <Text style={styles.title}>{idea.title}</Text>

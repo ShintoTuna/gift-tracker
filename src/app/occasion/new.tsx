@@ -3,8 +3,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,6 +12,7 @@ import {
 import {
   Btn,
   DatePicker,
+  KeyboardForm,
   Label,
   NavBar,
   Pill,
@@ -25,6 +24,16 @@ import { colors, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
 import type { Id } from "../../../convex/_generated/dataModel";
+
+// Quick-fill templates for the title field. Tapping a pill replaces
+// whatever's in the input. Localised via occasionForm.template.<key>.
+const TITLE_TEMPLATES = [
+  "birthday",
+  "anniversary",
+  "newYear",
+  "christmas",
+  "mothersDay",
+] as const;
 
 // Modal-presented "new occasion" form. Reached via the Profile
 // screen's "+ Add" affordance, which passes the parent `personId`
@@ -70,10 +79,7 @@ export default function NewOccasionScreen() {
         leading="close"
         onLeadingPress={() => router.back()}
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={styles.flex}
-      >
+      <KeyboardForm>
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
@@ -84,16 +90,36 @@ export default function NewOccasionScreen() {
           </ScreenTitle>
 
           <View style={styles.fields}>
-            <TextField
-              label={t("occasionForm.titleLabel")}
-              placeholder={t("occasionForm.titlePlaceholder")}
-              value={title}
-              onChangeText={setTitle}
-              autoFocus
-              autoCapitalize="words"
-              autoCorrect={false}
-              returnKeyType="next"
-            />
+            <View>
+              <TextField
+                label={t("occasionForm.titleLabel")}
+                placeholder={t("occasionForm.titlePlaceholder")}
+                value={title}
+                onChangeText={setTitle}
+                autoFocus
+                autoCapitalize="words"
+                autoCorrect={false}
+                returnKeyType="next"
+              />
+              <View style={styles.templates}>
+                {TITLE_TEMPLATES.map((key) => {
+                  const label = t(`occasionForm.template.${key}`);
+                  return (
+                    <Pressable
+                      key={key}
+                      onPress={() => setTitle(label)}
+                      hitSlop={4}
+                      accessibilityRole="button"
+                      accessibilityLabel={label}
+                    >
+                      <Pill tone="default" dashed>
+                        {label}
+                      </Pill>
+                    </Pressable>
+                  );
+                })}
+              </View>
+            </View>
 
             <DatePicker value={date} onChange={setDate} />
 
@@ -136,7 +162,7 @@ export default function NewOccasionScreen() {
             </Btn>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardForm>
       {limitSheet}
     </View>
   );
@@ -147,7 +173,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  flex: { flex: 1 },
   scroll: {
     paddingBottom: spacing.xxl,
   },
@@ -162,6 +187,12 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     gap: spacing.sm,
+  },
+  templates: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+    marginTop: spacing.sm,
   },
   saveBtn: {
     marginTop: spacing.md,

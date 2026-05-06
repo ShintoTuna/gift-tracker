@@ -1,10 +1,8 @@
 import { useAction, useMutation, useQuery } from "convex/react";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -15,6 +13,7 @@ import {
 import {
   Btn,
   ImagePickerField,
+  KeyboardForm,
   NavBar,
   PeoplePicker,
   ScreenTitle,
@@ -37,6 +36,7 @@ import type { Id } from "../../convex/_generated/dataModel";
 // footer) so the iOS keyboard accessory bar never collides with it.
 export default function CaptureScreen() {
   const { t } = useTranslation();
+  const { personId } = useLocalSearchParams<{ personId?: string }>();
   const people = useQuery(api.people.list);
   const createIdea = useMutation(api.giftIdeas.create);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
@@ -48,7 +48,11 @@ export default function CaptureScreen() {
   const [sourceUrl, setSourceUrl] = useState("");
   const [priceText, setPriceText] = useState("");
   const [description, setDescription] = useState("");
-  const [taggedIds, setTaggedIds] = useState<Id<"people">[]>([]);
+  // When opened from a profile screen, preselect that person. The
+  // picker stays editable so the user can untag or add others.
+  const [taggedIds, setTaggedIds] = useState<Id<"people">[]>(() =>
+    personId ? [personId as Id<"people">] : [],
+  );
   const [imageStorageId, setImageStorageId] = useState<Id<"_storage"> | null>(
     null,
   );
@@ -129,10 +133,15 @@ export default function CaptureScreen() {
           priceEstimate !== undefined ? defaultCurrency : undefined,
         taggedPeople: taggedIds,
       });
-      // Land on the gifts list so the new idea is visible at the top
-      // — `replace` so the back stack doesn't preserve the (now-empty)
-      // capture form.
-      router.replace("/(tabs)/backlog");
+      // From a profile (personId param), return there so the freshly
+      // tagged idea shows up under "Considered". Otherwise land on
+      // the backlog so the new idea is visible at the top — `replace`
+      // so the back stack doesn't preserve the (now-empty) form.
+      if (personId) {
+        router.back();
+      } else {
+        router.replace("/(tabs)/backlog");
+      }
     } catch (err) {
       handleError(err, t("capture.couldNotSave"));
       setSaving(false);
@@ -146,10 +155,7 @@ export default function CaptureScreen() {
         leading="close"
         onLeadingPress={() => router.back()}
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={styles.flex}
-      >
+      <KeyboardForm>
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
@@ -245,7 +251,7 @@ export default function CaptureScreen() {
             </Btn>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardForm>
       {limitSheet}
     </View>
   );
@@ -256,7 +262,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  flex: { flex: 1 },
   scroll: {
     paddingBottom: spacing.xxl,
   },

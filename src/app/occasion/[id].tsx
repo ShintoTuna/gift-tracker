@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -16,6 +14,7 @@ import {
 import {
   Btn,
   DatePicker,
+  KeyboardForm,
   Label,
   NavBar,
   Pill,
@@ -137,10 +136,7 @@ export default function EditOccasionScreen() {
         leading="close"
         onLeadingPress={() => router.back()}
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={styles.flex}
-      >
+      <KeyboardForm>
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
@@ -208,7 +204,7 @@ export default function EditOccasionScreen() {
             </Btn>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardForm>
     </View>
   );
 }
@@ -218,7 +214,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  flex: { flex: 1 },
   scroll: {
     paddingBottom: spacing.xxl,
   },
