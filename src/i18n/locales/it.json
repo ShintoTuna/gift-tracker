@@ -197,13 +197,7 @@
     "recurrence": "Ricorrenza",
     "recurrenceYearly": "Annuale",
     "recurrenceOneOff": "Una tantum",
-    "template": {
-      "birthday": "Compleanno",
-      "anniversary": "Anniversario",
-      "newYear": "Capodanno",
-      "christmas": "Natale",
-      "mothersDay": "Festa della Mamma"
-    },
+    "templates": "Compleanno, Anniversario, Natale, Festa della Mamma, Festa del Papà",
     "deleteButton": "Elimina occasione",
     "deleteConfirmTitle": "Eliminare questa occasione?",
     "notFound": "Occasione non trovata."

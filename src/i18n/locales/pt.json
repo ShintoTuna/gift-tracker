@@ -197,13 +197,7 @@
     "recurrence": "Recorrência",
     "recurrenceYearly": "Anual",
     "recurrenceOneOff": "Única",
-    "template": {
-      "birthday": "Aniversário",
-      "anniversary": "Bodas",
-      "newYear": "Ano Novo",
-      "christmas": "Natal",
-      "mothersDay": "Dia das Mães"
-    },
+    "templates": "Aniversário, Bodas, Natal, Dia das Mães, Dia dos Pais",
     "deleteButton": "Excluir ocasião",
     "deleteConfirmTitle": "Excluir esta ocasião?",
     "notFound": "Ocasião não encontrada."

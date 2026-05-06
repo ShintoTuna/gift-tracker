@@ -207,13 +207,7 @@
     "recurrence": "Повтор",
     "recurrenceYearly": "Ежегодно",
     "recurrenceOneOff": "Один раз",
-    "template": {
-      "birthday": "День рождения",
-      "anniversary": "Годовщина",
-      "newYear": "Новый год",
-      "christmas": "Рождество",
-      "mothersDay": "День матери"
-    },
+    "templates": "День рождения, Годовщина, Новый год, 8 марта, 23 февраля",
     "deleteButton": "Удалить событие",
     "deleteConfirmTitle": "Удалить это событие?",
     "notFound": "Событие не найдено."

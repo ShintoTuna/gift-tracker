@@ -197,13 +197,7 @@
     "recurrence": "Récurrence",
     "recurrenceYearly": "Annuel",
     "recurrenceOneOff": "Unique",
-    "template": {
-      "birthday": "Anniversaire",
-      "anniversary": "Anniversaire de mariage",
-      "newYear": "Nouvel An",
-      "christmas": "Noël",
-      "mothersDay": "Fête des Mères"
-    },
+    "templates": "Anniversaire, Anniversaire de mariage, Noël, Fête des Mères, Fête des Pères",
     "deleteButton": "Supprimer l'événement",
     "deleteConfirmTitle": "Supprimer cet événement ?",
     "notFound": "Événement introuvable."
