@@ -2,7 +2,7 @@ import { useMutation } from "convex/react";
 import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { Btn } from "@/components";
@@ -46,40 +46,45 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView style={styles.root} edges={["top", "bottom"]}>
-      <View style={styles.hero}>
-        <Image
-          source={require("../../assets/images/icon.png")}
-          style={styles.logo}
-          resizeMode="contain"
-        />
-        <Text style={styles.title}>{t("welcome.title")}</Text>
-        <Text style={styles.subtitle}>{t("welcome.subtitle")}</Text>
-      </View>
+      <ScrollView
+        contentContainerStyle={styles.scroll}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={styles.hero}>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>{t("welcome.title")}</Text>
+          <Text style={styles.subtitle}>{t("welcome.subtitle")}</Text>
+        </View>
 
-      <View style={styles.steps}>
-        <Step
-          numeral="1"
-          title={t("welcome.step1Title")}
-          body={t("welcome.step1Body")}
-        />
-        <Step
-          numeral="2"
-          title={t("welcome.step2Title")}
-          body={t("welcome.step2Body")}
-        />
-        <Step
-          numeral="3"
-          title={t("welcome.step3Title")}
-          body={t("welcome.step3Body")}
-        />
-      </View>
+        <View style={styles.steps}>
+          <Step
+            numeral="1"
+            title={t("welcome.step1Title")}
+            body={t("welcome.step1Body")}
+          />
+          <Step
+            numeral="2"
+            title={t("welcome.step2Title")}
+            body={t("welcome.step2Body")}
+          />
+          <Step
+            numeral="3"
+            title={t("welcome.step3Title")}
+            body={t("welcome.step3Body")}
+          />
+        </View>
 
-      <View style={styles.actions}>
-        <Text style={styles.recoveryNote}>{t("welcome.recoveryNote")}</Text>
-        <Btn tone="primary" full onPress={onContinue} disabled={busy}>
-          {t("welcome.cta")}
-        </Btn>
-      </View>
+        <View style={styles.actions}>
+          <Text style={styles.recoveryNote}>{t("welcome.recoveryNote")}</Text>
+          <Btn tone="primary" full onPress={onContinue} disabled={busy}>
+            {t("welcome.cta")}
+          </Btn>
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -110,9 +115,12 @@ const styles = StyleSheet.create({
   root: {
     flex: 1,
     backgroundColor: colors.bg,
+  },
+  scroll: {
+    flexGrow: 1,
+    justifyContent: "space-between",
     paddingHorizontal: spacing.xl,
     paddingBottom: spacing.xl,
-    justifyContent: "space-between",
   },
   hero: {
     alignItems: "center",
