@@ -155,6 +155,19 @@ function NotificationsRegistrar() {
   return null;
 }
 
+// `useSegments()` returns the static template names of the active
+// route, so dynamic params come back as e.g. "[id]". The screens
+// listed below all opt into `presentation: "modal"` in the root
+// Stack — keep the two lists in sync if a new modal route lands.
+function isModalRoute(segments: string[]): boolean {
+  const [s0, s1, s2] = segments;
+  if (s0 === "capture" || s0 === "settings") return true;
+  if (s0 === "occasion" || s0 === "brainstorm") return true;
+  if (s0 === "people" && s1 === "new") return true;
+  if ((s0 === "people" || s0 === "idea") && s2 === "edit") return true;
+  return false;
+}
+
 // AuthGate redirects unauthenticated users to the (auth) route group,
 // and conversely keeps signed-in users out of it. `useConvexAuth()` is
 // what reads from the secure-store-backed token cache, so this is the
@@ -193,6 +206,16 @@ function AuthGate({ children }: { children: ReactNode }) {
 
 function RootLayout() {
   const isDesktop = useBreakpoint() === "desktop";
+  const segments = useSegments();
+  // Modal routes break out of the desktop frame: the 832px-wide
+  // shell with gray gutters reads as "an app window" for tab views
+  // (sidebar + content), but on a modal the gutters look like
+  // dead space because the sidebar isn't there to balance them.
+  // When a modal route is focused, we drop the maxWidth so the
+  // dark frame fills the viewport — gray gutters return when the
+  // modal dismisses back to a tab.
+  const onModalRoute = isModalRoute(segments);
+  const wideFrame = isDesktop && !onModalRoute;
   const [fontsLoaded] = useFonts({
     CormorantGaramond_500Medium_Italic,
     Manrope_400Regular,
@@ -233,7 +256,7 @@ function RootLayout() {
             <View
               style={[
                 frameStyles.inner,
-                isDesktop ? frameStyles.innerDesktop : null,
+                wideFrame ? frameStyles.innerDesktop : null,
               ]}
             >
               <Stack
