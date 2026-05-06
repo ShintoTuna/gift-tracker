@@ -13,6 +13,7 @@ export { ErrorFallback } from "./ErrorFallback";
 export { Icon, type IconName } from "./Icon";
 export { IdeaCard } from "./IdeaCard";
 export { ImagePickerField } from "./ImagePickerField";
+export { KeyboardForm } from "./KeyboardForm";
 export { Label, type LabelTone } from "./Label";
 export { LimitReachedSheet } from "./LimitReachedSheet";
 export { NavBar, type NavBarLeading } from "./NavBar";

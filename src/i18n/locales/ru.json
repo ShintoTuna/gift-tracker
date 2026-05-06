@@ -206,6 +206,13 @@
     "recurrence": "Повтор",
     "recurrenceYearly": "Ежегодно",
     "recurrenceOneOff": "Один раз",
+    "template": {
+      "birthday": "День рождения",
+      "anniversary": "Годовщина",
+      "newYear": "Новый год",
+      "christmas": "Рождество",
+      "mothersDay": "День матери"
+    },
     "deleteButton": "Удалить событие",
     "deleteConfirmTitle": "Удалить это событие?",
     "notFound": "Событие не найдено."
@@ -216,13 +223,18 @@
     "editPill": "Изменить",
     "occasions": "События",
     "addOccasion": "+ Добавить",
-    "occasionsEmpty": "Пока нет событий — нажмите <accent>+ Добавить</accent>, чтобы создать.",
+    "addOccasionCta": "Добавить событие",
+    "occasionsEmptyHeadline": "Событий пока нет",
+    "occasionsEmptyBody": "Добавьте день рождения, годовщину или любую дату, которую нужно помнить.",
     "interests": "Интересы",
     "consideredIdeas": "В планах · {{count}}",
     "givenIdeas": "Подарено · {{count}}",
     "givenCaption": "Подарено · {{date}}",
     "givenCaptionWithOccasion": "Подарено · {{date}} · {{occasion}}",
-    "ideasEmpty": "Пока нет идей подарков. Добавьте через быструю запись.",
+    "addIdea": "+ Идея",
+    "addIdeaCta": "Добавить идею подарка",
+    "ideasEmptyHeadline": "Идей пока нет",
+    "ideasEmptyBody": "Запишите идею сейчас, чтобы вспомнить о ней к следующему событию.",
     "notFound": "Человек не найден."
   },
   "brainstorm": {

@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  KeyboardAvoidingView,
-  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -18,6 +16,7 @@ import {
   Btn,
   Card,
   ImagePickerField,
+  KeyboardForm,
   Label,
   NavBar,
   PeoplePicker,
@@ -317,10 +316,7 @@ export default function EditIdeaScreen() {
         leading="close"
         onLeadingPress={() => router.back()}
       />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        style={styles.flex}
-      >
+      <KeyboardForm>
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
@@ -634,7 +630,7 @@ export default function EditIdeaScreen() {
             </Btn>
           </View>
         </ScrollView>
-      </KeyboardAvoidingView>
+      </KeyboardForm>
     </View>
   );
 }
@@ -644,7 +640,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.bg,
   },
-  flex: { flex: 1 },
   scroll: {
     paddingBottom: spacing.xxl,
   },

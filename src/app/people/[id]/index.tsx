@@ -1,6 +1,6 @@
 import { useQuery } from "convex/react";
 import { router, useLocalSearchParams } from "expo-router";
-import { Trans, useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Pressable,
@@ -12,7 +12,9 @@ import {
 
 import {
   Avatar,
+  Btn,
   Card,
+  Icon,
   IdeaCard,
   Label,
   NavBar,
@@ -85,6 +87,11 @@ export default function ProfileScreen() {
       pathname: "/idea/[id]",
       params: { id: ideaId },
     });
+  const openCaptureForPerson = () =>
+    router.push({
+      pathname: "/capture",
+      params: { personId: person._id },
+    });
 
   return (
     <View style={styles.root}>
@@ -136,21 +143,23 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Label>{t("profile.occasions")}</Label>
-            <Pressable
-              onPress={() =>
-                router.push({
-                  pathname: "/occasion/new",
-                  params: { personId: person._id },
-                })
-              }
-              hitSlop={6}
-              accessibilityRole="button"
-              accessibilityLabel={t("profile.addOccasion")}
-            >
-              <Pill tone="brass" dashed>
-                {t("profile.addOccasion")}
-              </Pill>
-            </Pressable>
+            {occasions.length > 0 && (
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: "/occasion/new",
+                    params: { personId: person._id },
+                  })
+                }
+                hitSlop={6}
+                accessibilityRole="button"
+                accessibilityLabel={t("profile.addOccasion")}
+              >
+                <Pill tone="brass" dashed>
+                  {t("profile.addOccasion")}
+                </Pill>
+              </Pressable>
+            )}
           </View>
           {occasions.length > 0 ? (
             <Card padding={0}>
@@ -195,14 +204,37 @@ export default function ProfileScreen() {
               })}
             </Card>
           ) : (
-            <Text style={styles.occasionEmpty}>
-              <Trans
-                i18nKey="profile.occasionsEmpty"
-                components={{
-                  accent: <Text style={styles.occasionEmptyAccent} />,
-                }}
-              />
-            </Text>
+            <Card>
+              <View style={styles.occasionEmptyCard}>
+                <View style={styles.occasionEmptyIcon}>
+                  <Icon
+                    name="calendar"
+                    color={colors.brass}
+                    size={22}
+                    weight="medium"
+                  />
+                </View>
+                <Text style={styles.occasionEmptyHeadline}>
+                  {t("profile.occasionsEmptyHeadline")}
+                </Text>
+                <Text style={styles.occasionEmptyBody}>
+                  {t("profile.occasionsEmptyBody")}
+                </Text>
+                <Btn
+                  tone="primary"
+                  full
+                  onPress={() =>
+                    router.push({
+                      pathname: "/occasion/new",
+                      params: { personId: person._id },
+                    })
+                  }
+                  style={styles.occasionEmptyCta}
+                >
+                  {t("profile.addOccasionCta")}
+                </Btn>
+              </View>
+            </Card>
           )}
         </View>
 
@@ -221,11 +253,23 @@ export default function ProfileScreen() {
         {/* Considered for {name} — tagged, not yet given to this person */}
         {consideredIdeas.length > 0 && (
           <View style={styles.section}>
-            <Label style={styles.sectionLabel}>
-              {t("profile.consideredIdeas", {
-                count: consideredIdeas.length,
-              })}
-            </Label>
+            <View style={styles.sectionHeader}>
+              <Label>
+                {t("profile.consideredIdeas", {
+                  count: consideredIdeas.length,
+                })}
+              </Label>
+              <Pressable
+                onPress={openCaptureForPerson}
+                hitSlop={6}
+                accessibilityRole="button"
+                accessibilityLabel={t("profile.addIdea")}
+              >
+                <Pill tone="brass" dashed>
+                  {t("profile.addIdea")}
+                </Pill>
+              </Pressable>
+            </View>
             <View style={styles.cardStack}>
               {consideredIdeas.map((idea) => (
                 <IdeaCard
@@ -275,7 +319,30 @@ export default function ProfileScreen() {
         {consideredIdeas.length === 0 && givenIdeas.length === 0 && (
           <View style={styles.section}>
             <Card>
-              <Text style={styles.cardMeta}>{t("profile.ideasEmpty")}</Text>
+              <View style={styles.occasionEmptyCard}>
+                <View style={styles.occasionEmptyIcon}>
+                  <Icon
+                    name="gift"
+                    color={colors.brass}
+                    size={22}
+                    weight="medium"
+                  />
+                </View>
+                <Text style={styles.occasionEmptyHeadline}>
+                  {t("profile.ideasEmptyHeadline")}
+                </Text>
+                <Text style={styles.occasionEmptyBody}>
+                  {t("profile.ideasEmptyBody")}
+                </Text>
+                <Btn
+                  tone="primary"
+                  full
+                  onPress={openCaptureForPerson}
+                  style={styles.occasionEmptyCta}
+                >
+                  {t("profile.addIdeaCta")}
+                </Btn>
+              </View>
             </Card>
           </View>
         )}
@@ -363,28 +430,36 @@ const styles = StyleSheet.create({
   occasionRowPressed: {
     opacity: 0.6,
   },
-  occasionEmpty: {
+  occasionEmptyCard: {
+    alignItems: "center",
+    paddingVertical: spacing.sm,
+  },
+  occasionEmptyIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: "rgba(200, 164, 90, 0.12)",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: spacing.md,
+  },
+  occasionEmptyHeadline: {
+    fontFamily: fonts.serif,
+    fontSize: 18,
+    color: colors.text,
+    letterSpacing: -0.2,
+    textAlign: "center",
+  },
+  occasionEmptyBody: {
     fontFamily: fonts.body,
     fontSize: 13,
     color: colors.text3,
-    paddingVertical: spacing.sm,
-  },
-  occasionEmptyAccent: {
-    color: colors.brass,
-    fontFamily: fonts.bodyMedium,
-  },
-  cardHeadline: {
-    fontFamily: fonts.serif,
-    fontSize: 24,
-    color: colors.text,
-    letterSpacing: -0.2,
-  },
-  cardMeta: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text2,
-    marginTop: 4,
+    textAlign: "center",
+    marginTop: spacing.xs,
     lineHeight: 18,
+  },
+  occasionEmptyCta: {
+    marginTop: spacing.lg,
   },
   occasionRow: {
     flexDirection: "row",
