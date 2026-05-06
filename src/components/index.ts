@@ -23,4 +23,5 @@ export { PersonRow } from "./PersonRow";
 export { PersonSuggestRow } from "./PersonSuggestRow";
 export { Pill, type PillTone } from "./Pill";
 export { ScreenTitle } from "./ScreenTitle";
+export { Sidebar, SIDEBAR_WIDTH } from "./Sidebar";
 export { TextField } from "./TextField";

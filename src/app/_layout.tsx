@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, View } from "react-native";
 
 import { ConnectionBanner, DevDock, ErrorFallback } from "@/components";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 import { colors } from "@/theme/tokens";
 // IMPORTANT: importing `@/i18n` runs i18next's `init()` for its
 // side effect. This must happen before any child component calls
@@ -154,6 +155,19 @@ function NotificationsRegistrar() {
   return null;
 }
 
+// `useSegments()` returns the static template names of the active
+// route, so dynamic params come back as e.g. "[id]". The screens
+// listed below all opt into `presentation: "modal"` in the root
+// Stack — keep the two lists in sync if a new modal route lands.
+function isModalRoute(segments: string[]): boolean {
+  const [s0, s1, s2] = segments;
+  if (s0 === "capture" || s0 === "settings") return true;
+  if (s0 === "occasion" || s0 === "brainstorm") return true;
+  if (s0 === "people" && s1 === "new") return true;
+  if ((s0 === "people" || s0 === "idea") && s2 === "edit") return true;
+  return false;
+}
+
 // AuthGate redirects unauthenticated users to the (auth) route group,
 // and conversely keeps signed-in users out of it. `useConvexAuth()` is
 // what reads from the secure-store-backed token cache, so this is the
@@ -191,6 +205,17 @@ function AuthGate({ children }: { children: ReactNode }) {
 }
 
 function RootLayout() {
+  const isDesktop = useBreakpoint() === "desktop";
+  const segments = useSegments();
+  // Modal routes break out of the desktop frame: the 832px-wide
+  // shell with gray gutters reads as "an app window" for tab views
+  // (sidebar + content), but on a modal the gutters look like
+  // dead space because the sidebar isn't there to balance them.
+  // When a modal route is focused, we drop the maxWidth so the
+  // dark frame fills the viewport — gray gutters return when the
+  // modal dismisses back to a tab.
+  const onModalRoute = isModalRoute(segments);
+  const wideFrame = isDesktop && !onModalRoute;
   const [fontsLoaded] = useFonts({
     CormorantGaramond_500Medium_Italic,
     Manrope_400Regular,
@@ -228,10 +253,44 @@ function RootLayout() {
           <AuthGate>
             <NotificationsRegistrar />
             <View style={frameStyles.outer}>
-            <View style={frameStyles.inner}>
-              <Stack screenOptions={{ headerShown: false }}>
+            <View
+              style={[
+                frameStyles.inner,
+                wideFrame ? frameStyles.innerDesktop : null,
+              ]}
+            >
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  // At desktop, every screen renders inside a
+                  // centered 640px column so forms and lists stop
+                  // stretching across the wide frame. The (tabs)
+                  // screen below opts out so the sidebar can use
+                  // the full frame width.
+                  contentStyle: isDesktop
+                    ? {
+                        width: "100%",
+                        maxWidth: 600,
+                        alignSelf: "center",
+                        backgroundColor: colors.bg,
+                      }
+                    : undefined,
+                }}
+              >
                 <Stack.Screen name="(auth)" />
-                <Stack.Screen name="(tabs)" />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={
+                    isDesktop
+                      ? {
+                          contentStyle: {
+                            width: "100%",
+                            backgroundColor: colors.bg,
+                          },
+                        }
+                      : undefined
+                  }
+                />
                 <Stack.Screen name="people/[id]" />
                 <Stack.Screen
                   name="people/[id]/edit"
@@ -283,6 +342,11 @@ function RootLayout() {
 // On web, frame the phone-portrait UI in a centered max-width
 // column so the app stays usable on desktop viewports without a
 // per-screen responsive rewrite. On native, the inner view fills.
+//
+// At the desktop breakpoint we widen the frame to accommodate the
+// sidebar layout introduced by `(tabs)/_layout.tsx`. The phone
+// column stays at 480px so other web routes (auth, capture modal)
+// keep their existing proportions on small viewports.
 const frameStyles = StyleSheet.create({
   outer: {
     flex: 1,
@@ -303,6 +367,12 @@ const frameStyles = StyleSheet.create({
           borderColor: colors.border,
         }
       : null),
+  },
+  innerDesktop: {
+    // Sidebar (232) + content (~600). Anything wider just adds dead
+    // space inside the frame; users prefer the gray gutters to live
+    // outside the app shell, not between the sidebar and content.
+    maxWidth: 832,
   },
 });
 
