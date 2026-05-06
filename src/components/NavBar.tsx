@@ -1,9 +1,9 @@
-import { SymbolView } from "expo-symbols";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { colors, radii, spacing } from "@/theme/tokens";
 
+import { Icon } from "./Icon";
 import { Label } from "./Label";
 
 export type NavBarLeading = "back" | "close" | "none";
@@ -41,12 +41,11 @@ export function NavBar({
               leading === "back" ? t("common.back") : t("common.close")
             }
           >
-            <SymbolView
+            <Icon
               name={leading === "back" ? "chevron.left" : "xmark"}
-              tintColor={colors.text2}
+              color={colors.text2}
               weight="semibold"
               size={leading === "back" ? 16 : 14}
-              resizeMode="scaleAspectFit"
             />
           </Pressable>
         ) : (

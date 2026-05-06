@@ -1,10 +1,10 @@
-import { SymbolView } from "expo-symbols";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { colors, fonts, radii, tints } from "@/theme/tokens";
 
 import { Avatar } from "./Avatar";
+import { Icon } from "./Icon";
 
 type Props = {
   initial: string;
@@ -36,13 +36,7 @@ export function PersonChip({ initial, name, onRemove }: Props) {
             pressed && styles.removePressed,
           ]}
         >
-          <SymbolView
-            name="xmark"
-            tintColor={colors.text3}
-            size={10}
-            weight="semibold"
-            resizeMode="scaleAspectFit"
-          />
+          <Icon name="xmark" color={colors.text3} size={10} weight="semibold" />
         </Pressable>
       )}
     </View>

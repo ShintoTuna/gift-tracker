@@ -10,6 +10,7 @@ export { ConnectionBanner } from "./ConnectionBanner";
 export { DatePicker } from "./DatePicker";
 export { DevDock } from "./DevDock";
 export { ErrorFallback } from "./ErrorFallback";
+export { Icon, type IconName } from "./Icon";
 export { IdeaCard } from "./IdeaCard";
 export { ImagePickerField } from "./ImagePickerField";
 export { Label, type LabelTone } from "./Label";

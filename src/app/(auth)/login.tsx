@@ -2,12 +2,13 @@ import { useAuthActions } from "@convex-dev/auth/react";
 import { makeRedirectUri } from "expo-auth-session";
 import { router } from "expo-router";
 import { openAuthSessionAsync } from "expo-web-browser";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Alert,
   Image,
+  Platform,
   Pressable,
   StyleSheet,
   Text,
@@ -15,6 +16,16 @@ import {
 } from "react-native";
 
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
+
+// Apple Sign-in on the web requires Sign in with Apple JS + a
+// configured Service ID; until that's wired up we hide the button on
+// web. Google + email OTP are enough to get users in.
+const SHOW_APPLE_BUTTON = Platform.OS !== "web";
+
+// localStorage key for remembering which OAuth provider initiated
+// the redirect, so when the IdP returns `?code=...` to our origin
+// we know which `signIn(provider, { code })` to call.
+const PENDING_PROVIDER_KEY = "giftsmith.pendingOAuthProvider";
 
 // Single-screen OAuth login. Apple is rendered first per Apple HIG;
 // Google is the secondary option. Both go through the canonical Convex
@@ -39,6 +50,39 @@ export default function LoginScreen() {
 
   const redirectTo = makeRedirectUri();
 
+  // On web, the IdP returns the user to this same page with
+  // `?code=...`. Pick that up on mount and finish the handshake.
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    const url = new URL(window.location.href);
+    const code = url.searchParams.get("code");
+    const stashed = window.localStorage.getItem(PENDING_PROVIDER_KEY);
+    if (!code || (stashed !== "apple" && stashed !== "google")) return;
+
+    const provider = stashed as Provider;
+    setPending(provider);
+    void (async () => {
+      try {
+        await signIn(provider, { code });
+        window.localStorage.removeItem(PENDING_PROVIDER_KEY);
+        // Strip ?code so a refresh doesn't replay the exchange.
+        url.searchParams.delete("code");
+        url.searchParams.delete("state");
+        window.history.replaceState({}, "", url.toString());
+      } catch (err) {
+        window.localStorage.removeItem(PENDING_PROVIDER_KEY);
+        Alert.alert(
+          t("auth.errorTitle"),
+          err instanceof Error ? err.message : String(err),
+        );
+        setPending(null);
+      }
+    })();
+    // signIn / t are stable enough; rerunning on every render would
+    // re-trigger the exchange.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleOAuth = async (provider: Provider) => {
     if (pending !== null) return;
     setPending(provider);
@@ -46,6 +90,13 @@ export default function LoginScreen() {
       const { redirect } = await signIn(provider, { redirectTo });
       if (!redirect) {
         throw new Error("No redirect URL returned");
+      }
+      if (Platform.OS === "web") {
+        // Full-page redirect; the useEffect above will pick up the
+        // `?code=...` return on the way back.
+        window.localStorage.setItem(PENDING_PROVIDER_KEY, provider);
+        window.location.assign(redirect.toString());
+        return;
       }
       const result = await openAuthSessionAsync(redirect.toString(), redirectTo);
       if (result.type !== "success") {
@@ -81,24 +132,26 @@ export default function LoginScreen() {
       </View>
 
       <View style={styles.actions}>
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel={t("auth.continueWithApple")}
-          onPress={() => handleOAuth("apple")}
-          style={({ pressed }) => [
-            styles.appleBtn,
-            pressed && styles.applePressed,
-          ]}
-        >
-          {pending === "apple" ? (
-            <ActivityIndicator color="#FFFFFF" />
-          ) : (
-            <Text style={styles.appleText}>
-              {"  "}
-              {t("auth.continueWithApple")}
-            </Text>
-          )}
-        </Pressable>
+        {SHOW_APPLE_BUTTON && (
+          <Pressable
+            accessibilityRole="button"
+            accessibilityLabel={t("auth.continueWithApple")}
+            onPress={() => handleOAuth("apple")}
+            style={({ pressed }) => [
+              styles.appleBtn,
+              pressed && styles.applePressed,
+            ]}
+          >
+            {pending === "apple" ? (
+              <ActivityIndicator color="#FFFFFF" />
+            ) : (
+              <Text style={styles.appleText}>
+                {"  "}
+                {t("auth.continueWithApple")}
+              </Text>
+            )}
+          </Pressable>
+        )}
 
         <Pressable
           accessibilityRole="button"

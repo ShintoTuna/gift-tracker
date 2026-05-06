@@ -1,9 +1,9 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useTranslation } from "react-i18next";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { colors, spacing } from "@/theme/tokens";
 
+import DateTimePicker from "./internal/DateTimePicker";
 import { Label } from "./Label";
 import { Pill } from "./Pill";
 

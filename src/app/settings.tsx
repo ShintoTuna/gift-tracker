@@ -1,5 +1,4 @@
 import { useAuthActions } from "@convex-dev/auth/react";
-import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery } from "convex/react";
 import * as Application from "expo-application";
 import { router } from "expo-router";
@@ -9,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import {
   Alert,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -19,6 +19,7 @@ import {
 } from "react-native";
 
 import { Btn, Card, Label, NavBar, Pill, ScreenTitle } from "@/components";
+import DateTimePicker from "@/components/internal/DateTimePicker";
 import {
   LANGUAGE_LABELS,
   SUPPORTED_LANGUAGES,
@@ -201,10 +202,12 @@ export default function SettingsScreen() {
           </Card>
         </View>
 
-        <NotificationsSection
-          prefs={notificationPrefs}
-          setPrefs={setNotificationPrefs}
-        />
+        {Platform.OS !== "web" && (
+          <NotificationsSection
+            prefs={notificationPrefs}
+            setPrefs={setNotificationPrefs}
+          />
+        )}
 
         <View style={styles.section}>
           <Label style={styles.sectionLabel}>{t("auth.account.title")}</Label>

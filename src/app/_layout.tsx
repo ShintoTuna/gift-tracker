@@ -17,9 +17,10 @@ import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Platform, View } from "react-native";
+import { Platform, StyleSheet, View } from "react-native";
 
 import { ConnectionBanner, DevDock, ErrorFallback } from "@/components";
+import { colors } from "@/theme/tokens";
 // IMPORTANT: importing `@/i18n` runs i18next's `init()` for its
 // side effect. This must happen before any child component calls
 // `useTranslation()`, which the static import order guarantees.
@@ -226,7 +227,8 @@ function RootLayout() {
         <LanguageGate>
           <AuthGate>
             <NotificationsRegistrar />
-            <View style={{ flex: 1 }}>
+            <View style={frameStyles.outer}>
+            <View style={frameStyles.inner}>
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(auth)" />
                 <Stack.Screen name="(tabs)" />
@@ -270,12 +272,39 @@ function RootLayout() {
               <DevDock />
               <ConnectionBanner />
             </View>
+            </View>
           </AuthGate>
         </LanguageGate>
       </ConvexAuthProvider>
     </GlobalErrorBoundary>
   );
 }
+
+// On web, frame the phone-portrait UI in a centered max-width
+// column so the app stays usable on desktop viewports without a
+// per-screen responsive rewrite. On native, the inner view fills.
+const frameStyles = StyleSheet.create({
+  outer: {
+    flex: 1,
+    backgroundColor: colors.bg,
+    ...(Platform.OS === "web"
+      ? { alignItems: "center" as const }
+      : null),
+  },
+  inner: {
+    flex: 1,
+    width: "100%",
+    backgroundColor: colors.bg,
+    ...(Platform.OS === "web"
+      ? {
+          maxWidth: 480,
+          borderLeftWidth: 1,
+          borderRightWidth: 1,
+          borderColor: colors.border,
+        }
+      : null),
+  },
+});
 
 // `Sentry.wrap()` installs the touch-event boundary (touch
 // breadcrumbs) and the React profiler. The latter is a no-op while
