@@ -82,6 +82,7 @@ export default function EditIdeaScreen() {
   const [description, setDescription] = useState("");
   const [taggedIds, setTaggedIds] = useState<Id<"people">[]>([]);
   const [status, setStatus] = useState<IdeaStatus>("active");
+  const [forSelf, setForSelf] = useState(false);
   const [image, setImage] = useState<ImageState>({ kind: "unchanged" });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -109,6 +110,7 @@ export default function EditIdeaScreen() {
       setDescription(idea.description ?? "");
       setTaggedIds(idea.taggedPeople);
       setStatus(idea.status);
+      setForSelf(idea.forSelf === true);
       setImage({ kind: "unchanged" });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -231,6 +233,7 @@ export default function EditIdeaScreen() {
             priceEstimate !== undefined ? defaultCurrency : undefined,
           taggedPeople: taggedIds,
           status,
+          forSelf,
           ...(image.kind === "set" && { imageStorageId: image.storageId }),
           ...(image.kind === "removed" && { imageStorageId: null }),
         },
@@ -254,9 +257,11 @@ export default function EditIdeaScreen() {
       await removeIdea({ id: ideaId });
       // Dismiss this modal, then replace the underlying view screen
       // so we don't briefly render the deleted idea on the way back
-      // to the Gifts list.
+      // to the list. Wish-only items send the user back to the Wish
+      // List tab; everything else lands on Gifts.
+      const wishOnly = forSelf && taggedIds.length === 0;
       router.dismissAll();
-      router.replace("/(tabs)/backlog");
+      router.replace(wishOnly ? "/(tabs)/wishlist" : "/(tabs)/backlog");
     } catch (err) {
       notify(
         t("common.couldNotDelete"),
@@ -391,6 +396,25 @@ export default function EditIdeaScreen() {
               selectedIds={taggedIds}
               onChange={setTaggedIds}
             />
+
+            <Pressable
+              onPress={() => setForSelf((v) => !v)}
+              hitSlop={6}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: forSelf }}
+              accessibilityLabel={t("ideaForm.forSelfLabel")}
+              style={styles.forSelfRow}
+            >
+              <View style={styles.forSelfTextWrap}>
+                <Label>{t("ideaForm.forSelfLabel")}</Label>
+                <Text style={styles.forSelfHint}>
+                  {t("ideaForm.forSelfHint")}
+                </Text>
+              </View>
+              <Pill tone={forSelf ? "brass" : "default"}>
+                {forSelf ? t("common.on") : t("common.off")}
+              </Pill>
+            </Pressable>
 
             <View>
               <Label style={styles.statusLabel}>{t("ideaForm.status")}</Label>
@@ -654,6 +678,22 @@ const styles = StyleSheet.create({
   },
   statusLabel: {
     marginBottom: spacing.sm,
+  },
+  forSelfRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+  },
+  forSelfTextWrap: {
+    flexShrink: 1,
+    gap: spacing.xs,
+  },
+  forSelfHint: {
+    fontFamily: fonts.body,
+    fontSize: 12,
+    color: colors.text3,
+    lineHeight: 16,
   },
   statusRow: {
     flexDirection: "row",

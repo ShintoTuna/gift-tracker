@@ -74,6 +74,24 @@ export const listByStatus = query({
   },
 });
 
+// Powers the Wish List tab. `forSelf` was added later as
+// `v.optional(v.boolean())`, so older rows have the field unset;
+// the indexed query for `forSelf: true` only matches rows where
+// the flag is explicitly true, which is what we want.
+export const listByUserForSelf = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await getCurrentUserId(ctx);
+    const rows = await ctx.db
+      .query("giftIdeas")
+      .withIndex("by_user_forSelf", (q) =>
+        q.eq("userId", userId).eq("forSelf", true),
+      )
+      .take(MAX_GIFT_IDEAS);
+    return await withImageUrl(ctx, rows);
+  },
+});
+
 // Capture mutation. Defaults `status` to "active" — the capture flow
 // is sub-10s so a status picker would be friction. Archiving and
 // per-person givings happen later via the idea detail screen. Empty
@@ -88,6 +106,7 @@ export const create = mutation({
     priceEstimate: v.optional(v.number()),
     currency: v.optional(v.string()),
     taggedPeople: v.array(v.id("people")),
+    forSelf: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
     assertMaxLength("title", args.title, FIELD_LIMITS.giftTitle);
@@ -114,9 +133,15 @@ export const create = mutation({
       });
     }
     const now = Date.now();
+    const { forSelf, ...rest } = args;
     return await ctx.db.insert("giftIdeas", {
       userId,
-      ...args,
+      ...rest,
+      // Always persist as a boolean so the `by_user_forSelf` index
+      // is well-formed for new rows. Pre-existing rows with the
+      // field missing aren't backfilled — the index lookup for
+      // `forSelf: true` simply doesn't match them.
+      forSelf: forSelf === true,
       status: "active",
       createdAt: now,
       updatedAt: now,
@@ -156,6 +181,7 @@ export const update = mutation({
       status: v.optional(
         v.union(v.literal("active"), v.literal("archived")),
       ),
+      forSelf: v.optional(v.boolean()),
     }),
   },
   handler: async (ctx, { id, patch }) => {

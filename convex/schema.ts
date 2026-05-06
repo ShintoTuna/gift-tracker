@@ -152,11 +152,18 @@ export default defineSchema({
     // record on `giftGivings`, not a property of the idea, so
     // giving doesn't archive the idea.
     status: v.union(v.literal("active"), v.literal("archived")),
+    // Marks an idea as something the user wants for themselves.
+    // Independent from `taggedPeople` — an item can be both a
+    // wish and a gift idea for someone else (the Wish List tab
+    // filters on this flag). Optional + missing = `false` so
+    // pre-existing rows don't need backfilling.
+    forSelf: v.optional(v.boolean()),
     createdAt: v.number(),
     updatedAt: v.number(),
   })
     .index("by_user", ["userId"])
-    .index("by_user_status", ["userId", "status"]),
+    .index("by_user_status", ["userId", "status"])
+    .index("by_user_forSelf", ["userId", "forSelf"]),
 
   // History of givings: one row per (idea, person, date). Multiple
   // rows for the same (idea, person) pair are allowed — the same

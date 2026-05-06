@@ -8,6 +8,8 @@
     "optional": "Необязательно",
     "required": "Обязательно",
     "saving": "Сохранение…",
+    "on": "Вкл",
+    "off": "Выкл",
     "couldNotSave": "Не удалось сохранить",
     "couldNotDelete": "Не удалось удалить",
     "cantBeUndone": "Это нельзя отменить."
@@ -15,7 +17,8 @@
   "tabs": {
     "people": "Люди",
     "calendar": "Календарь",
-    "gifts": "Подарки"
+    "gifts": "Подарки",
+    "wishlist": "Хочу"
   },
   "settings": {
     "title": "Настройки",
@@ -174,7 +177,8 @@
     "editA11y": "Редактировать идею",
     "openSourceA11y": "Открыть ссылку на источник",
     "descriptionLabel": "Описание",
-    "peopleLabel": "Привязанные люди"
+    "peopleLabel": "Привязанные люди",
+    "forSelfBadge": "★ Себе"
   },
   "ideaForm": {
     "editTitle": "Редактировать идею",
@@ -182,6 +186,8 @@
     "status": "Статус",
     "statusActive": "Активна",
     "statusArchived": "В архиве",
+    "forSelfLabel": "Тоже себе",
+    "forSelfHint": "Показывать во вкладке «Хочу».",
     "givingsTitle": "Дарения",
     "givingsEmpty": "Ещё никому не подарено. Добавьте дарение, чтобы отметить, кому и когда.",
     "addGiving": "+ Добавить дарение",
@@ -195,6 +201,17 @@
     "deleteButton": "Удалить идею",
     "deleteConfirmTitle": "Удалить эту идею подарка?",
     "notFound": "Идея не найдена."
+  },
+  "wishlist": {
+    "title": "Хочу",
+    "subtitle": "Что хочется себе",
+    "search": "Поиск желаний",
+    "emptyNone": "Пока пусто. Нажмите +, чтобы добавить желание.",
+    "emptyCta": "Добавить первое желание",
+    "fabLabel": "Добавить желание",
+    "captureTitle": "Новое желание",
+    "captureScreenTitle": "Новое желание",
+    "captureSubtitle": "Что-то для себя"
   },
   "occasionForm": {
     "newTitle": "Новое событие",

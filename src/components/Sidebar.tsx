@@ -8,12 +8,16 @@ import { Icon, type IconName } from "./Icon";
 
 export const SIDEBAR_WIDTH = 232;
 
-type NavKey = "people" | "calendar" | "gifts";
+type NavKey = "people" | "calendar" | "gifts" | "wishlist";
 
 type NavItem = {
   key: NavKey;
-  href: "/" | "/calendar" | "/backlog";
-  labelKey: "tabs.people" | "tabs.calendar" | "tabs.gifts";
+  href: "/" | "/calendar" | "/backlog" | "/wishlist";
+  labelKey:
+    | "tabs.people"
+    | "tabs.calendar"
+    | "tabs.gifts"
+    | "tabs.wishlist";
   icon: { focused: IconName; unfocused: IconName };
 };
 
@@ -36,11 +40,18 @@ const NAV: readonly NavItem[] = [
     labelKey: "tabs.gifts",
     icon: { focused: "gift.fill", unfocused: "gift" },
   },
+  {
+    key: "wishlist",
+    href: "/wishlist",
+    labelKey: "tabs.wishlist",
+    icon: { focused: "star.fill", unfocused: "star" },
+  },
 ];
 
 function activeKey(pathname: string): NavKey {
   if (pathname.startsWith("/calendar")) return "calendar";
   if (pathname.startsWith("/backlog")) return "gifts";
+  if (pathname.startsWith("/wishlist")) return "wishlist";
   return "people";
 }
 
@@ -55,6 +66,18 @@ export function Sidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
   const active = activeKey(pathname);
+  const onWishlist = active === "wishlist";
+
+  // The primary CTA tracks the active destination so capturing from
+  // the Wish List rail lands the new row on /wishlist with `forSelf`
+  // pre-set, matching the behaviour of the mobile CaptureFab.
+  const onCapture = () => {
+    if (onWishlist) {
+      router.push({ pathname: "/capture", params: { forSelf: "1" } });
+    } else {
+      router.push("/capture");
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -63,13 +86,17 @@ export function Sidebar() {
       </View>
 
       <Pressable
-        onPress={() => router.push("/capture")}
+        onPress={onCapture}
         style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
         accessibilityRole="button"
-        accessibilityLabel={t("capture.fabLabel")}
+        accessibilityLabel={
+          onWishlist ? t("wishlist.fabLabel") : t("capture.fabLabel")
+        }
       >
         <Icon name="plus" color={colors.bg} weight="semibold" size={18} />
-        <Text style={styles.ctaText}>{t("capture.title")}</Text>
+        <Text style={styles.ctaText}>
+          {onWishlist ? t("wishlist.captureTitle") : t("capture.title")}
+        </Text>
       </Pressable>
 
       <View style={styles.nav}>

@@ -36,7 +36,16 @@ import type { Id } from "../../convex/_generated/dataModel";
 // footer) so the iOS keyboard accessory bar never collides with it.
 export default function CaptureScreen() {
   const { t } = useTranslation();
-  const { personId } = useLocalSearchParams<{ personId?: string }>();
+  const { personId, forSelf: forSelfParam } = useLocalSearchParams<{
+    personId?: string;
+    forSelf?: string;
+  }>();
+  // The Wish List tab launches capture with `?forSelf=1`. The flag
+  // travels through Save and lands the new row on the wish list
+  // instead of (or alongside) the gift backlog. The form itself
+  // shows no extra control — keeping the gift capture path single-
+  // purpose was an explicit design call.
+  const forSelf = forSelfParam === "1";
   const people = useQuery(api.people.list);
   const createIdea = useMutation(api.giftIdeas.create);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
@@ -137,13 +146,17 @@ export default function CaptureScreen() {
         currency:
           priceEstimate !== undefined ? defaultCurrency : undefined,
         taggedPeople: taggedIds,
+        forSelf: forSelf ? true : undefined,
       });
       // From a profile (personId param), return there so the freshly
-      // tagged idea shows up under "Considered". Otherwise land on
-      // the backlog so the new idea is visible at the top — `replace`
-      // so the back stack doesn't preserve the (now-empty) form.
+      // tagged idea shows up under "Considered". From the Wish List
+      // FAB, land back on the wish list. Otherwise land on the gift
+      // backlog. `replace` so the back stack doesn't preserve the
+      // (now-empty) form.
       if (personId) {
         router.back();
+      } else if (forSelf) {
+        router.replace("/(tabs)/wishlist");
       } else {
         router.replace("/(tabs)/backlog");
       }
@@ -156,7 +169,7 @@ export default function CaptureScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title={t("capture.title")}
+        title={forSelf ? t("wishlist.captureTitle") : t("capture.title")}
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -166,8 +179,14 @@ export default function CaptureScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle sub={t("capture.subtitle")}>
-            {t("capture.screenTitle")}
+          <ScreenTitle
+            sub={
+              forSelf ? t("wishlist.captureSubtitle") : t("capture.subtitle")
+            }
+          >
+            {forSelf
+              ? t("wishlist.captureScreenTitle")
+              : t("capture.screenTitle")}
           </ScreenTitle>
 
           <View style={styles.fields}>
