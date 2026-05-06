@@ -1,0 +1,326 @@
+{
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "back": "Retour",
+    "delete": "Supprimer",
+    "optional": "Facultatif",
+    "required": "Obligatoire",
+    "saving": "Enregistrement…",
+    "couldNotSave": "Impossible d'enregistrer",
+    "couldNotDelete": "Impossible de supprimer",
+    "cantBeUndone": "Cette action est irréversible."
+  },
+  "tabs": {
+    "people": "Personnes",
+    "calendar": "Calendrier",
+    "gifts": "Cadeaux"
+  },
+  "settings": {
+    "title": "Réglages",
+    "subtitle": "Ce que vous pouvez modifier",
+    "preferences": "Préférences",
+    "defaultCurrency": "Devise par défaut",
+    "defaultCurrencyHint": "Utilisée quand vous enregistrez un prix sur une idée.",
+    "language": "Langue",
+    "languageHint": "Utilisée partout dans l'application.",
+    "notifications": {
+      "title": "Notifications",
+      "hint": "Rappels pour les événements à venir.",
+      "masterToggle": "Notifications push",
+      "permissionDenied": "Activez les notifications dans les Réglages iOS pour recevoir des rappels.",
+      "daysAhead": "Me rappeler",
+      "daysAheadHint": "Ajoutez n'importe quel nombre de jours avant. Nous enverrons un rappel pour chacun.",
+      "daysAheadPill_one": "{{count}} jour avant",
+      "daysAheadPill_other": "{{count}} jours avant",
+      "daysAheadInputPlaceholder": "Jours avant",
+      "daysAheadAdd": "Ajouter",
+      "daysAheadInvalid": "Entrez un nombre entier entre 1 et 365.",
+      "daysAheadDuplicate": "Cette valeur est déjà dans la liste.",
+      "daysAheadMax": "Jusqu'à 10 rappels par événement.",
+      "daysAheadRemoveA11y": "Supprimer le rappel à {{count}} jour",
+      "timeOfDay": "Heure de la journée",
+      "timeOfDayHint": "Nous enverrons le rappel autour de cette heure."
+    },
+    "about": {
+      "title": "À propos",
+      "version": "Version",
+      "update": "Mise à jour",
+      "updateEmbedded": "intégrée",
+      "privacy": "Politique de confidentialité",
+      "terms": "Conditions d'utilisation",
+      "feedback": "Envoyer un retour",
+      "feedbackSubject": "Retour Giftsmith",
+      "errorReports": "Envoyer les rapports d'erreur",
+      "errorReportsHint": "Les rapports de plantage anonymes aident à corriger les bugs plus vite. Aucune donnée personnelle n'est envoyée.",
+      "openFailed": "Impossible d'ouvrir ce lien."
+    }
+  },
+  "push": {
+    "title": "{{personName}} · {{occasionTitle}}",
+    "bodyTomorrow": "{{occasionTitle}} de {{personName}} c'est demain.",
+    "bodyToday": "{{occasionTitle}} de {{personName}} c'est aujourd'hui.",
+    "bodyInDays_one": "{{occasionTitle}} de {{personName}} dans {{count}} jour.",
+    "bodyInDays_other": "{{occasionTitle}} de {{personName}} dans {{count}} jours."
+  },
+  "capture": {
+    "title": "Capture rapide",
+    "subtitle": "Qu'avez-vous repéré ?",
+    "screenTitle": "Capturer une idée",
+    "ideaLabel": "Idée",
+    "ideaPlaceholder": "p. ex. sécateur sans fil",
+    "imageLabel": "Photo",
+    "sourceLabel": "Source",
+    "priceLabel": "Prix ({{currency}})",
+    "descriptionLabel": "Description",
+    "saveIdea": "Enregistrer l'idée",
+    "couldNotSave": "Impossible d'enregistrer",
+    "fabLabel": "Capturer une idée"
+  },
+  "imagePicker": {
+    "add": "Ajouter une photo",
+    "addA11y": "Ajouter une photo",
+    "change": "Changer la photo",
+    "changeA11y": "Changer la photo",
+    "remove": "Retirer",
+    "takePhoto": "Prendre une photo",
+    "chooseFromLibrary": "Choisir dans la galerie",
+    "uploadFailed": "Impossible d'envoyer la photo",
+    "fetchFromSource": "Utiliser l'image de la source",
+    "fetchFromSourceFailed": "Impossible de récupérer l'image de la source",
+    "fetchFromSourceHint": "Certains sites bloquent la récupération d'images. Choisissez une photo manuellement."
+  },
+  "people": {
+    "title": "Personnes",
+    "subtitle": "Gardez une trace des gens qui comptent",
+    "addPerson": "+ Personne",
+    "addPersonA11y": "Ajouter une personne",
+    "openSettingsA11y": "Ouvrir les réglages",
+    "search": "Rechercher nom, relation, intérêts",
+    "thisWeek": "Cette semaine",
+    "upcoming": "À venir",
+    "emptyAll": "Personne ici pour l'instant. Touchez <accent>+ Personne</accent> pour ajouter quelqu'un, ou utilisez la pastille <accent>dev</accent> pour des données de test.",
+    "emptyCta": "Ajouter votre première personne",
+    "noMatches": "Aucun résultat pour <accent>« {{query}} »</accent>.",
+    "pendingDate": "Date en attente",
+    "noUpcomingDates": "Aucune date à venir",
+    "noUpcomingOccasions": "Aucun événement à venir"
+  },
+  "calendar": {
+    "title": "Calendrier",
+    "thisWeek": "Cette semaine",
+    "pendingDates": "Dates en attente",
+    "empty": "Rien à l'horizon. Ajoutez des événements depuis le profil d'une personne et ils apparaîtront ici.",
+    "emptyCta": "Ajouter une personne"
+  },
+  "format": {
+    "dateLine": "{{title}} · {{suffix}}",
+    "today": "aujourd'hui",
+    "tomorrow": "demain",
+    "inDays_one": "dans {{count}} jour",
+    "inDays_other": "dans {{count}} jours",
+    "inWeeks_one": "dans {{count}} semaine",
+    "inWeeks_other": "dans {{count}} semaines",
+    "inMonths_one": "dans {{count}} mois",
+    "inMonths_other": "dans {{count}} mois",
+    "inOverAYear": "dans plus d'un an",
+    "dateTBD": "Date à définir",
+    "occasionAnnual": "Annuel · {{date}}",
+    "occasionOnce": "Unique · {{date}}"
+  },
+  "backlog": {
+    "title": "Cadeaux",
+    "search": "Rechercher des idées",
+    "filterActive": "Actives",
+    "filterArchived": "Archivées",
+    "emptyNone": "Aucune idée pour l'instant. Touchez le bouton + pour capturer la première.",
+    "emptyCta": "Capturer votre première idée",
+    "emptySearch": "Aucune idée ne correspond à « {{query}} ».",
+    "emptyFilter": "Aucune idée pour ce filtre."
+  },
+  "personForm": {
+    "newTitle": "Nouvelle personne",
+    "editTitle": "Modifier la personne",
+    "newScreenTitle": "Qui ajoutons-nous ?",
+    "newSubtitle": "Quelqu'un dont vous voulez vous souvenir",
+    "editScreenTitle": "Modifier la personne",
+    "photo": "Photo",
+    "name": "Nom",
+    "nickname": "Surnom",
+    "relationship": "Relation",
+    "relationshipHint": "Texte libre — p. ex. maman, meilleur ami, collègue",
+    "interests": "Centres d'intérêt",
+    "interestsHint": "Séparés par des virgules",
+    "interestsPlaceholder": "p. ex. jardinage, livres audio, thé",
+    "deleteButton": "Supprimer la personne",
+    "deleteConfirmTitle": "Supprimer cette personne ?",
+    "deleteConfirmBody": "Cela supprimera aussi ses événements et la retirera des idées de cadeaux. Cette action est irréversible.",
+    "notFound": "Personne introuvable."
+  },
+  "ideaView": {
+    "title": "Idée",
+    "editPill": "Modifier",
+    "editA11y": "Modifier l'idée",
+    "openSourceA11y": "Ouvrir le lien de la source",
+    "descriptionLabel": "Description",
+    "peopleLabel": "Personnes associées"
+  },
+  "ideaForm": {
+    "editTitle": "Modifier l'idée",
+    "editScreenTitle": "Modifier l'idée",
+    "status": "Statut",
+    "statusActive": "Active",
+    "statusArchived": "Archivée",
+    "givingsTitle": "Cadeaux offerts",
+    "givingsEmpty": "Pas encore offert. Ajoutez une remise pour noter à qui et quand.",
+    "addGiving": "+ Ajouter une remise",
+    "saveGiving": "Enregistrer la remise",
+    "removeGiving": "Supprimer la remise",
+    "removeGivingConfirm": "Supprimer cette remise ?",
+    "givingPerson": "Pour",
+    "givingDate": "Quand",
+    "givingOccasion": "Occasion",
+    "givingNoOccasion": "Sans occasion",
+    "deleteButton": "Supprimer l'idée",
+    "deleteConfirmTitle": "Supprimer cette idée de cadeau ?",
+    "notFound": "Idée introuvable."
+  },
+  "occasionForm": {
+    "newTitle": "Nouvel événement",
+    "editTitle": "Modifier l'événement",
+    "newScreenTitle": "Ajouter un événement",
+    "newSubtitle": "Quand devons-nous nous en souvenir ?",
+    "editScreenTitle": "Modifier l'événement",
+    "titleLabel": "Titre",
+    "titlePlaceholder": "p. ex. Anniversaire, Anniversaire de mariage",
+    "recurrence": "Récurrence",
+    "recurrenceYearly": "Annuel",
+    "recurrenceOneOff": "Unique",
+    "template": {
+      "birthday": "Anniversaire",
+      "anniversary": "Anniversaire de mariage",
+      "newYear": "Nouvel An",
+      "christmas": "Noël",
+      "mothersDay": "Fête des Mères"
+    },
+    "deleteButton": "Supprimer l'événement",
+    "deleteConfirmTitle": "Supprimer cet événement ?",
+    "notFound": "Événement introuvable."
+  },
+  "profile": {
+    "title": "Profil",
+    "editA11y": "Modifier la personne",
+    "editPill": "Modifier",
+    "occasions": "Événements",
+    "addOccasion": "+ Ajouter",
+    "addOccasionCta": "Ajouter un événement",
+    "occasionsEmptyHeadline": "Aucun événement pour l'instant",
+    "occasionsEmptyBody": "Ajoutez un anniversaire, un anniversaire de mariage ou toute autre date dont vous voulez vous souvenir.",
+    "interests": "Centres d'intérêt",
+    "consideredIdeas": "À considérer · {{count}}",
+    "givenIdeas": "Offerts · {{count}}",
+    "givenCaption": "Offert · {{date}}",
+    "givenCaptionWithOccasion": "Offert · {{date}} · {{occasion}}",
+    "addIdea": "+ Ajouter une idée",
+    "addIdeaCta": "Ajouter une idée de cadeau",
+    "ideasEmptyHeadline": "Aucune idée de cadeau pour l'instant",
+    "ideasEmptyBody": "Capturez une idée maintenant et souvenez-vous-en pour la prochaine occasion.",
+    "notFound": "Personne introuvable."
+  },
+  "brainstorm": {
+    "stubTitle": "Idées pour {{personId}}"
+  },
+  "personPicker": {
+    "label": "Pour",
+    "placeholder": "Rechercher des personnes…",
+    "noPeople": "Aucune personne — ajoutez d'abord quelqu'un depuis l'onglet Personnes.",
+    "moreOverflow": "+ {{count}} de plus — tapez pour filtrer",
+    "noMatches": "Aucun résultat pour « {{query}} »."
+  },
+  "personChip": {
+    "removeA11y": "Retirer {{name}}"
+  },
+  "datePicker": {
+    "defaultLabel": "Date",
+    "setDate": "+ Définir une date",
+    "clearDate": "Effacer la date"
+  },
+  "network": {
+    "reconnecting": "Reconnexion…"
+  },
+  "welcome": {
+    "title": "Bienvenue sur Giftsmith",
+    "subtitle": "Trois étapes pour ne plus jamais oublier un cadeau.",
+    "step1Title": "Ajoutez les gens qui comptent",
+    "step1Body": "Noms, relations, ce qui les passionne. Complétez au fil du temps.",
+    "step2Title": "Capturez des idées en quelques secondes",
+    "step2Body": "Vous repérez quelque chose qu'ils adoreraient ? Capturez-le et associez-le à une personne.",
+    "step3Title": "Soyez prévenu à temps",
+    "step3Body": "Anniversaires, occasions personnalisées — nous vous préviendrons à l'avance.",
+    "cta": "Commencer",
+    "recoveryNote": "À noter : vos données sont liées à votre connexion Apple ou Google. Gardez ce compte en sécurité — il n'y a pas encore d'e-mail de récupération séparé."
+  },
+  "auth": {
+    "welcome": {
+      "title": "Bienvenue sur Giftsmith",
+      "subtitle": "Capturez des idées de cadeaux. Ne ratez jamais le moment."
+    },
+    "continueWithApple": "Se connecter avec Apple",
+    "continueWithGoogle": "Continuer avec Google",
+    "continueWithEmail": "Continuer avec l'e-mail",
+    "email": {
+      "title": "Connexion par e-mail",
+      "subtitle": "Nous vous enverrons un code par e-mail pour vous connecter.",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "vous@exemple.com",
+      "sendCodeCta": "Envoyer le code",
+      "codeLabel": "Code de vérification",
+      "codePlaceholder": "Code à 8 chiffres",
+      "codeSentTo": "Code envoyé à {{email}}. Vérifiez votre boîte.",
+      "signInCta": "Se connecter",
+      "resendCode": "Renvoyer le code",
+      "useDifferentEmail": "Utiliser un autre e-mail",
+      "errors": {
+        "invalidEmail": "Entrez une adresse e-mail valide.",
+        "invalidCode": "Ce code n'a pas fonctionné. Réessayez ou demandez-en un nouveau.",
+        "sendFailed": "Impossible d'envoyer le code. Réessayez dans un moment."
+      }
+    },
+    "errorTitle": "Connexion impossible",
+    "account": {
+      "title": "Compte",
+      "signOut": "Se déconnecter",
+      "signOutConfirm": "Se déconnecter de Giftsmith ?",
+      "delete": "Supprimer le compte",
+      "deleteConfirmTitle": "Supprimer votre compte ?",
+      "deleteConfirmBody": "Cela supprime définitivement toutes vos personnes, événements et idées de cadeaux. Cette action est irréversible.",
+      "deleteConfirmCta": "Supprimer définitivement",
+      "usageTitle": "Utilisation",
+      "usagePeople": "Personnes · {{used}} / {{total}}",
+      "usageGiftIdeas": "Idées de cadeaux · {{used}} / {{total}}",
+      "linkedLabel": "Connecté avec",
+      "linkedApple": "Apple",
+      "linkedGoogle": "Google",
+      "linkedEmail": "E-mail",
+      "linkedHint": "Vos données sont liées à ce compte. Gardez-le en sécurité — perdre l'accès, c'est perdre vos cadeaux."
+    }
+  },
+  "limits": {
+    "people_one": "Vous avez atteint la limite de ce forfait : {{count}} personne.",
+    "people_other": "Vous avez atteint la limite de ce forfait : {{count}} personnes.",
+    "giftIdeas_one": "Vous avez atteint la limite de ce forfait : {{count}} idée de cadeau.",
+    "giftIdeas_other": "Vous avez atteint la limite de ce forfait : {{count}} idées de cadeaux.",
+    "occasionsPerPerson_one": "Chaque personne peut avoir jusqu'à {{count}} événement.",
+    "occasionsPerPerson_other": "Chaque personne peut avoir jusqu'à {{count}} événements.",
+    "sheetTitle": "Limite du forfait atteinte",
+    "sheetUsage": "Utilisation actuelle : {{current}} sur {{limit}}.",
+    "sheetUpgrade": "Mettre à niveau (bientôt)",
+    "sheetDismiss": "Compris"
+  },
+  "errors": {
+    "crashTitle": "Quelque chose a mal tourné",
+    "crashBody": "Nous avons envoyé un rapport pour corriger ça. Vous pouvez réessayer d'ici.",
+    "tryAgain": "Réessayer"
+  }
+}

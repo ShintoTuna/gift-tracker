@@ -2,7 +2,15 @@ import * as Localization from "expo-localization";
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 
+import de from "./locales/de.json";
 import en from "./locales/en.json";
+import es from "./locales/es.json";
+import fr from "./locales/fr.json";
+import it from "./locales/it.json";
+// `pt` ships Brazilian Portuguese copy — pt-BR is the dominant variant
+// for consumer apps, and `expo-localization` returns 2-letter
+// `languageCode` (e.g. "pt") rather than the full BCP-47 tag.
+import pt from "./locales/pt.json";
 import ru from "./locales/ru.json";
 
 // Languages we ship translations for. Adding a new locale is:
@@ -10,7 +18,15 @@ import ru from "./locales/ru.json";
 //   2. Add the code here and to LANGUAGE_LABELS
 //   3. Import + register it in `resources` below
 // See CLAUDE.md (project root) for the translation workflow.
-export const SUPPORTED_LANGUAGES = ["en", "ru"] as const;
+export const SUPPORTED_LANGUAGES = [
+  "en",
+  "ru",
+  "es",
+  "fr",
+  "de",
+  "pt",
+  "it",
+] as const;
 export type Language = (typeof SUPPORTED_LANGUAGES)[number];
 
 // Native-form labels so a user who picked the wrong language can find
@@ -18,6 +34,11 @@ export type Language = (typeof SUPPORTED_LANGUAGES)[number];
 export const LANGUAGE_LABELS: Record<Language, string> = {
   en: "English",
   ru: "Русский",
+  es: "Español",
+  fr: "Français",
+  de: "Deutsch",
+  pt: "Português",
+  it: "Italiano",
 };
 
 // AsyncStorage key for the boot-time language cache. Read from this
@@ -44,6 +65,11 @@ void i18n.use(initReactI18next).init({
   resources: {
     en: { translation: en },
     ru: { translation: ru },
+    es: { translation: es },
+    fr: { translation: fr },
+    de: { translation: de },
+    pt: { translation: pt },
+    it: { translation: it },
   },
   lng: initialLang,
   fallbackLng: "en",
