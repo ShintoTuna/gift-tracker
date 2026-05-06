@@ -1,6 +1,6 @@
 import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
-import { View } from "react-native";
+import { Platform, View } from "react-native";
 
 import { CaptureFab, Icon, type IconName } from "@/components";
 import { colors } from "@/theme/tokens";
@@ -40,7 +40,15 @@ export default function TabsLayout() {
           tabBarStyle: {
             backgroundColor: colors.bg,
             borderTopColor: colors.border,
+            // On web, @react-navigation/bottom-tabs leaves no room for
+            // the label under the icon, clipping descenders. Give the
+            // bar an explicit height with breathing room for the text.
+            ...(Platform.OS === "web"
+              ? { height: 64, paddingTop: 6, paddingBottom: 8 }
+              : null),
           },
+          tabBarLabelStyle:
+            Platform.OS === "web" ? { paddingBottom: 4 } : undefined,
           tabBarActiveTintColor: colors.brass,
           tabBarInactiveTintColor: colors.text3,
         }}
