@@ -25,6 +25,12 @@ import type { Id } from "./_generated/dataModel";
 // a site exceeds the cap we just give up and let the user pick.
 const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
 
+// A real browser UA. Many retailers (Amazon, Cloudflare-fronted
+// shops) 403 anything that self-identifies as a bot, so we have to
+// look like Chrome to get the OG tags at all.
+const BROWSER_UA =
+  "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
+
 const META_PATTERNS: RegExp[] = [
   /<meta[^>]+property=["']og:image(?::secure_url|:url)?["'][^>]+content=["']([^"']+)["'][^>]*>/i,
   /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image(?::secure_url|:url)?["'][^>]*>/i,
@@ -54,13 +60,16 @@ export const fetchFromUrl = action({
   ): Promise<{ storageId: Id<"_storage">; previewUrl: string | null }> => {
     const userId = await getAuthUserId(ctx);
     if (userId === null) throw new Error("Unauthenticated");
-    // Page fetch with a recognisable UA — some hosts return a
-    // stripped-down page or a 403 to anonymous bots.
+    // Page fetch with a real browser UA — bot-shaped UAs get 403'd
+    // by Amazon, Cloudflare-fronted shops, etc.
     const pageRes = await fetch(url, {
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Giftsmith/1.0)",
-        Accept: "text/html,application/xhtml+xml",
+        "User-Agent": BROWSER_UA,
+        Accept:
+          "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
       },
+      redirect: "follow",
     });
     if (!pageRes.ok) {
       throw new Error(`Source returned ${pageRes.status}`);
@@ -71,7 +80,16 @@ export const fetchFromUrl = action({
       throw new Error("No image found on source page");
     }
 
-    const imgRes = await fetch(imageUrl);
+    // Image CDNs often hotlink-protect, so present ourselves as a
+    // browser navigating from the page we just scraped.
+    const imgRes = await fetch(imageUrl, {
+      headers: {
+        "User-Agent": BROWSER_UA,
+        Accept: "image/avif,image/webp,image/apng,image/*,*/*;q=0.8",
+        Referer: pageRes.url || url,
+      },
+      redirect: "follow",
+    });
     if (!imgRes.ok) {
       throw new Error(`Image fetch failed: ${imgRes.status}`);
     }
