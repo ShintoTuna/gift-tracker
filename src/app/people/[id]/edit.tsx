@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -20,6 +19,7 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
+import { confirmDestructive, notify } from "@/lib/alerts";
 import { describeMutationError } from "@/lib/convexErrors";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { colors, fonts, spacing } from "@/theme/tokens";
@@ -88,7 +88,7 @@ export default function EditPersonScreen() {
         });
       }
     } catch (err) {
-      Alert.alert(
+      notify(
         t("imagePicker.uploadFailed"),
         err instanceof Error ? err.message : String(err),
       );
@@ -152,38 +152,32 @@ export default function EditPersonScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
+      notify(t("common.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };
 
-  const onDelete = () => {
-    Alert.alert(
-      t("personForm.deleteConfirmTitle"),
-      t("personForm.deleteConfirmBody"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("common.delete"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await removePerson({ id: personId });
-              // Dismiss any open modals (this one), then replace the
-              // stack root so we don't briefly render the now-deleted
-              // profile en route to the People tab.
-              router.dismissAll();
-              router.replace("/");
-            } catch (err) {
-              Alert.alert(
-                t("common.couldNotDelete"),
-                err instanceof Error ? err.message : String(err),
-              );
-            }
-          },
-        },
-      ],
-    );
+  const onDelete = async () => {
+    const confirmed = await confirmDestructive({
+      title: t("personForm.deleteConfirmTitle"),
+      message: t("personForm.deleteConfirmBody"),
+      confirmLabel: t("common.delete"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    try {
+      await removePerson({ id: personId });
+      // Dismiss any open modals (this one), then replace the stack
+      // root so we don't briefly render the now-deleted profile en
+      // route to the People tab.
+      router.dismissAll();
+      router.replace("/");
+    } catch (err) {
+      notify(
+        t("common.couldNotDelete"),
+        err instanceof Error ? err.message : String(err),
+      );
+    }
   };
 
   return (

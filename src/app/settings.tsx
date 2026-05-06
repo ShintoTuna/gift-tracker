@@ -6,7 +6,6 @@ import * as Updates from "expo-updates";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   Linking,
   Platform,
   Pressable,
@@ -25,6 +24,7 @@ import {
   SUPPORTED_LANGUAGES,
   type Language,
 } from "@/i18n";
+import { confirmDestructive, notify } from "@/lib/alerts";
 import {
   DEFAULT_CURRENCY,
   DEFAULT_REMINDER_DAYS_AHEAD,
@@ -79,55 +79,42 @@ export default function SettingsScreen() {
 
   const currentCurrency = settings?.defaultCurrency ?? DEFAULT_CURRENCY;
 
-  const onSignOut = () => {
-    Alert.alert(
-      t("auth.account.signOutConfirm"),
-      undefined,
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("auth.account.signOut"),
-          style: "destructive",
-          onPress: async () => {
-            // Best-effort token cleanup before the auth context
-            // disappears. Silenced — the cron also prunes via Expo's
-            // DeviceNotRegistered receipt if this fails.
-            try {
-              const token = await getStoredPushToken();
-              if (token) await unregisterToken({ token });
-            } catch {
-              // ignore
-            }
-            await signOut();
-          },
-        },
-      ],
-    );
+  const onSignOut = async () => {
+    const confirmed = await confirmDestructive({
+      title: t("auth.account.signOutConfirm"),
+      confirmLabel: t("auth.account.signOut"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    // Best-effort token cleanup before the auth context disappears.
+    // Silenced — the cron also prunes via Expo's DeviceNotRegistered
+    // receipt if this fails.
+    try {
+      const token = await getStoredPushToken();
+      if (token) await unregisterToken({ token });
+    } catch {
+      // ignore
+    }
+    await signOut();
   };
 
-  const onDeleteAccount = () => {
-    Alert.alert(
-      t("auth.account.deleteConfirmTitle"),
-      t("auth.account.deleteConfirmBody"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("auth.account.deleteConfirmCta"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteAccount({});
-              await signOut();
-            } catch (err) {
-              Alert.alert(
-                t("auth.errorTitle"),
-                err instanceof Error ? err.message : String(err),
-              );
-            }
-          },
-        },
-      ],
-    );
+  const onDeleteAccount = async () => {
+    const confirmed = await confirmDestructive({
+      title: t("auth.account.deleteConfirmTitle"),
+      message: t("auth.account.deleteConfirmBody"),
+      confirmLabel: t("auth.account.deleteConfirmCta"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    try {
+      await deleteAccount({});
+      await signOut();
+    } catch (err) {
+      notify(
+        t("auth.errorTitle"),
+        err instanceof Error ? err.message : String(err),
+      );
+    }
   };
 
   return (
@@ -297,7 +284,7 @@ function AboutSection() {
 
   const openExternal = (url: string) => {
     void Linking.openURL(url).catch(() => {
-      Alert.alert(t("settings.about.openFailed"));
+      notify(t("settings.about.openFailed"));
     });
   };
 
@@ -416,7 +403,7 @@ function NotificationsSection({
     if (next) {
       const token = await requestPermissionsAndGetToken();
       if (!token) {
-        Alert.alert(t("settings.notifications.permissionDenied"));
+        notify(t("settings.notifications.permissionDenied"));
         return;
       }
       await setPrefs({

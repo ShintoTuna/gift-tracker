@@ -4,7 +4,6 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -17,6 +16,7 @@ import {
 } from "react-native";
 
 import { TextField } from "@/components/TextField";
+import { notify } from "@/lib/alerts";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
 // Email-OTP login screen. Two-step state machine:
@@ -45,7 +45,7 @@ export default function EmailLoginScreen() {
     const trimmed = email.trim().toLowerCase();
     // Minimal client-side gate; server validates rigorously.
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
-      Alert.alert(t("auth.errorTitle"), t("auth.email.errors.invalidEmail"));
+      notify(t("auth.errorTitle"), t("auth.email.errors.invalidEmail"));
       return;
     }
     setPending(true);
@@ -59,7 +59,7 @@ export default function EmailLoginScreen() {
       // step change so the ref is fresh; defer one tick.
       setTimeout(() => codeInputRef.current?.focus(), 50);
     } catch {
-      Alert.alert(t("auth.errorTitle"), t("auth.email.errors.sendFailed"));
+      notify(t("auth.errorTitle"), t("auth.email.errors.sendFailed"));
     } finally {
       setPending(false);
     }
@@ -69,7 +69,7 @@ export default function EmailLoginScreen() {
     if (pending) return;
     const trimmedCode = code.trim();
     if (trimmedCode.length === 0) {
-      Alert.alert(t("auth.errorTitle"), t("auth.email.errors.invalidCode"));
+      notify(t("auth.errorTitle"), t("auth.email.errors.invalidCode"));
       return;
     }
     setPending(true);
@@ -81,7 +81,7 @@ export default function EmailLoginScreen() {
       // AuthGate in src/app/_layout.tsx flips on isAuthenticated and
       // redirects to /welcome (new user) or / (returning).
     } catch {
-      Alert.alert(t("auth.errorTitle"), t("auth.email.errors.invalidCode"));
+      notify(t("auth.errorTitle"), t("auth.email.errors.invalidCode"));
       setPending(false);
     }
   };
@@ -100,7 +100,7 @@ export default function EmailLoginScreen() {
       formData.set("email", email);
       await signIn("resend-otp", formData);
     } catch {
-      Alert.alert(t("auth.errorTitle"), t("auth.email.errors.sendFailed"));
+      notify(t("auth.errorTitle"), t("auth.email.errors.sendFailed"));
     } finally {
       setPending(false);
     }
