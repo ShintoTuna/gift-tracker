@@ -53,6 +53,36 @@ const MAX_DAYS_AHEAD_ENTRIES = 10;
 const MIN_DAYS_AHEAD = 1;
 const MAX_DAYS_AHEAD = 365;
 
+// `Alert.alert` with multiple buttons is a no-op on react-native-web,
+// so confirmation flows fall back to the browser's `window.confirm`.
+function confirmDestructive(opts: {
+  title: string;
+  message?: string;
+  confirmLabel: string;
+  cancelLabel: string;
+}): Promise<boolean> {
+  if (Platform.OS === "web") {
+    const body = opts.message ? `${opts.title}\n\n${opts.message}` : opts.title;
+    return Promise.resolve(
+      typeof window !== "undefined" ? window.confirm(body) : false,
+    );
+  }
+  return new Promise((resolve) => {
+    Alert.alert(opts.title, opts.message, [
+      {
+        text: opts.cancelLabel,
+        style: "cancel",
+        onPress: () => resolve(false),
+      },
+      {
+        text: opts.confirmLabel,
+        style: "destructive",
+        onPress: () => resolve(true),
+      },
+    ]);
+  });
+}
+
 const CURRENCIES: { code: string; label: string }[] = [
   { code: "EUR", label: "EUR €" },
   { code: "USD", label: "USD $" },
@@ -79,55 +109,42 @@ export default function SettingsScreen() {
 
   const currentCurrency = settings?.defaultCurrency ?? DEFAULT_CURRENCY;
 
-  const onSignOut = () => {
-    Alert.alert(
-      t("auth.account.signOutConfirm"),
-      undefined,
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("auth.account.signOut"),
-          style: "destructive",
-          onPress: async () => {
-            // Best-effort token cleanup before the auth context
-            // disappears. Silenced — the cron also prunes via Expo's
-            // DeviceNotRegistered receipt if this fails.
-            try {
-              const token = await getStoredPushToken();
-              if (token) await unregisterToken({ token });
-            } catch {
-              // ignore
-            }
-            await signOut();
-          },
-        },
-      ],
-    );
+  const onSignOut = async () => {
+    const confirmed = await confirmDestructive({
+      title: t("auth.account.signOutConfirm"),
+      confirmLabel: t("auth.account.signOut"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    // Best-effort token cleanup before the auth context disappears.
+    // Silenced — the cron also prunes via Expo's DeviceNotRegistered
+    // receipt if this fails.
+    try {
+      const token = await getStoredPushToken();
+      if (token) await unregisterToken({ token });
+    } catch {
+      // ignore
+    }
+    await signOut();
   };
 
-  const onDeleteAccount = () => {
-    Alert.alert(
-      t("auth.account.deleteConfirmTitle"),
-      t("auth.account.deleteConfirmBody"),
-      [
-        { text: t("common.cancel"), style: "cancel" },
-        {
-          text: t("auth.account.deleteConfirmCta"),
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await deleteAccount({});
-              await signOut();
-            } catch (err) {
-              Alert.alert(
-                t("auth.errorTitle"),
-                err instanceof Error ? err.message : String(err),
-              );
-            }
-          },
-        },
-      ],
-    );
+  const onDeleteAccount = async () => {
+    const confirmed = await confirmDestructive({
+      title: t("auth.account.deleteConfirmTitle"),
+      message: t("auth.account.deleteConfirmBody"),
+      confirmLabel: t("auth.account.deleteConfirmCta"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    try {
+      await deleteAccount({});
+      await signOut();
+    } catch (err) {
+      Alert.alert(
+        t("auth.errorTitle"),
+        err instanceof Error ? err.message : String(err),
+      );
+    }
   };
 
   return (
