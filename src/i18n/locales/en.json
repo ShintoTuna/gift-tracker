@@ -88,7 +88,8 @@
     "chooseFromLibrary": "Choose from Library",
     "uploadFailed": "Couldn't upload photo",
     "fetchFromSource": "Use image from source",
-    "fetchFromSourceFailed": "Couldn't fetch image from source"
+    "fetchFromSourceFailed": "Couldn't fetch image from source",
+    "fetchFromSourceHint": "Some sites block image lookups. Please pick a photo manually."
   },
   "people": {
     "title": "People",
