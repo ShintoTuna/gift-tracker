@@ -2,7 +2,8 @@ import { Tabs } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { Platform, View } from "react-native";
 
-import { CaptureFab, Icon, type IconName } from "@/components";
+import { CaptureFab, Icon, Sidebar, type IconName } from "@/components";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 import { colors } from "@/theme/tokens";
 
 // SF Symbol name pairs for each tab — focused (filled) and
@@ -32,41 +33,54 @@ function tabIcon(key: keyof typeof ICONS) {
 
 export default function TabsLayout() {
   const { t } = useTranslation();
+  const isDesktop = useBreakpoint() === "desktop";
+
   return (
-    <View style={{ flex: 1 }}>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarStyle: {
-            backgroundColor: colors.bg,
-            borderTopColor: colors.border,
-            // On web, @react-navigation/bottom-tabs leaves no room for
-            // the label under the icon, clipping descenders. Give the
-            // bar an explicit height with breathing room for the text.
-            ...(Platform.OS === "web"
-              ? { height: 64, paddingTop: 6, paddingBottom: 8 }
-              : null),
-          },
-          tabBarLabelStyle:
-            Platform.OS === "web" ? { paddingBottom: 4 } : undefined,
-          tabBarActiveTintColor: colors.brass,
-          tabBarInactiveTintColor: colors.text3,
-        }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{ title: t("tabs.people"), tabBarIcon: tabIcon("index") }}
-        />
-        <Tabs.Screen
-          name="calendar"
-          options={{ title: t("tabs.calendar"), tabBarIcon: tabIcon("calendar") }}
-        />
-        <Tabs.Screen
-          name="backlog"
-          options={{ title: t("tabs.gifts"), tabBarIcon: tabIcon("backlog") }}
-        />
-      </Tabs>
-      <CaptureFab />
+    <View style={{ flex: 1, flexDirection: isDesktop ? "row" : "column" }}>
+      {isDesktop ? <Sidebar /> : null}
+      <View style={{ flex: 1 }}>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarStyle: isDesktop
+              ? { display: "none" }
+              : {
+                  backgroundColor: colors.bg,
+                  borderTopColor: colors.border,
+                  // On web, @react-navigation/bottom-tabs leaves no room
+                  // for the label under the icon, clipping descenders.
+                  // Give the bar an explicit height with breathing room.
+                  ...(Platform.OS === "web"
+                    ? { height: 64, paddingTop: 6, paddingBottom: 8 }
+                    : null),
+                },
+            tabBarLabelStyle:
+              Platform.OS === "web" ? { paddingBottom: 4 } : undefined,
+            tabBarActiveTintColor: colors.brass,
+            tabBarInactiveTintColor: colors.text3,
+          }}
+        >
+          <Tabs.Screen
+            name="index"
+            options={{ title: t("tabs.people"), tabBarIcon: tabIcon("index") }}
+          />
+          <Tabs.Screen
+            name="calendar"
+            options={{
+              title: t("tabs.calendar"),
+              tabBarIcon: tabIcon("calendar"),
+            }}
+          />
+          <Tabs.Screen
+            name="backlog"
+            options={{
+              title: t("tabs.gifts"),
+              tabBarIcon: tabIcon("backlog"),
+            }}
+          />
+        </Tabs>
+        {isDesktop ? null : <CaptureFab />}
+      </View>
     </View>
   );
 }

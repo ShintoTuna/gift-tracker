@@ -20,6 +20,7 @@ import { useTranslation } from "react-i18next";
 import { Platform, StyleSheet, View } from "react-native";
 
 import { ConnectionBanner, DevDock, ErrorFallback } from "@/components";
+import { useBreakpoint } from "@/lib/useBreakpoint";
 import { colors } from "@/theme/tokens";
 // IMPORTANT: importing `@/i18n` runs i18next's `init()` for its
 // side effect. This must happen before any child component calls
@@ -191,6 +192,7 @@ function AuthGate({ children }: { children: ReactNode }) {
 }
 
 function RootLayout() {
+  const isDesktop = useBreakpoint() === "desktop";
   const [fontsLoaded] = useFonts({
     CormorantGaramond_500Medium_Italic,
     Manrope_400Regular,
@@ -228,7 +230,12 @@ function RootLayout() {
           <AuthGate>
             <NotificationsRegistrar />
             <View style={frameStyles.outer}>
-            <View style={frameStyles.inner}>
+            <View
+              style={[
+                frameStyles.inner,
+                isDesktop ? frameStyles.innerDesktop : null,
+              ]}
+            >
               <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="(auth)" />
                 <Stack.Screen name="(tabs)" />
@@ -283,6 +290,11 @@ function RootLayout() {
 // On web, frame the phone-portrait UI in a centered max-width
 // column so the app stays usable on desktop viewports without a
 // per-screen responsive rewrite. On native, the inner view fills.
+//
+// At the desktop breakpoint we widen the frame to accommodate the
+// sidebar layout introduced by `(tabs)/_layout.tsx`. The phone
+// column stays at 480px so other web routes (auth, capture modal)
+// keep their existing proportions on small viewports.
 const frameStyles = StyleSheet.create({
   outer: {
     flex: 1,
@@ -303,6 +315,9 @@ const frameStyles = StyleSheet.create({
           borderColor: colors.border,
         }
       : null),
+  },
+  innerDesktop: {
+    maxWidth: 1200,
   },
 });
 
