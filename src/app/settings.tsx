@@ -6,7 +6,6 @@ import * as Updates from "expo-updates";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   Linking,
   Platform,
   Pressable,
@@ -25,6 +24,7 @@ import {
   SUPPORTED_LANGUAGES,
   type Language,
 } from "@/i18n";
+import { confirmDestructive, notify } from "@/lib/alerts";
 import {
   DEFAULT_CURRENCY,
   DEFAULT_REMINDER_DAYS_AHEAD,
@@ -52,36 +52,6 @@ const FEEDBACK_EMAIL = "nikita.shatunov@gmail.com";
 const MAX_DAYS_AHEAD_ENTRIES = 10;
 const MIN_DAYS_AHEAD = 1;
 const MAX_DAYS_AHEAD = 365;
-
-// `Alert.alert` with multiple buttons is a no-op on react-native-web,
-// so confirmation flows fall back to the browser's `window.confirm`.
-function confirmDestructive(opts: {
-  title: string;
-  message?: string;
-  confirmLabel: string;
-  cancelLabel: string;
-}): Promise<boolean> {
-  if (Platform.OS === "web") {
-    const body = opts.message ? `${opts.title}\n\n${opts.message}` : opts.title;
-    return Promise.resolve(
-      typeof window !== "undefined" ? window.confirm(body) : false,
-    );
-  }
-  return new Promise((resolve) => {
-    Alert.alert(opts.title, opts.message, [
-      {
-        text: opts.cancelLabel,
-        style: "cancel",
-        onPress: () => resolve(false),
-      },
-      {
-        text: opts.confirmLabel,
-        style: "destructive",
-        onPress: () => resolve(true),
-      },
-    ]);
-  });
-}
 
 const CURRENCIES: { code: string; label: string }[] = [
   { code: "EUR", label: "EUR €" },
@@ -140,7 +110,7 @@ export default function SettingsScreen() {
       await deleteAccount({});
       await signOut();
     } catch (err) {
-      Alert.alert(
+      notify(
         t("auth.errorTitle"),
         err instanceof Error ? err.message : String(err),
       );
@@ -314,7 +284,7 @@ function AboutSection() {
 
   const openExternal = (url: string) => {
     void Linking.openURL(url).catch(() => {
-      Alert.alert(t("settings.about.openFailed"));
+      notify(t("settings.about.openFailed"));
     });
   };
 
@@ -433,7 +403,7 @@ function NotificationsSection({
     if (next) {
       const token = await requestPermissionsAndGetToken();
       if (!token) {
-        Alert.alert(t("settings.notifications.permissionDenied"));
+        notify(t("settings.notifications.permissionDenied"));
         return;
       }
       await setPrefs({

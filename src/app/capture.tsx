@@ -3,7 +3,6 @@ import { router } from "expo-router";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -21,6 +20,7 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
+import { notify } from "@/lib/alerts";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
 import { useLimitErrorSheet } from "@/lib/useLimitErrorSheet";
@@ -71,7 +71,7 @@ export default function CaptureScreen() {
         setImagePreview(result.previewUri);
       }
     } catch (err) {
-      Alert.alert(
+      notify(
         t("imagePicker.uploadFailed"),
         err instanceof Error ? err.message : String(err),
       );
@@ -94,7 +94,7 @@ export default function CaptureScreen() {
       setImageStorageId(result.storageId);
       setImagePreview(result.previewUrl ?? null);
     } catch (err) {
-      Alert.alert(
+      notify(
         t("imagePicker.fetchFromSourceFailed"),
         err instanceof Error ? err.message : String(err),
       );

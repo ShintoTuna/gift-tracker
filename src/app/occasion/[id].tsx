@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -23,6 +22,7 @@ import {
   ScreenTitle,
   TextField,
 } from "@/components";
+import { confirmDestructive, notify } from "@/lib/alerts";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../../convex/_generated/api";
@@ -103,7 +103,7 @@ export default function EditOccasionScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(
+      notify(
         t("common.couldNotSave"),
         err instanceof Error ? err.message : String(err),
       );
@@ -111,25 +111,23 @@ export default function EditOccasionScreen() {
     }
   };
 
-  const onDelete = () => {
-    Alert.alert(t("occasionForm.deleteConfirmTitle"), t("common.cantBeUndone"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.delete"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await removeOccasion({ id: occasionId });
-            router.back();
-          } catch (err) {
-            Alert.alert(
-              t("common.couldNotDelete"),
-              err instanceof Error ? err.message : String(err),
-            );
-          }
-        },
-      },
-    ]);
+  const onDelete = async () => {
+    const confirmed = await confirmDestructive({
+      title: t("occasionForm.deleteConfirmTitle"),
+      message: t("common.cantBeUndone"),
+      confirmLabel: t("common.delete"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    try {
+      await removeOccasion({ id: occasionId });
+      router.back();
+    } catch (err) {
+      notify(
+        t("common.couldNotDelete"),
+        err instanceof Error ? err.message : String(err),
+      );
+    }
   };
 
   return (

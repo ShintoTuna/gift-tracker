@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   Pressable,
@@ -27,6 +26,7 @@ import {
   TextField,
 } from "@/components";
 import DateTimePicker from "@/components/internal/DateTimePicker";
+import { confirmDestructive, notify } from "@/lib/alerts";
 import { describeMutationError } from "@/lib/convexErrors";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
@@ -136,7 +136,7 @@ export default function EditIdeaScreen() {
         });
       }
     } catch (err) {
-      Alert.alert(
+      notify(
         t("imagePicker.uploadFailed"),
         err instanceof Error ? err.message : String(err),
       );
@@ -161,7 +161,7 @@ export default function EditIdeaScreen() {
         previewUri: result.previewUrl ?? "",
       });
     } catch (err) {
-      Alert.alert(
+      notify(
         t("imagePicker.fetchFromSourceFailed"),
         err instanceof Error ? err.message : String(err),
       );
@@ -233,34 +233,32 @@ export default function EditIdeaScreen() {
       });
       router.back();
     } catch (err) {
-      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
+      notify(t("common.couldNotSave"), describeMutationError(err, t));
       setSaving(false);
     }
   };
 
-  const onDelete = () => {
-    Alert.alert(t("ideaForm.deleteConfirmTitle"), t("common.cantBeUndone"), [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.delete"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await removeIdea({ id: ideaId });
-            // Dismiss this modal, then replace the underlying view
-            // screen so we don't briefly render the deleted idea on
-            // the way back to the Gifts list.
-            router.dismissAll();
-            router.replace("/(tabs)/backlog");
-          } catch (err) {
-            Alert.alert(
-              t("common.couldNotDelete"),
-              err instanceof Error ? err.message : String(err),
-            );
-          }
-        },
-      },
-    ]);
+  const onDelete = async () => {
+    const confirmed = await confirmDestructive({
+      title: t("ideaForm.deleteConfirmTitle"),
+      message: t("common.cantBeUndone"),
+      confirmLabel: t("common.delete"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    try {
+      await removeIdea({ id: ideaId });
+      // Dismiss this modal, then replace the underlying view screen
+      // so we don't briefly render the deleted idea on the way back
+      // to the Gifts list.
+      router.dismissAll();
+      router.replace("/(tabs)/backlog");
+    } catch (err) {
+      notify(
+        t("common.couldNotDelete"),
+        err instanceof Error ? err.message : String(err),
+      );
+    }
   };
 
   const startAddGiving = () => {
@@ -288,30 +286,28 @@ export default function EditIdeaScreen() {
       });
       cancelAddGiving();
     } catch (err) {
-      Alert.alert(t("common.couldNotSave"), describeMutationError(err, t));
+      notify(t("common.couldNotSave"), describeMutationError(err, t));
     } finally {
       setSavingGiving(false);
     }
   };
 
-  const onRemoveGiving = (givingId: Id<"giftGivings">, label: string) => {
-    Alert.alert(t("ideaForm.removeGivingConfirm"), label, [
-      { text: t("common.cancel"), style: "cancel" },
-      {
-        text: t("common.delete"),
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await removeGiving({ id: givingId });
-          } catch (err) {
-            Alert.alert(
-              t("common.couldNotDelete"),
-              err instanceof Error ? err.message : String(err),
-            );
-          }
-        },
-      },
-    ]);
+  const onRemoveGiving = async (givingId: Id<"giftGivings">, label: string) => {
+    const confirmed = await confirmDestructive({
+      title: t("ideaForm.removeGivingConfirm"),
+      message: label,
+      confirmLabel: t("common.delete"),
+      cancelLabel: t("common.cancel"),
+    });
+    if (!confirmed) return;
+    try {
+      await removeGiving({ id: givingId });
+    } catch (err) {
+      notify(
+        t("common.couldNotDelete"),
+        err instanceof Error ? err.message : String(err),
+      );
+    }
   };
 
   return (

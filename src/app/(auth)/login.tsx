@@ -6,7 +6,6 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
-  Alert,
   Image,
   Platform,
   Pressable,
@@ -15,6 +14,7 @@ import {
   View,
 } from "react-native";
 
+import { notify } from "@/lib/alerts";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
 // Apple Sign-in on the web requires Sign in with Apple JS + a
@@ -71,7 +71,7 @@ export default function LoginScreen() {
         window.history.replaceState({}, "", url.toString());
       } catch (err) {
         window.localStorage.removeItem(PENDING_PROVIDER_KEY);
-        Alert.alert(
+        notify(
           t("auth.errorTitle"),
           err instanceof Error ? err.message : String(err),
         );
@@ -111,7 +111,7 @@ export default function LoginScreen() {
       await signIn(provider, { code });
       // AuthGate will redirect into (tabs) once isAuthenticated flips.
     } catch (err) {
-      Alert.alert(
+      notify(
         t("auth.errorTitle"),
         err instanceof Error ? err.message : String(err),
       );

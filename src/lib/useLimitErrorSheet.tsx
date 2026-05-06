@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Alert } from "react-native";
 
 import { LimitReachedSheet } from "@/components/LimitReachedSheet";
+import { notify } from "@/lib/alerts";
 import {
   describeMutationError,
   getLimitReachedData,
@@ -31,7 +31,7 @@ export function useLimitErrorSheet() {
         setData(limit);
         return;
       }
-      Alert.alert(fallbackTitle, describeMutationError(err, t));
+      notify(fallbackTitle, describeMutationError(err, t));
     },
     [t],
   );
