@@ -236,9 +236,30 @@ function RootLayout() {
                 isDesktop ? frameStyles.innerDesktop : null,
               ]}
             >
-              <Stack screenOptions={{ headerShown: false }}>
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  // At desktop, every screen renders inside a
+                  // centered 640px column so forms and lists stop
+                  // stretching across the wide frame. The (tabs)
+                  // screen below opts out so the sidebar can use
+                  // the full frame width.
+                  contentStyle: isDesktop
+                    ? {
+                        width: "100%",
+                        maxWidth: 640,
+                        alignSelf: "center",
+                      }
+                    : undefined,
+                }}
+              >
                 <Stack.Screen name="(auth)" />
-                <Stack.Screen name="(tabs)" />
+                <Stack.Screen
+                  name="(tabs)"
+                  options={
+                    isDesktop ? { contentStyle: { width: "100%" } } : undefined
+                  }
+                />
                 <Stack.Screen name="people/[id]" />
                 <Stack.Screen
                   name="people/[id]/edit"
