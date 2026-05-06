@@ -2,6 +2,7 @@ import Apple from "@auth/core/providers/apple";
 import Google from "@auth/core/providers/google";
 import { convexAuth } from "@convex-dev/auth/server";
 
+import type { MutationCtx } from "./_generated/server";
 import { ResendOTP } from "./ResendOTP";
 
 // Three providers, all surfaced on the login screen:
@@ -44,9 +45,23 @@ export const { auth, signIn, signOut, store, isAuthenticated } = convexAuth({
         // intact. Apple/Google may not re-share name on re-login.
         return args.existingUserId;
       }
-      return await ctx.db.insert("users", {
+      // Convex Auth matches on provider accountId, not email, so a
+      // user who first signed in with Google and later uses the email
+      // OTP (or vice versa) would otherwise get a second `users` row.
+      // All three providers (Apple, Google, ResendOTP) verify email
+      // ownership, so it's safe to merge by email here.
+      const email = args.profile.email as string | undefined;
+      const db = (ctx as MutationCtx).db;
+      if (email) {
+        const existing = await db
+          .query("users")
+          .withIndex("email", (q) => q.eq("email", email))
+          .unique();
+        if (existing) return existing._id;
+      }
+      return await db.insert("users", {
         name: args.profile.name as string | undefined,
-        email: args.profile.email as string | undefined,
+        email,
         image: args.profile.image as string | undefined,
         subscriptionTier: "free" as const,
         aiUsageThisPeriod: 0,

@@ -1,0 +1,56 @@
+# Deploys the Convex backend (functions + schema) to production.
+# Manual-only — trigger from the Actions tab (or `gh workflow run
+# convex-deploy.yml`).
+#
+# Required GitHub repository secret:
+#   CONVEX_DEPLOY_KEY  — production deploy key from the Convex
+#                        dashboard (Settings → Deploy Keys).
+#                        `npx convex deploy` reads it from env.
+
+name: Convex Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag, or SHA to deploy (defaults to current)
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Verify required secrets
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: |
+          if [ -z "${CONVEX_DEPLOY_KEY:-}" ]; then
+            echo "::error::CONVEX_DEPLOY_KEY is not set — convex deploy can't authenticate."
+            exit 1
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy to Convex
+        env:
+          CONVEX_DEPLOY_KEY: ${{ secrets.CONVEX_DEPLOY_KEY }}
+        run: npx convex deploy
+
+      - name: Summary
+        run: |
+          {
+            echo "### Convex deploy"
+            echo ""
+            echo "- Ref: \`${{ inputs.ref || github.ref }}\`"
+          } >> "$GITHUB_STEP_SUMMARY"
