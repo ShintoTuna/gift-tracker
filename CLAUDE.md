@@ -37,6 +37,7 @@ require they exit 0:
 npx expo-doctor       # native module / SDK version mismatches
 npm run lint          # eslint via expo lint
 npx tsc --noEmit      # strict typecheck across src/ and convex/
+npm run web:export    # expo export -p web — catches web bundler regressions
 ```
 
 `expo-doctor` is the most important of the three for catching what
@@ -82,3 +83,27 @@ To verify symbolication end-to-end after a build:
    `<bundleId>@<version>+<build>` (e.g.
    `com.shatunov.giftsmith@1.0.0+7`); confirm the new release
    appears at https://shintotuna.sentry.io/releases/.
+
+## Web build (Cloudflare Workers)
+
+The web app is a separate deploy target from the marketing site.
+Two wrangler configs live at the repo root:
+
+- `wrangler.jsonc` — marketing site (`./site`).
+- `wrangler.app.jsonc` — web app (`./dist`, SPA fallback).
+
+```bash
+npm run web:export    # expo export -p web → ./dist
+npm run web:deploy    # exports + wrangler deploy --config wrangler.app.jsonc
+```
+
+`EXPO_PUBLIC_CONVEX_URL` must be set when exporting (same as native).
+On the Convex side, set `WEB_SITE_URL` in the dashboard env to the
+production app origin so the OAuth redirect allowlist accepts it
+(see `convex/auth.ts`).
+
+Push notifications, Apple Sign-in, expo-secure-store, and Sentry
+are no-ops on web (file-input image upload, full-page OAuth
+redirect, and the in-memory token storage take their place). Adding
+features that depend on native-only modules requires either a
+`.web.ts` shim or a `Platform.OS` guard.

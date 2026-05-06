@@ -1,0 +1,16 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "giftsmith-app",
+  "compatibility_date": "2026-04-30",
+  // Output of `npx expo export -p web`. Run `npm run web:export`
+  // before `wrangler deploy --config wrangler.app.jsonc`, or use
+  // `npm run web:deploy` which chains both.
+  "assets": {
+    "directory": "./dist",
+    // expo-router with `web.output: "static"` emits per-route HTML
+    // for known paths; dynamic routes (e.g. /people/[id]) miss on
+    // the static manifest, so fall back to index.html and let the
+    // client router resolve the URL.
+    "not_found_handling": "single-page-application"
+  }
+}

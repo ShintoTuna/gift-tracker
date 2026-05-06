@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import {
   Alert,
   Linking,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -201,10 +202,12 @@ export default function SettingsScreen() {
           </Card>
         </View>
 
-        <NotificationsSection
-          prefs={notificationPrefs}
-          setPrefs={setNotificationPrefs}
-        />
+        {Platform.OS !== "web" && (
+          <NotificationsSection
+            prefs={notificationPrefs}
+            setPrefs={setNotificationPrefs}
+          />
+        )}
 
         <View style={styles.section}>
           <Label style={styles.sectionLabel}>{t("auth.account.title")}</Label>
