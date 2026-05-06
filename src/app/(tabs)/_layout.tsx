@@ -11,10 +11,14 @@ import { colors } from "@/theme/tokens";
 // Symbols so the same name is used for both states; tint color
 // alone signals selection there.
 type IconPair = { focused: IconName; unfocused: IconName };
-const ICONS: Record<"index" | "calendar" | "backlog", IconPair> = {
+const ICONS: Record<
+  "index" | "calendar" | "backlog" | "wishlist",
+  IconPair
+> = {
   index: { focused: "person.2.fill", unfocused: "person.2" },
   calendar: { focused: "calendar", unfocused: "calendar" },
   backlog: { focused: "gift.fill", unfocused: "gift" },
+  wishlist: { focused: "star.fill", unfocused: "star" },
 };
 
 function tabIcon(key: keyof typeof ICONS) {
@@ -80,6 +84,13 @@ export default function TabsLayout() {
             options={{
               title: t("tabs.gifts"),
               tabBarIcon: tabIcon("backlog"),
+            }}
+          />
+          <Tabs.Screen
+            name="wishlist"
+            options={{
+              title: t("tabs.wishlist"),
+              tabBarIcon: tabIcon("wishlist"),
             }}
           />
         </Tabs>

@@ -127,6 +127,9 @@ export default function ViewIdeaScreen() {
                 ? t("ideaForm.statusArchived")
                 : t("ideaForm.statusActive")}
             </Pill>
+            {idea.forSelf === true ? (
+              <Pill tone="default">{t("ideaView.forSelfBadge")}</Pill>
+            ) : null}
           </View>
 
           {(sourceLabel || priceLabel) && (
@@ -299,6 +302,8 @@ const styles = StyleSheet.create({
   },
   statusRow: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
   },
   metaRow: {
     flexDirection: "row",

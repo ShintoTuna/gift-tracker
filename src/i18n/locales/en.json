@@ -8,6 +8,8 @@
     "optional": "Optional",
     "required": "Required",
     "saving": "Saving…",
+    "on": "On",
+    "off": "Off",
     "couldNotSave": "Could not save",
     "couldNotDelete": "Could not delete",
     "cantBeUndone": "This can't be undone."
@@ -15,7 +17,8 @@
   "tabs": {
     "people": "People",
     "calendar": "Calendar",
-    "gifts": "Gifts"
+    "gifts": "Gifts",
+    "wishlist": "Wishes"
   },
   "settings": {
     "title": "Settings",
@@ -164,7 +167,8 @@
     "editA11y": "Edit idea",
     "openSourceA11y": "Open source link",
     "descriptionLabel": "Description",
-    "peopleLabel": "Tagged people"
+    "peopleLabel": "Tagged people",
+    "forSelfBadge": "★ For me"
   },
   "ideaForm": {
     "editTitle": "Edit idea",
@@ -172,6 +176,8 @@
     "status": "Status",
     "statusActive": "Active",
     "statusArchived": "Archived",
+    "forSelfLabel": "Also for me",
+    "forSelfHint": "Show this on the Wishes tab.",
     "givingsTitle": "Givings",
     "givingsEmpty": "Not given yet. Add a giving to track when you gave this idea away.",
     "addGiving": "+ Add giving",
@@ -185,6 +191,17 @@
     "deleteButton": "Delete idea",
     "deleteConfirmTitle": "Delete this gift idea?",
     "notFound": "Idea not found."
+  },
+  "wishlist": {
+    "title": "Wishes",
+    "subtitle": "Things you want for yourself",
+    "search": "Search wishes",
+    "emptyNone": "No wishes yet. Tap the + button to add one.",
+    "emptyCta": "Add your first wish",
+    "fabLabel": "Add a wish",
+    "captureTitle": "Add a wish",
+    "captureScreenTitle": "Add a wish",
+    "captureSubtitle": "Something you want for yourself"
   },
   "occasionForm": {
     "newTitle": "New occasion",

@@ -9,6 +9,8 @@ export type IconName =
   | "calendar"
   | "gift"
   | "gift.fill"
+  | "star"
+  | "star.fill"
   | "gearshape";
 
 export type IconWeight =
