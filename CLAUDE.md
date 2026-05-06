@@ -6,6 +6,20 @@ When working on Convex code, **always read `convex/_generated/ai/guidelines.md` 
 Convex agent skills for common tasks can be installed by running `npx convex ai-files install`.
 <!-- convex-ai-end -->
 
+## Convex deploy reminder
+
+Anything under `convex/` (schema, queries, mutations, actions, crons,
+auth config) only takes effect after `npx convex deploy` runs against
+the target environment — the JS bundle on its own is not enough.
+
+**Whenever a change touches files under `convex/`, explicitly tell the
+user at the end of the task that they will need to run a Convex
+deploy.** Call out which environment (dev vs. prod) is relevant if the
+change implies one. This applies even when the diff is small (e.g. one
+new index, a tweaked validator) — silent backend drift between the
+client bundle and the deployed Convex functions is the most common
+"works locally, broken in prod" failure mode for this project.
+
 ## Localization (i18n)
 
 The app ships in English + Russian using `i18next` + `react-i18next`. All
