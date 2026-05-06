@@ -13,6 +13,7 @@ import { ConvexAuthProvider } from "@convex-dev/auth/react";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useFonts } from "expo-font";
 import { Redirect, Stack, useSegments } from "expo-router";
+import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import * as SecureStore from "expo-secure-store";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -54,6 +55,21 @@ const secureStorage = {
   getItem: SecureStore.getItemAsync,
   setItem: SecureStore.setItemAsync,
   removeItem: SecureStore.deleteItemAsync,
+};
+
+// React Navigation defaults to a light theme whose `background` is
+// `rgb(242, 242, 242)`. react-native-screens paints that color on the
+// screen wrapper, which leaks through as gray gutters on web around
+// the centered desktop column. Pin the navigation theme's surface
+// colors to the app bg so every Stack (outer, (auth), (tabs), etc.)
+// renders against the same dark surface without per-screen overrides.
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.bg,
+    card: colors.bg,
+  },
 };
 
 // LanguageGate primes i18next from the user's persisted preference
@@ -249,6 +265,7 @@ function RootLayout() {
             : undefined
         }
       >
+        <ThemeProvider value={navTheme}>
         <LanguageGate>
           <AuthGate>
             <NotificationsRegistrar />
@@ -334,6 +351,7 @@ function RootLayout() {
             </View>
           </AuthGate>
         </LanguageGate>
+        </ThemeProvider>
       </ConvexAuthProvider>
     </GlobalErrorBoundary>
   );
