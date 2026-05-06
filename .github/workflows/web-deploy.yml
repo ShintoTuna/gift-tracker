@@ -1,0 +1,108 @@
+# Builds and deploys the web app to Cloudflare Workers via wrangler.
+# Manual-only — trigger from the Actions tab (or `gh workflow run
+# web-deploy.yml`). Outputs the deploy URL in the run summary.
+#
+# DELIBERATELY UNADVERTISED:
+#   The deployed `*.workers.dev` URL is intentionally not linked
+#   from README, the marketing site (./site), or any sitemap. The
+#   workflow also injects `noindex,nofollow` into every HTML page
+#   and writes a wildcard robots.txt so search crawlers will not
+#   surface it. Share the URL out-of-band only.
+#
+# Required GitHub repository secrets:
+#   CLOUDFLARE_API_TOKEN     — token with "Edit Cloudflare Workers"
+#                              + "Workers Scripts:Edit" scopes
+#   CLOUDFLARE_ACCOUNT_ID    — visible in the Cloudflare dashboard URL
+#   EXPO_PUBLIC_CONVEX_URL   — same value used for native; baked
+#                              into the static bundle at export time
+#
+# Optional secrets:
+#   EXPO_PUBLIC_SENTRY_DSN   — currently a no-op on web (we ship a
+#                              Sentry shim) but reserved for when we
+#                              add @sentry/browser
+
+name: Web Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag, or SHA to deploy (defaults to current)
+        required: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Verify required secrets
+        env:
+          EXPO_PUBLIC_CONVEX_URL: ${{ secrets.EXPO_PUBLIC_CONVEX_URL }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          fail=0
+          if [ -z "${EXPO_PUBLIC_CONVEX_URL:-}" ]; then
+            echo "::error::EXPO_PUBLIC_CONVEX_URL is not set — bundle would crash at module load."
+            fail=1
+          fi
+          if [ -z "${CLOUDFLARE_API_TOKEN:-}" ]; then
+            echo "::error::CLOUDFLARE_API_TOKEN is not set — wrangler can't authenticate."
+            fail=1
+          fi
+          if [ -z "${CLOUDFLARE_ACCOUNT_ID:-}" ]; then
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is not set — wrangler can't pick the target account."
+            fail=1
+          fi
+          exit $fail
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Export web bundle
+        env:
+          EXPO_PUBLIC_CONVEX_URL: ${{ secrets.EXPO_PUBLIC_CONVEX_URL }}
+          CI: "1"
+        run: npm run web:export
+
+      - name: Block search indexing
+        # Two layers: a wildcard robots.txt for crawlers that honour
+        # it, and a per-page <meta name="robots"> for crawlers that
+        # ignore robots.txt but respect HTML hints. Belt + suspenders
+        # while the URL stays unadvertised.
+        run: |
+          printf 'User-agent: *\nDisallow: /\n' > dist/robots.txt
+          find dist -name '*.html' -print0 | while IFS= read -r -d '' f; do
+            if ! grep -q 'name="robots"' "$f"; then
+              # Inject into <head>; static renders all have <head>.
+              sed -i 's|<head>|<head><meta name="robots" content="noindex,nofollow,noarchive">|' "$f"
+            fi
+          done
+
+      - name: Deploy to Cloudflare Workers
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --config wrangler.app.jsonc
+
+      - name: Summary
+        run: |
+          {
+            echo "### Web deploy"
+            echo ""
+            echo "- Ref: \`${{ inputs.ref || github.ref }}\`"
+            echo "- Worker: \`giftsmith-app\`"
+            echo "- URL: check the wrangler step above for the \`*.workers.dev\` link"
+            echo ""
+            echo "Reminder: do not link this URL from README or the marketing site."
+          } >> "$GITHUB_STEP_SUMMARY"

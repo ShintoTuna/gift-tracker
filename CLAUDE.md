@@ -102,6 +102,14 @@ On the Convex side, set `WEB_SITE_URL` in the dashboard env to the
 production app origin so the OAuth redirect allowlist accepts it
 (see `convex/auth.ts`).
 
+CI deploys go through `.github/workflows/web-deploy.yml`
+(workflow_dispatch). It needs the repo secrets
+`CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ACCOUNT_ID`, and
+`EXPO_PUBLIC_CONVEX_URL`. The workflow injects `noindex` meta tags
+and a `Disallow: /` robots.txt into the bundle so the
+unadvertised `*.workers.dev` URL won't get crawled. Don't link the
+deploy URL from README, the marketing site (`./site`), or sitemaps.
+
 Push notifications, Apple Sign-in, expo-secure-store, and Sentry
 are no-ops on web (file-input image upload, full-page OAuth
 redirect, and the in-memory token storage take their place). Adding
