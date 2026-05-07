@@ -4,6 +4,17 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api } from "../../convex/_generated/api";
 
 const DEBOUNCE_MS = 100;
+// Cap both the rendered pill and the title pasted into the field to a
+// length that comfortably fits one line of pill UI. Longer scraped
+// titles get a trailing ellipsis so the user sees that more was
+// available and can extend the title manually if they care.
+const SUGGESTION_MAX_CHARS = 50;
+
+function truncateSuggestion(raw: string): string {
+  return raw.length > SUGGESTION_MAX_CHARS
+    ? `${raw.slice(0, SUGGESTION_MAX_CHARS)}…`
+    : raw;
+}
 
 function looksLikeUrl(raw: string): string | null {
   const trimmed = raw.trim();
@@ -77,10 +88,11 @@ export function useSourceTitleSuggestion(sourceUrl: string): {
     const handle = setTimeout(async () => {
       try {
         const result = await fetchTitle({ url: normalized });
-        cacheRef.current.set(normalized, result.title ?? null);
+        const truncated = result.title ? truncateSuggestion(result.title) : null;
+        cacheRef.current.set(normalized, truncated);
         if (latestUrlRef.current !== normalized) return;
         if (dismissedRef.current.has(normalized)) return;
-        setSuggestion(result.title ?? null);
+        setSuggestion(truncated);
       } catch (err) {
         console.warn("fetchTitle failed", err);
         cacheRef.current.set(normalized, null);
