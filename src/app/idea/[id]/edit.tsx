@@ -387,7 +387,11 @@ export default function EditIdeaScreen() {
                     title: titleSuggestion.suggestion,
                   })}
                 >
-                  <Pill tone="brass">{titleSuggestion.suggestion}</Pill>
+                  <Pill tone="brass">
+                    {titleSuggestion.suggestion.length > 40
+                      ? `${titleSuggestion.suggestion.slice(0, 40)}…`
+                      : titleSuggestion.suggestion}
+                  </Pill>
                 </Pressable>
               )}
             </View>
