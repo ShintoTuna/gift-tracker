@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { api } from "../../convex/_generated/api";
 
-const DEBOUNCE_MS = 600;
+const DEBOUNCE_MS = 100;
 
 function looksLikeUrl(raw: string): string | null {
   const trimmed = raw.trim();
