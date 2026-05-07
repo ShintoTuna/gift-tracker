@@ -81,6 +81,9 @@
     "sourceLabel": "Источник",
     "priceLabel": "Цена ({{currency}})",
     "descriptionLabel": "Описание",
+    "titleSuggestionLabel": "Использовать это название",
+    "titleSuggestionLoading": "Получаем название…",
+    "titleSuggestionA11y": "Использовать предложенное название: {{title}}",
     "saveIdea": "Сохранить идею",
     "couldNotSave": "Не удалось сохранить",
     "fabLabel": "Записать идею"

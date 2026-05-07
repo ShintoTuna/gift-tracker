@@ -26,6 +26,7 @@ import type * as lib_storage from "../lib/storage.js";
 import type * as lib_validate from "../lib/validate.js";
 import type * as notifications from "../notifications.js";
 import type * as occasions from "../occasions.js";
+import type * as pageMetadata from "../pageMetadata.js";
 import type * as people from "../people.js";
 import type * as seed from "../seed.js";
 import type * as seedInternal from "../seedInternal.js";
@@ -58,6 +59,7 @@ declare const fullApi: ApiFromModules<{
   "lib/validate": typeof lib_validate;
   notifications: typeof notifications;
   occasions: typeof occasions;
+  pageMetadata: typeof pageMetadata;
   people: typeof people;
   seed: typeof seed;
   seedInternal: typeof seedInternal;

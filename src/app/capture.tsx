@@ -25,6 +25,7 @@ import { notify } from "@/lib/alerts";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
 import { useLimitErrorSheet } from "@/lib/useLimitErrorSheet";
+import { useSourceTitleSuggestion } from "@/lib/useSourceTitleSuggestion";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../convex/_generated/api";
@@ -69,6 +70,7 @@ export default function CaptureScreen() {
   const [forSelf, setForSelf] = useState(forSelfParam === "1");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const titleSuggestion = useSourceTitleSuggestion(sourceUrl);
 
   const canSave = title.trim().length > 0 && !saving && !uploading;
 
@@ -221,16 +223,47 @@ export default function CaptureScreen() {
               )}
             </View>
 
-            <TextField
-              label={t("capture.sourceLabel")}
-              placeholder="https://…"
-              value={sourceUrl}
-              onChangeText={setSourceUrl}
-              keyboardType="url"
-              autoCapitalize="none"
-              autoCorrect={false}
-              returnKeyType="next"
-            />
+            <View>
+              <TextField
+                label={t("capture.sourceLabel")}
+                placeholder="https://…"
+                value={sourceUrl}
+                onChangeText={setSourceUrl}
+                keyboardType="url"
+                autoCapitalize="none"
+                autoCorrect={false}
+                returnKeyType="next"
+              />
+              {titleSuggestion.loading && (
+                <Text style={styles.titleSuggestionLoading}>
+                  {t("capture.titleSuggestionLoading")}
+                </Text>
+              )}
+              {titleSuggestion.suggestion && !titleSuggestion.loading && (
+                <Pressable
+                  onPress={() => {
+                    setTitle(titleSuggestion.suggestion ?? "");
+                    titleSuggestion.dismiss();
+                  }}
+                  hitSlop={6}
+                  style={styles.titleSuggestion}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("capture.titleSuggestionA11y", {
+                    title: titleSuggestion.suggestion,
+                  })}
+                >
+                  <Text style={styles.titleSuggestionLabel}>
+                    {t("capture.titleSuggestionLabel")}
+                  </Text>
+                  <Text
+                    style={styles.titleSuggestionValue}
+                    numberOfLines={2}
+                  >
+                    {titleSuggestion.suggestion}
+                  </Text>
+                </Pressable>
+              )}
+            </View>
 
             <TextField
               label={t("capture.priceLabel", { currency: defaultCurrency })}
@@ -330,6 +363,29 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodyMedium,
     fontSize: 13,
     color: colors.brass,
+  },
+  titleSuggestion: {
+    marginTop: spacing.sm,
+    paddingVertical: spacing.xs,
+    gap: 2,
+  },
+  titleSuggestionLabel: {
+    fontFamily: fonts.bodyMedium,
+    fontSize: 13,
+    color: colors.brass,
+  },
+  titleSuggestionValue: {
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.text2,
+    lineHeight: 18,
+  },
+  titleSuggestionLoading: {
+    marginTop: spacing.sm,
+    paddingVertical: spacing.xs,
+    fontFamily: fonts.body,
+    fontSize: 13,
+    color: colors.text3,
   },
   forSelfRow: {
     flexDirection: "row",

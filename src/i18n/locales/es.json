@@ -75,6 +75,9 @@
     "sourceLabel": "Fuente",
     "priceLabel": "Precio ({{currency}})",
     "descriptionLabel": "Descripción",
+    "titleSuggestionLabel": "Usar este título",
+    "titleSuggestionLoading": "Buscando título…",
+    "titleSuggestionA11y": "Usar título sugerido: {{title}}",
     "saveIdea": "Guardar idea",
     "couldNotSave": "No se pudo guardar",
     "fabLabel": "Captura una idea"
