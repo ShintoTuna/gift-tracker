@@ -1,10 +1,12 @@
-import { useQuery } from "convex/react";
+import { useMutation, useQuery } from "convex/react";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ActivityIndicator,
   Linking,
+  Modal,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,7 +14,10 @@ import {
   View,
 } from "react-native";
 
-import { Avatar, Card, Label, NavBar, Pill } from "@/components";
+import { Avatar, Btn, Card, Label, NavBar, Pill } from "@/components";
+import DateTimePicker from "@/components/internal/DateTimePicker";
+import { notify } from "@/lib/alerts";
+import { describeMutationError } from "@/lib/convexErrors";
 import { formatPrice, shortenSource } from "@/lib/format";
 import { colors, fonts, radii, spacing } from "@/theme/tokens";
 
@@ -27,8 +32,10 @@ const dateFormatter = new Intl.DateTimeFormat(undefined, {
 
 // Read-only view for a single gift idea. Shows the image, title,
 // status, tagged people, description, source/price, and the giving
-// history. Edit/Delete + giving management live on the edit modal,
-// pushed via the trailing "Edit" pill.
+// history. Edit/Delete + per-giving removal live on the edit modal,
+// pushed via the trailing "Edit" pill. The "Mark as given" CTA opens
+// a lightweight sheet so users can record a giving in one tap
+// without diving into the full edit form.
 export default function ViewIdeaScreen() {
   const { t } = useTranslation();
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -38,6 +45,21 @@ export default function ViewIdeaScreen() {
   const givings = useQuery(api.giftGivings.listByIdea, {
     giftIdeaId: ideaId,
   });
+  const addGiving = useMutation(api.giftGivings.addGiving);
+
+  const [sheetOpen, setSheetOpen] = useState(false);
+  const [givingPersonId, setGivingPersonId] =
+    useState<Id<"people"> | null>(null);
+  const [givingDate, setGivingDate] = useState<Date>(new Date());
+  const [givingOccasionId, setGivingOccasionId] =
+    useState<Id<"occasions"> | null>(null);
+  const [givingDateOpen, setGivingDateOpen] = useState(false);
+  const [savingGiving, setSavingGiving] = useState(false);
+
+  const occasionsForPerson = useQuery(
+    api.occasions.listByPerson,
+    givingPersonId ? { personId: givingPersonId } : "skip",
+  );
 
   if (idea === undefined) {
     return (
@@ -73,6 +95,7 @@ export default function ViewIdeaScreen() {
   const sourceLabel = shortenSource(idea.sourceUrl);
   const priceLabel = formatPrice(idea.priceEstimate, idea.currency);
   const description = idea.description?.trim();
+  const hasPeople = (people?.length ?? 0) > 0;
 
   const onOpenSource = () => {
     if (!idea.sourceUrl) return;
@@ -84,6 +107,48 @@ export default function ViewIdeaScreen() {
       pathname: "/idea/[id]/edit",
       params: { id: idea._id },
     });
+  };
+
+  const openGivingSheet = () => {
+    if (!hasPeople) return;
+    // Pre-select the first tagged person so the common one-person
+    // case is a single-tap confirmation. Falls back to the first
+    // person in the user's address book otherwise.
+    const preselect =
+      idea.taggedPeople[0] ?? (people && people[0]?._id) ?? null;
+    setGivingPersonId(preselect);
+    setGivingDate(new Date());
+    setGivingOccasionId(null);
+    setGivingDateOpen(false);
+    setSheetOpen(true);
+  };
+
+  const closeGivingSheet = () => {
+    setSheetOpen(false);
+    setGivingDateOpen(false);
+  };
+
+  const onSelectPerson = (pid: Id<"people">) => {
+    setGivingPersonId(pid);
+    setGivingOccasionId(null);
+  };
+
+  const onSaveGiving = async () => {
+    if (!givingPersonId || savingGiving) return;
+    setSavingGiving(true);
+    try {
+      await addGiving({
+        giftIdeaId: ideaId,
+        personId: givingPersonId,
+        givenAt: givingDate.getTime(),
+        occasionId: givingOccasionId ?? undefined,
+      });
+      closeGivingSheet();
+    } catch (err) {
+      notify(t("common.couldNotSave"), describeMutationError(err, t));
+    } finally {
+      setSavingGiving(false);
+    }
   };
 
   return (
@@ -251,8 +316,136 @@ export default function ViewIdeaScreen() {
               </Text>
             )}
           </View>
+
+          <Btn
+            tone="primary"
+            full
+            disabled={!hasPeople}
+            onPress={openGivingSheet}
+            style={styles.markGivenBtn}
+          >
+            {t("ideaView.markGiven")}
+          </Btn>
+          {!hasPeople && (
+            <Text style={styles.markGivenHint}>
+              {t("ideaView.markGivenNoPeople")}
+            </Text>
+          )}
         </View>
       </ScrollView>
+
+      <Modal
+        visible={sheetOpen}
+        transparent
+        animationType="fade"
+        onRequestClose={closeGivingSheet}
+      >
+        <Pressable style={styles.backdrop} onPress={closeGivingSheet}>
+          <Pressable style={styles.sheet} onPress={() => undefined}>
+            <Text style={styles.sheetTitle}>
+              {t("ideaView.markGivenSheetTitle")}
+            </Text>
+
+            <Label style={styles.sheetLabel}>
+              {t("ideaForm.givingPerson")}
+            </Label>
+            <View style={styles.pillRow}>
+              {(people ?? []).map((p) => (
+                <Pressable
+                  key={p._id}
+                  onPress={() => onSelectPerson(p._id)}
+                  hitSlop={4}
+                >
+                  <Pill tone={givingPersonId === p._id ? "brass" : "default"}>
+                    {p.nickname ?? p.name}
+                  </Pill>
+                </Pressable>
+              ))}
+            </View>
+
+            <Label style={styles.sheetLabel}>
+              {t("ideaForm.givingDate")}
+            </Label>
+            <Pressable
+              onPress={() => setGivingDateOpen((v) => !v)}
+              hitSlop={6}
+              style={styles.dateRow}
+            >
+              <Pill>{dateFormatter.format(givingDate)}</Pill>
+            </Pressable>
+            {givingDateOpen && (
+              <DateTimePicker
+                value={givingDate}
+                mode="date"
+                display="inline"
+                themeVariant="dark"
+                accentColor={colors.brass}
+                onChange={(_, selected) => {
+                  if (selected) setGivingDate(selected);
+                }}
+              />
+            )}
+
+            {givingPersonId &&
+              occasionsForPerson &&
+              occasionsForPerson.length > 0 && (
+                <>
+                  <Label style={styles.sheetLabel}>
+                    {t("ideaForm.givingOccasion")}
+                  </Label>
+                  <View style={styles.pillRow}>
+                    <Pressable
+                      onPress={() => setGivingOccasionId(null)}
+                      hitSlop={4}
+                    >
+                      <Pill
+                        tone={givingOccasionId === null ? "brass" : "default"}
+                      >
+                        {t("ideaForm.givingNoOccasion")}
+                      </Pill>
+                    </Pressable>
+                    {occasionsForPerson.map((o) => (
+                      <Pressable
+                        key={o._id}
+                        onPress={() => setGivingOccasionId(o._id)}
+                        hitSlop={4}
+                      >
+                        <Pill
+                          tone={
+                            givingOccasionId === o._id ? "brass" : "default"
+                          }
+                        >
+                          {o.title}
+                        </Pill>
+                      </Pressable>
+                    ))}
+                  </View>
+                </>
+              )}
+
+            <View style={styles.sheetActions}>
+              <Btn
+                tone="primary"
+                full
+                disabled={!givingPersonId || savingGiving}
+                onPress={onSaveGiving}
+              >
+                {savingGiving
+                  ? t("common.saving")
+                  : t("ideaForm.saveGiving")}
+              </Btn>
+              <Btn
+                tone="default"
+                full
+                onPress={closeGivingSheet}
+                style={styles.sheetCancelBtn}
+              >
+                {t("common.cancel")}
+              </Btn>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </View>
   );
 }
@@ -390,5 +583,54 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.6,
+  },
+  markGivenBtn: {
+    marginTop: spacing.md,
+  },
+  markGivenHint: {
+    fontFamily: fonts.body,
+    fontSize: 12,
+    color: colors.text3,
+    textAlign: "center",
+  },
+  backdrop: {
+    flex: 1,
+    backgroundColor: "rgba(15,26,22,0.6)",
+    justifyContent: "flex-end",
+  },
+  sheet: {
+    backgroundColor: colors.surface,
+    borderTopLeftRadius: radii.lg,
+    borderTopRightRadius: radii.lg,
+    paddingHorizontal: spacing.xl,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.xxl,
+    borderTopWidth: 1,
+    borderColor: colors.border,
+  },
+  sheetTitle: {
+    fontFamily: fonts.serif,
+    fontSize: 20,
+    color: colors.text,
+    marginBottom: spacing.md,
+  },
+  sheetLabel: {
+    marginTop: spacing.md,
+    marginBottom: spacing.sm,
+  },
+  pillRow: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: spacing.sm,
+  },
+  dateRow: {
+    flexDirection: "row",
+  },
+  sheetActions: {
+    marginTop: spacing.lg,
+    gap: spacing.sm,
+  },
+  sheetCancelBtn: {
+    marginTop: spacing.xs,
   },
 });

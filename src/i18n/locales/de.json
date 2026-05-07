@@ -167,7 +167,10 @@
     "openSourceA11y": "Quell-Link öffnen",
     "descriptionLabel": "Beschreibung",
     "peopleLabel": "Markierte Personen",
-    "forSelfBadge": "★ Für mich"
+    "forSelfBadge": "★ Für mich",
+    "markGiven": "Als verschenkt markieren",
+    "markGivenSheetTitle": "Als verschenkt markieren",
+    "markGivenNoPeople": "Füge zuerst eine Person hinzu, um eine Schenkung zu erfassen."
   },
   "ideaForm": {
     "editTitle": "Idee bearbeiten",

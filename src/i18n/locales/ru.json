@@ -179,7 +179,10 @@
     "openSourceA11y": "Открыть ссылку на источник",
     "descriptionLabel": "Описание",
     "peopleLabel": "Привязанные люди",
-    "forSelfBadge": "★ Себе"
+    "forSelfBadge": "★ Себе",
+    "markGiven": "Отметить как подаренный",
+    "markGivenSheetTitle": "Отметить как подаренный",
+    "markGivenNoPeople": "Сначала добавьте человека, чтобы записать вручение."
   },
   "ideaForm": {
     "editTitle": "Редактировать идею",
