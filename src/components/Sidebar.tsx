@@ -68,9 +68,9 @@ export function Sidebar() {
   const active = activeKey(pathname);
   const onWishlist = active === "wishlist";
 
-  // The primary CTA tracks the active destination so capturing from
-  // the Wish List rail lands the new row on /wishlist with `forSelf`
-  // pre-set, matching the behaviour of the mobile CaptureFab.
+  // On the Wish List rail the CTA pre-flips the "Also for me" toggle
+  // in the capture form. The form itself is identical; only the
+  // toggle's initial value changes.
   const onCapture = () => {
     if (onWishlist) {
       router.push({ pathname: "/capture", params: { forSelf: "1" } });
@@ -89,14 +89,10 @@ export function Sidebar() {
         onPress={onCapture}
         style={({ pressed }) => [styles.cta, pressed && styles.ctaPressed]}
         accessibilityRole="button"
-        accessibilityLabel={
-          onWishlist ? t("wishlist.fabLabel") : t("capture.fabLabel")
-        }
+        accessibilityLabel={t("capture.fabLabel")}
       >
         <Icon name="plus" color={colors.bg} weight="semibold" size={18} />
-        <Text style={styles.ctaText}>
-          {onWishlist ? t("wishlist.captureTitle") : t("capture.title")}
-        </Text>
+        <Text style={styles.ctaText}>{t("capture.title")}</Text>
       </Pressable>
 
       <View style={styles.nav}>

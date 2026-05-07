@@ -12,9 +12,9 @@ import { Icon } from "./Icon";
 // shows over all three tabs and disappears when a modal or detail
 // screen takes over.
 //
-// On the Wish List tab the FAB pre-selects "for me" via a route
-// param — the capture form itself is unchanged, the saved row just
-// lands in the wish list instead of the gift backlog.
+// On the Wish List tab the FAB pre-flips the "Also for me" toggle in
+// the capture form via a route param. The form itself is identical;
+// only the toggle's initial value changes.
 //
 // Glyph is an SF Symbol so iOS renders it pixel-perfect-centered
 // (manual Text-glyph centering with line-height tweaks looks subtly
@@ -36,9 +36,7 @@ export function CaptureFab() {
       style={({ pressed }) => [styles.fab, pressed && styles.fabPressed]}
       hitSlop={8}
       accessibilityRole="button"
-      accessibilityLabel={
-        onWishlistTab ? t("wishlist.fabLabel") : t("capture.fabLabel")
-      }
+      accessibilityLabel={t("capture.fabLabel")}
     >
       <Icon name="plus" color={colors.bg} weight="semibold" size={26} />
     </Pressable>

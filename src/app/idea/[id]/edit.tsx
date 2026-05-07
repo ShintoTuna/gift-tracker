@@ -7,6 +7,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from "react-native";
@@ -411,9 +412,16 @@ export default function EditIdeaScreen() {
                   {t("ideaForm.forSelfHint")}
                 </Text>
               </View>
-              <Pill tone={forSelf ? "brass" : "default"}>
-                {forSelf ? t("common.on") : t("common.off")}
-              </Pill>
+              {/* pointerEvents: row's Pressable owns the tap so the
+                  whole row is a hit target; Switch is a visual
+                  indicator only. */}
+              <View pointerEvents="none">
+                <Switch
+                  value={forSelf}
+                  trackColor={{ false: colors.border, true: colors.brass }}
+                  ios_backgroundColor={colors.border}
+                />
+              </View>
             </Pressable>
 
             <View>

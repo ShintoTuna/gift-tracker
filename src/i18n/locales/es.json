@@ -15,7 +15,8 @@
   "tabs": {
     "people": "Personas",
     "calendar": "Calendario",
-    "gifts": "Regalos"
+    "gifts": "Regalos",
+    "wishlist": "Deseos"
   },
   "settings": {
     "title": "Ajustes",
@@ -164,7 +165,8 @@
     "editA11y": "Editar idea",
     "openSourceA11y": "Abrir enlace de la fuente",
     "descriptionLabel": "Descripción",
-    "peopleLabel": "Personas etiquetadas"
+    "peopleLabel": "Personas etiquetadas",
+    "forSelfBadge": "★ Para mí"
   },
   "ideaForm": {
     "editTitle": "Editar idea",
@@ -172,6 +174,8 @@
     "status": "Estado",
     "statusActive": "Activa",
     "statusArchived": "Archivada",
+    "forSelfLabel": "Añadir a Deseos",
+    "forSelfHint": "Marcar como algo que quieres para ti.",
     "givingsTitle": "Entregas",
     "givingsEmpty": "Aún no se ha regalado. Añade una entrega para registrar a quién y cuándo.",
     "addGiving": "+ Añadir entrega",
@@ -185,6 +189,13 @@
     "deleteButton": "Eliminar idea",
     "deleteConfirmTitle": "¿Eliminar esta idea de regalo?",
     "notFound": "Idea no encontrada."
+  },
+  "wishlist": {
+    "title": "Deseos",
+    "subtitle": "Cosas que quieres para ti",
+    "search": "Buscar deseos",
+    "emptyNone": "Aún no hay deseos. Toca el botón + para añadir uno.",
+    "emptyCta": "Añade tu primer deseo"
   },
   "occasionForm": {
     "newTitle": "Nuevo evento",
@@ -228,7 +239,7 @@
   "personPicker": {
     "label": "Para",
     "placeholder": "Buscar personas…",
-    "noPeople": "Aún no hay personas — añade a alguien primero desde la pestaña Personas.",
+    "noPeople": "Aún no hay personas.",
     "moreOverflow": "+ {{count}} más — escribe para filtrar",
     "noMatches": "Sin resultados para «{{query}}»."
   },

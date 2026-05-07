@@ -15,7 +15,8 @@
   "tabs": {
     "people": "Persone",
     "calendar": "Calendario",
-    "gifts": "Regali"
+    "gifts": "Regali",
+    "wishlist": "Desideri"
   },
   "settings": {
     "title": "Impostazioni",
@@ -164,7 +165,8 @@
     "editA11y": "Modifica idea",
     "openSourceA11y": "Apri link di origine",
     "descriptionLabel": "Descrizione",
-    "peopleLabel": "Persone associate"
+    "peopleLabel": "Persone associate",
+    "forSelfBadge": "★ Per me"
   },
   "ideaForm": {
     "editTitle": "Modifica idea",
@@ -172,6 +174,8 @@
     "status": "Stato",
     "statusActive": "Attiva",
     "statusArchived": "Archiviata",
+    "forSelfLabel": "Aggiungi ai Desideri",
+    "forSelfHint": "Segna come qualcosa che vuoi per te.",
     "givingsTitle": "Regali fatti",
     "givingsEmpty": "Non ancora regalata. Aggiungi una consegna per tenere traccia di quando e a chi.",
     "addGiving": "+ Aggiungi consegna",
@@ -185,6 +189,13 @@
     "deleteButton": "Elimina idea",
     "deleteConfirmTitle": "Eliminare questa idea regalo?",
     "notFound": "Idea non trovata."
+  },
+  "wishlist": {
+    "title": "Desideri",
+    "subtitle": "Cose che vuoi per te",
+    "search": "Cerca desideri",
+    "emptyNone": "Ancora nessun desiderio. Tocca + per aggiungerne uno.",
+    "emptyCta": "Aggiungi il tuo primo desiderio"
   },
   "occasionForm": {
     "newTitle": "Nuova occasione",
@@ -228,7 +239,7 @@
   "personPicker": {
     "label": "Per",
     "placeholder": "Cerca persone…",
-    "noPeople": "Ancora nessuna persona — aggiungi prima qualcuno dalla scheda Persone.",
+    "noPeople": "Ancora nessuna persona.",
     "moreOverflow": "+ {{count}} altre — digita per filtrare",
     "noMatches": "Nessun risultato per «{{query}}»."
   },
