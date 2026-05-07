@@ -167,7 +167,10 @@
     "openSourceA11y": "Apri link di origine",
     "descriptionLabel": "Descrizione",
     "peopleLabel": "Persone associate",
-    "forSelfBadge": "★ Per me"
+    "forSelfBadge": "★ Per me",
+    "markGiven": "Segna come regalato",
+    "markGivenSheetTitle": "Segna come regalato",
+    "markGivenNoPeople": "Aggiungi una persona per registrare un regalo."
   },
   "ideaForm": {
     "editTitle": "Modifica idea",

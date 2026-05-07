@@ -167,7 +167,10 @@
     "openSourceA11y": "Abrir enlace de la fuente",
     "descriptionLabel": "Descripción",
     "peopleLabel": "Personas etiquetadas",
-    "forSelfBadge": "★ Para mí"
+    "forSelfBadge": "★ Para mí",
+    "markGiven": "Marcar como entregado",
+    "markGivenSheetTitle": "Marcar como entregado",
+    "markGivenNoPeople": "Añade una persona para registrar una entrega."
   },
   "ideaForm": {
     "editTitle": "Editar idea",

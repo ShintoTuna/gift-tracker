@@ -169,7 +169,10 @@
     "openSourceA11y": "Open source link",
     "descriptionLabel": "Description",
     "peopleLabel": "Tagged people",
-    "forSelfBadge": "★ For me"
+    "forSelfBadge": "★ For me",
+    "markGiven": "Mark as given",
+    "markGivenSheetTitle": "Mark as given",
+    "markGivenNoPeople": "Add a person first to record a giving."
   },
   "ideaForm": {
     "editTitle": "Edit idea",
