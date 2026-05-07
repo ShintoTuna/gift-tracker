@@ -365,32 +365,16 @@ export default function EditIdeaScreen() {
                 </Pressable>
               )}
             </View>
-            <TextField
-              label={t("capture.ideaLabel")}
-              value={title}
-              onChangeText={setTitle}
-              autoCapitalize="sentences"
-              autoCorrect
-              returnKeyType="next"
-            />
-
             <View>
               <TextField
-                label={t("capture.sourceLabel")}
-                placeholder="https://…"
-                value={sourceUrl}
-                onChangeText={setSourceUrl}
-                keyboardType="url"
-                autoCapitalize="none"
-                autoCorrect={false}
+                label={t("capture.ideaLabel")}
+                value={title}
+                onChangeText={setTitle}
+                autoCapitalize="sentences"
+                autoCorrect
                 returnKeyType="next"
               />
-              {titleSuggestion.loading && (
-                <Text style={styles.titleSuggestionLoading}>
-                  {t("capture.titleSuggestionLoading")}
-                </Text>
-              )}
-              {titleSuggestion.suggestion && !titleSuggestion.loading && (
+              {titleSuggestion.suggestion && (
                 <Pressable
                   onPress={() => {
                     setTitle(titleSuggestion.suggestion ?? "");
@@ -403,18 +387,21 @@ export default function EditIdeaScreen() {
                     title: titleSuggestion.suggestion,
                   })}
                 >
-                  <Text style={styles.titleSuggestionLabel}>
-                    {t("capture.titleSuggestionLabel")}
-                  </Text>
-                  <Text
-                    style={styles.titleSuggestionValue}
-                    numberOfLines={2}
-                  >
-                    {titleSuggestion.suggestion}
-                  </Text>
+                  <Pill tone="brass">{titleSuggestion.suggestion}</Pill>
                 </Pressable>
               )}
             </View>
+
+            <TextField
+              label={t("capture.sourceLabel")}
+              placeholder="https://…"
+              value={sourceUrl}
+              onChangeText={setSourceUrl}
+              keyboardType="url"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
 
             <TextField
               label={t("capture.priceLabel", { currency: defaultCurrency })}
@@ -839,25 +826,6 @@ const styles = StyleSheet.create({
   },
   titleSuggestion: {
     marginTop: spacing.sm,
-    paddingVertical: spacing.xs,
-    gap: 2,
-  },
-  titleSuggestionLabel: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 13,
-    color: colors.brass,
-  },
-  titleSuggestionValue: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text2,
-    lineHeight: 18,
-  },
-  titleSuggestionLoading: {
-    marginTop: spacing.sm,
-    paddingVertical: spacing.xs,
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text3,
+    alignSelf: "flex-start",
   },
 });

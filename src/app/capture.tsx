@@ -18,6 +18,7 @@ import {
   Label,
   NavBar,
   PeoplePicker,
+  Pill,
   ScreenTitle,
   TextField,
 } from "@/components";
@@ -188,16 +189,34 @@ export default function CaptureScreen() {
           </ScreenTitle>
 
           <View style={styles.fields}>
-            <TextField
-              label={t("capture.ideaLabel")}
-              placeholder={t("capture.ideaPlaceholder")}
-              value={title}
-              onChangeText={setTitle}
-              autoFocus
-              autoCapitalize="sentences"
-              autoCorrect
-              returnKeyType="next"
-            />
+            <View>
+              <TextField
+                label={t("capture.ideaLabel")}
+                placeholder={t("capture.ideaPlaceholder")}
+                value={title}
+                onChangeText={setTitle}
+                autoFocus
+                autoCapitalize="sentences"
+                autoCorrect
+                returnKeyType="next"
+              />
+              {titleSuggestion.suggestion && (
+                <Pressable
+                  onPress={() => {
+                    setTitle(titleSuggestion.suggestion ?? "");
+                    titleSuggestion.dismiss();
+                  }}
+                  hitSlop={6}
+                  style={styles.titleSuggestion}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("capture.titleSuggestionA11y", {
+                    title: titleSuggestion.suggestion,
+                  })}
+                >
+                  <Pill tone="brass">{titleSuggestion.suggestion}</Pill>
+                </Pressable>
+              )}
+            </View>
 
             <View>
               <ImagePickerField
@@ -223,47 +242,16 @@ export default function CaptureScreen() {
               )}
             </View>
 
-            <View>
-              <TextField
-                label={t("capture.sourceLabel")}
-                placeholder="https://…"
-                value={sourceUrl}
-                onChangeText={setSourceUrl}
-                keyboardType="url"
-                autoCapitalize="none"
-                autoCorrect={false}
-                returnKeyType="next"
-              />
-              {titleSuggestion.loading && (
-                <Text style={styles.titleSuggestionLoading}>
-                  {t("capture.titleSuggestionLoading")}
-                </Text>
-              )}
-              {titleSuggestion.suggestion && !titleSuggestion.loading && (
-                <Pressable
-                  onPress={() => {
-                    setTitle(titleSuggestion.suggestion ?? "");
-                    titleSuggestion.dismiss();
-                  }}
-                  hitSlop={6}
-                  style={styles.titleSuggestion}
-                  accessibilityRole="button"
-                  accessibilityLabel={t("capture.titleSuggestionA11y", {
-                    title: titleSuggestion.suggestion,
-                  })}
-                >
-                  <Text style={styles.titleSuggestionLabel}>
-                    {t("capture.titleSuggestionLabel")}
-                  </Text>
-                  <Text
-                    style={styles.titleSuggestionValue}
-                    numberOfLines={2}
-                  >
-                    {titleSuggestion.suggestion}
-                  </Text>
-                </Pressable>
-              )}
-            </View>
+            <TextField
+              label={t("capture.sourceLabel")}
+              placeholder="https://…"
+              value={sourceUrl}
+              onChangeText={setSourceUrl}
+              keyboardType="url"
+              autoCapitalize="none"
+              autoCorrect={false}
+              returnKeyType="next"
+            />
 
             <TextField
               label={t("capture.priceLabel", { currency: defaultCurrency })}
@@ -366,26 +354,7 @@ const styles = StyleSheet.create({
   },
   titleSuggestion: {
     marginTop: spacing.sm,
-    paddingVertical: spacing.xs,
-    gap: 2,
-  },
-  titleSuggestionLabel: {
-    fontFamily: fonts.bodyMedium,
-    fontSize: 13,
-    color: colors.brass,
-  },
-  titleSuggestionValue: {
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text2,
-    lineHeight: 18,
-  },
-  titleSuggestionLoading: {
-    marginTop: spacing.sm,
-    paddingVertical: spacing.xs,
-    fontFamily: fonts.body,
-    fontSize: 13,
-    color: colors.text3,
+    alignSelf: "flex-start",
   },
   forSelfRow: {
     flexDirection: "row",
