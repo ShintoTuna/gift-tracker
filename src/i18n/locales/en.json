@@ -176,8 +176,8 @@
     "status": "Status",
     "statusActive": "Active",
     "statusArchived": "Archived",
-    "forSelfLabel": "Also for me",
-    "forSelfHint": "Show this on the Wishes tab.",
+    "forSelfLabel": "Add to Wishes",
+    "forSelfHint": "Mark as something you want for yourself.",
     "givingsTitle": "Givings",
     "givingsEmpty": "Not given yet. Add a giving to track when you gave this idea away.",
     "addGiving": "+ Add giving",
@@ -197,11 +197,7 @@
     "subtitle": "Things you want for yourself",
     "search": "Search wishes",
     "emptyNone": "No wishes yet. Tap the + button to add one.",
-    "emptyCta": "Add your first wish",
-    "fabLabel": "Add a wish",
-    "captureTitle": "Add a wish",
-    "captureScreenTitle": "Add a wish",
-    "captureSubtitle": "Something you want for yourself"
+    "emptyCta": "Add your first wish"
   },
   "occasionForm": {
     "newTitle": "New occasion",
@@ -245,7 +241,7 @@
   "personPicker": {
     "label": "For",
     "placeholder": "Search people…",
-    "noPeople": "No people yet — add someone from the People tab first.",
+    "noPeople": "No people yet.",
     "moreOverflow": "+ {{count}} more — type to filter",
     "noMatches": "No matches for “{{query}}”."
   },

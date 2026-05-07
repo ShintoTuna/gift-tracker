@@ -28,13 +28,12 @@ const FILTERS: { value: Filter; key: "filterActive" | "filterArchived" }[] = [
 
 // Wish List — the "for me" companion to the Gifts backlog. Lists
 // every idea the user has flagged `forSelf: true` (server-filtered
-// via the `by_user_forSelf` index). An idea can be both a wish and
-// a gift idea for someone else; in that case it appears on both
-// tabs, which is intentional.
+// via the `by_user_forSelf` index). An idea tagged to someone *and*
+// marked `forSelf` appears on both tabs, which is intentional.
 //
-// The "+" FAB on this tab routes to /capture?forSelf=1, so adding
-// a wish lands here without showing any extra fields in the capture
-// form itself.
+// The "+" FAB opens the same Quick Capture form as everywhere else,
+// but pre-flips the "Also for me" toggle when launched from this
+// tab (or from the empty-state CTA below).
 export default function WishlistScreen() {
   const { t } = useTranslation();
   const ideas = useQuery(api.giftIdeas.listByUserForSelf);

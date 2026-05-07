@@ -15,7 +15,8 @@
   "tabs": {
     "people": "Personnes",
     "calendar": "Calendrier",
-    "gifts": "Cadeaux"
+    "gifts": "Cadeaux",
+    "wishlist": "Souhaits"
   },
   "settings": {
     "title": "Réglages",
@@ -164,7 +165,8 @@
     "editA11y": "Modifier l'idée",
     "openSourceA11y": "Ouvrir le lien de la source",
     "descriptionLabel": "Description",
-    "peopleLabel": "Personnes associées"
+    "peopleLabel": "Personnes associées",
+    "forSelfBadge": "★ Pour moi"
   },
   "ideaForm": {
     "editTitle": "Modifier l'idée",
@@ -172,6 +174,8 @@
     "status": "Statut",
     "statusActive": "Active",
     "statusArchived": "Archivée",
+    "forSelfLabel": "Ajouter aux Souhaits",
+    "forSelfHint": "Marquer comme quelque chose que vous voulez pour vous.",
     "givingsTitle": "Cadeaux offerts",
     "givingsEmpty": "Pas encore offert. Ajoutez une remise pour noter à qui et quand.",
     "addGiving": "+ Ajouter une remise",
@@ -185,6 +189,13 @@
     "deleteButton": "Supprimer l'idée",
     "deleteConfirmTitle": "Supprimer cette idée de cadeau ?",
     "notFound": "Idée introuvable."
+  },
+  "wishlist": {
+    "title": "Souhaits",
+    "subtitle": "Ce que vous voulez pour vous",
+    "search": "Rechercher des souhaits",
+    "emptyNone": "Aucun souhait pour le moment. Appuyez sur + pour en ajouter un.",
+    "emptyCta": "Ajouter votre premier souhait"
   },
   "occasionForm": {
     "newTitle": "Nouvel événement",
@@ -228,7 +239,7 @@
   "personPicker": {
     "label": "Pour",
     "placeholder": "Rechercher des personnes…",
-    "noPeople": "Aucune personne — ajoutez d'abord quelqu'un depuis l'onglet Personnes.",
+    "noPeople": "Aucune personne pour le moment.",
     "moreOverflow": "+ {{count}} de plus — tapez pour filtrer",
     "noMatches": "Aucun résultat pour « {{query}} »."
   },

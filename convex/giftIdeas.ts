@@ -36,7 +36,14 @@ export const listByUser = query({
       .query("giftIdeas")
       .withIndex("by_user", (q) => q.eq("userId", userId))
       .take(MAX_GIFT_IDEAS);
-    return await withImageUrl(ctx, rows);
+    // Personal-only wishes (`forSelf` with no tags) live exclusively
+    // on the Wish List tab. Items tagged to someone *and* marked
+    // `forSelf` still appear here, since they are also being
+    // considered as gifts for the tagged people.
+    const visible = rows.filter(
+      (r) => !(r.forSelf === true && r.taggedPeople.length === 0),
+    );
+    return await withImageUrl(ctx, visible);
   },
 });
 

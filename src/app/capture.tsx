@@ -6,6 +6,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from "react-native";
@@ -14,6 +15,7 @@ import {
   Btn,
   ImagePickerField,
   KeyboardForm,
+  Label,
   NavBar,
   PeoplePicker,
   ScreenTitle,
@@ -36,16 +38,14 @@ import type { Id } from "../../convex/_generated/dataModel";
 // footer) so the iOS keyboard accessory bar never collides with it.
 export default function CaptureScreen() {
   const { t } = useTranslation();
+  // Some entry points (the FAB / Sidebar CTA / empty-state on the
+  // Wish List tab) pre-flip the "Also for me" toggle as a courtesy —
+  // the form is otherwise identical regardless of where capture was
+  // opened from.
   const { personId, forSelf: forSelfParam } = useLocalSearchParams<{
     personId?: string;
     forSelf?: string;
   }>();
-  // The Wish List tab launches capture with `?forSelf=1`. The flag
-  // travels through Save and lands the new row on the wish list
-  // instead of (or alongside) the gift backlog. The form itself
-  // shows no extra control — keeping the gift capture path single-
-  // purpose was an explicit design call.
-  const forSelf = forSelfParam === "1";
   const people = useQuery(api.people.list);
   const createIdea = useMutation(api.giftIdeas.create);
   const generateUploadUrl = useMutation(api.storage.generateUploadUrl);
@@ -66,6 +66,7 @@ export default function CaptureScreen() {
     null,
   );
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [forSelf, setForSelf] = useState(forSelfParam === "1");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -149,13 +150,14 @@ export default function CaptureScreen() {
         forSelf: forSelf ? true : undefined,
       });
       // From a profile (personId param), return there so the freshly
-      // tagged idea shows up under "Considered". From the Wish List
-      // FAB, land back on the wish list. Otherwise land on the gift
-      // backlog. `replace` so the back stack doesn't preserve the
-      // (now-empty) form.
+      // tagged idea shows up under "Considered". A wish-only row
+      // (forSelf with no tags) is invisible on the Gifts tab — land
+      // on Wish List so the user sees what they just saved.
+      // Otherwise land on the gift backlog. `replace` so the back
+      // stack doesn't preserve the (now-empty) form.
       if (personId) {
         router.back();
-      } else if (forSelf) {
+      } else if (forSelf && taggedIds.length === 0) {
         router.replace("/(tabs)/wishlist");
       } else {
         router.replace("/(tabs)/backlog");
@@ -169,7 +171,7 @@ export default function CaptureScreen() {
   return (
     <View style={styles.root}>
       <NavBar
-        title={forSelf ? t("wishlist.captureTitle") : t("capture.title")}
+        title={t("capture.title")}
         leading="close"
         onLeadingPress={() => router.back()}
       />
@@ -179,14 +181,8 @@ export default function CaptureScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <ScreenTitle
-            sub={
-              forSelf ? t("wishlist.captureSubtitle") : t("capture.subtitle")
-            }
-          >
-            {forSelf
-              ? t("wishlist.captureScreenTitle")
-              : t("capture.screenTitle")}
+          <ScreenTitle sub={t("capture.subtitle")}>
+            {t("capture.screenTitle")}
           </ScreenTitle>
 
           <View style={styles.fields}>
@@ -251,6 +247,32 @@ export default function CaptureScreen() {
               onChange={setTaggedIds}
             />
 
+            <Pressable
+              onPress={() => setForSelf((v) => !v)}
+              hitSlop={6}
+              accessibilityRole="switch"
+              accessibilityState={{ checked: forSelf }}
+              accessibilityLabel={t("ideaForm.forSelfLabel")}
+              style={styles.forSelfRow}
+            >
+              <View style={styles.forSelfTextWrap}>
+                <Label>{t("ideaForm.forSelfLabel")}</Label>
+                <Text style={styles.forSelfHint}>
+                  {t("ideaForm.forSelfHint")}
+                </Text>
+              </View>
+              {/* pointerEvents: row's Pressable owns the tap so the
+                  whole row is a hit target; Switch is a visual
+                  indicator only. */}
+              <View pointerEvents="none">
+                <Switch
+                  value={forSelf}
+                  trackColor={{ false: colors.border, true: colors.brass }}
+                  ios_backgroundColor={colors.border}
+                />
+              </View>
+            </Pressable>
+
             <TextField
               label={t("capture.descriptionLabel")}
               placeholder={t("common.optional")}
@@ -308,5 +330,21 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodyMedium,
     fontSize: 13,
     color: colors.brass,
+  },
+  forSelfRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: spacing.md,
+  },
+  forSelfTextWrap: {
+    flexShrink: 1,
+    gap: spacing.xs,
+  },
+  forSelfHint: {
+    fontFamily: fonts.body,
+    fontSize: 12,
+    color: colors.text3,
+    lineHeight: 16,
   },
 });

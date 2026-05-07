@@ -22,22 +22,33 @@ client bundle and the deployed Convex functions is the most common
 
 ## Localization (i18n)
 
-The app ships in English + Russian using `i18next` + `react-i18next`. All
-user-facing strings live in `src/i18n/locales/<code>.json`. Components read
-strings via `useTranslation()` and `t("namespace.key")`.
+The app currently ships **seven** languages — English, Russian, Spanish,
+French, German, Brazilian Portuguese, and Italian — using `i18next` +
+`react-i18next`. The canonical list lives in `SUPPORTED_LANGUAGES` in
+[`src/i18n/index.ts`](src/i18n/index.ts); always re-read that file before
+making translation changes, since the set grows over time. All user-facing
+strings live in `src/i18n/locales/<code>.json` (currently `en`, `ru`, `es`,
+`fr`, `de`, `pt`, `it`). Components read strings via `useTranslation()` and
+`t("namespace.key")`.
 
-**Translation workflow:** when you add or change keys in
-`src/i18n/locales/en.json`, also update every sibling locale file
-(`ru.json`, etc.) to keep parity. Translations should be concise and match
-the existing app tone. The English file is the source of truth.
+**Translation workflow:** when you add, change, or remove keys in
+`src/i18n/locales/en.json`, also update **every** sibling locale file in
+`src/i18n/locales/` to keep parity — not just `ru.json`. Skipping this is
+the most common i18n regression: missing keys fall back to English at
+runtime and removed keys silently rot. List the locales directory with
+`ls src/i18n/locales/` first if unsure. Translations should be concise and
+match the existing app tone. The English file is the source of truth.
 
-**Russian plural rules:** Russian has four CLDR plural forms — define
-`<key>_one`, `<key>_few`, `<key>_many`, and `<key>_other` together. English
-only needs `<key>_one` and `<key>_other`.
+**Plural rules:** Russian and Polish-family languages have multiple CLDR
+plural forms — for Russian define `<key>_one`, `<key>_few`, `<key>_many`,
+and `<key>_other` together. English, Spanish, French, German, Italian, and
+Portuguese only need `<key>_one` and `<key>_other`.
 
 **Adding a new language:** add the JSON file, the code to
 `SUPPORTED_LANGUAGES` and `LANGUAGE_LABELS`, and the `resources` map in
-`src/i18n/index.ts`. The Settings picker auto-renders the new option.
+`src/i18n/index.ts`. **Update this CLAUDE.md to mention the new language
+in the list above so future translation work doesn't miss it.** The
+Settings picker auto-renders the new option.
 
 ## Pre-merge / pre-build verification
 
