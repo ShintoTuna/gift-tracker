@@ -1,28 +1,23 @@
-// Re-generates the app icon and splash icon from a single SVG
-// definition. Re-run with `node scripts/generate-icons.mjs` after
-// editing the SVG below if the icon needs to evolve.
+// Re-generates every app icon and splash variant from the master logo PNG.
+// Re-run with `node scripts/generate-icons.mjs` after replacing the master
+// in `assets/source/logo.png`.
 //
-// The two outputs:
-//   - assets/images/icon.png      — 1024×1024, brass background,
-//                                   dark gift silhouette + cream
-//                                   ribbons. Used as the iOS app
-//                                   icon (and Android fallback).
-//   - assets/images/splash-icon.png — 1024×1024, transparent
-//                                   background, brass gift box
-//                                   centered. Layered over the
-//                                   midnight-green splash background
-//                                   color set in app.json.
+// Input (assets/source/logo.png): gold G + leaves on a transparent
+// background. Source for every output below.
 //
-// Sharp renders the SVG at 1024×1024 directly; no rasterization
-// loss. Iterate on shape proportions in the SVG strings, not on the
-// PNG output.
+// Outputs (assets/images/):
+//   - icon.png                       1024×1024  midnight-green bg, gold G  — iOS app icon, Android fallback
+//   - splash-icon.png                1024×1024  transparent, gold G        — splash plugin, layered over #0F1A16
+//   - android-icon-foreground.png    1024×1024  transparent, gold G inset  — Android adaptive icon foreground
+//   - android-icon-background.png    1024×1024  solid #0F1A16              — Android adaptive icon background
+//   - android-icon-monochrome.png    1024×1024  white silhouette           — Android 13+ themed icons
+//   - favicon.png                    256×256    transparent, gold G        — web favicon
 //
-// Sharp is intentionally NOT in package.json — its native prebuild
-// fails to install on EAS Build (no node-addon-api / node-gyp in
-// the cloud build env), which would break every production build.
-// Instead, we lazy-install via `npm install --no-save sharp` on
-// first run, scoped to local node_modules only. Manifest stays
-// clean.
+// Sharp is intentionally NOT in package.json — its native prebuild fails
+// to install on EAS Build (no node-addon-api / node-gyp in the cloud
+// build env), which would break every production build. Instead, we
+// lazy-install via `npm install --no-save sharp` on first run, scoped
+// to local node_modules only. Manifest stays clean.
 
 import { execSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
@@ -46,56 +41,115 @@ try {
 }
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const ASSETS_DIR = path.join(__dirname, "..", "assets", "images");
-mkdirSync(ASSETS_DIR, { recursive: true });
+const SOURCE = path.join(__dirname, "..", "assets", "source", "logo.png");
+const OUT_DIR = path.join(__dirname, "..", "assets", "images");
+mkdirSync(OUT_DIR, { recursive: true });
 
 // Midnight Garden tokens — keep in sync with src/theme/tokens.ts.
 const C = {
-  bg: "#0F1A16",
-  brass: "#C8A45A",
-  cream: "#E8E1CF",
+  bg: { r: 0x0f, g: 0x1a, b: 0x16, alpha: 1 },
 };
 
-// Reusable gift-box glyph centered in a 1024×1024 viewBox. Scales to
-// roughly 60% of canvas width with generous padding so it reads at
-// small home-screen sizes. Two cream ribbons cross the dark box; a
-// chunky two-loop bow sits on top.
-function giftGlyph({ boxFill, ribbonFill }) {
-  return `
-    <!-- Lid (slightly wider than body for that classic giftbox overhang) -->
-    <rect x="184" y="424" width="656" height="92" fill="${boxFill}" rx="16"/>
-    <!-- Body -->
-    <rect x="216" y="516" width="592" height="332" fill="${boxFill}" rx="20"/>
+const CANVAS = 1024;
 
-    <!-- Cream cross ribbons over the dark box -->
-    <rect x="488" y="424" width="48" height="424" fill="${ribbonFill}"/>
-    <rect x="184" y="588" width="656" height="44" fill="${ribbonFill}"/>
+// Composite the source logo onto a canvas at `logoFraction` of canvas width.
+// `background` of `null` leaves the canvas transparent.
+async function composite({ logoFraction, background = null, canvas = CANVAS }) {
+  const logoSize = Math.round(canvas * logoFraction);
+  const logo = await sharp(SOURCE)
+    .ensureAlpha()
+    .resize(logoSize, logoSize, {
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .png()
+    .toBuffer();
 
-    <!-- Bow on top: two loops + center knot -->
-    <ellipse cx="404" cy="354" rx="100" ry="60" fill="${boxFill}"/>
-    <ellipse cx="620" cy="354" rx="100" ry="60" fill="${boxFill}"/>
-    <rect x="488" y="316" width="48" height="92" fill="${boxFill}" rx="6"/>
-  `;
+  return sharp({
+    create: {
+      width: canvas,
+      height: canvas,
+      channels: 4,
+      background: background ?? { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  })
+    .composite([{ input: logo, gravity: "center" }])
+    .png();
 }
 
-const ICON_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <rect width="1024" height="1024" fill="${C.brass}"/>
-  ${giftGlyph({ boxFill: C.bg, ribbonFill: C.cream })}
-</svg>
-`;
-
-const SPLASH_SVG = `
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  ${giftGlyph({ boxFill: C.brass, ribbonFill: C.cream })}
-</svg>
-`;
-
-async function render(svg, outName) {
-  const out = path.join(ASSETS_DIR, outName);
-  await sharp(Buffer.from(svg)).png().toFile(out);
+async function write(pipeline, outName) {
+  const out = path.join(OUT_DIR, outName);
+  await pipeline.toFile(out);
   console.log(`wrote ${out}`);
 }
 
-await render(ICON_SVG, "icon.png");
-await render(SPLASH_SVG, "splash-icon.png");
+// 1. iOS app icon — gold G on midnight green, generous padding inside Apple's mask.
+await write(
+  await composite({ logoFraction: 0.72, background: C.bg }),
+  "icon.png",
+);
+
+// 2. Splash icon — gold G, transparent background. Layered over #0F1A16 by the splash plugin.
+await write(await composite({ logoFraction: 0.72 }), "splash-icon.png");
+
+// 3. Android adaptive foreground — inset to ~66% so it survives round/squircle/square masks.
+await write(
+  await composite({ logoFraction: 0.66 }),
+  "android-icon-foreground.png",
+);
+
+// 4. Android adaptive background — flat midnight green.
+await write(
+  sharp({
+    create: { width: CANVAS, height: CANVAS, channels: 4, background: C.bg },
+  }).png(),
+  "android-icon-background.png",
+);
+
+// 5. Android themed monochrome — white silhouette derived from the source
+//    alpha, then composed onto a 1024² transparent canvas.
+{
+  const silhouetteSize = Math.round(CANVAS * 0.66);
+  const alpha = await sharp(SOURCE)
+    .ensureAlpha()
+    .resize(silhouetteSize, silhouetteSize, {
+      fit: "contain",
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    })
+    .extractChannel("alpha")
+    .raw()
+    .toBuffer();
+
+  const white = await sharp({
+    create: {
+      width: silhouetteSize,
+      height: silhouetteSize,
+      channels: 3,
+      background: "#FFFFFF",
+    },
+  })
+    .joinChannel(alpha, {
+      raw: { width: silhouetteSize, height: silhouetteSize, channels: 1 },
+    })
+    .png()
+    .toBuffer();
+
+  const base = sharp({
+    create: {
+      width: CANVAS,
+      height: CANVAS,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 },
+    },
+  });
+  await write(
+    base.composite([{ input: white, gravity: "center" }]).png(),
+    "android-icon-monochrome.png",
+  );
+}
+
+// 6. Favicon — gold G on transparent at smaller canvas; reads on light & dark browser chrome.
+await write(
+  await composite({ logoFraction: 0.8, canvas: 256 }),
+  "favicon.png",
+);
