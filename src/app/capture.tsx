@@ -18,6 +18,7 @@ import {
   Label,
   NavBar,
   PeoplePicker,
+  Pill,
   ScreenTitle,
   TextField,
 } from "@/components";
@@ -25,6 +26,7 @@ import { notify } from "@/lib/alerts";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
 import { useLimitErrorSheet } from "@/lib/useLimitErrorSheet";
+import { useSourceTitleSuggestion } from "@/lib/useSourceTitleSuggestion";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../convex/_generated/api";
@@ -69,6 +71,7 @@ export default function CaptureScreen() {
   const [forSelf, setForSelf] = useState(forSelfParam === "1");
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const titleSuggestion = useSourceTitleSuggestion(sourceUrl);
 
   const canSave = title.trim().length > 0 && !saving && !uploading;
 
@@ -186,16 +189,34 @@ export default function CaptureScreen() {
           </ScreenTitle>
 
           <View style={styles.fields}>
-            <TextField
-              label={t("capture.ideaLabel")}
-              placeholder={t("capture.ideaPlaceholder")}
-              value={title}
-              onChangeText={setTitle}
-              autoFocus
-              autoCapitalize="sentences"
-              autoCorrect
-              returnKeyType="next"
-            />
+            <View>
+              <TextField
+                label={t("capture.ideaLabel")}
+                placeholder={t("capture.ideaPlaceholder")}
+                value={title}
+                onChangeText={setTitle}
+                autoFocus
+                autoCapitalize="sentences"
+                autoCorrect
+                returnKeyType="next"
+              />
+              {titleSuggestion.suggestion && (
+                <Pressable
+                  onPress={() => {
+                    setTitle(titleSuggestion.suggestion ?? "");
+                    titleSuggestion.dismiss();
+                  }}
+                  hitSlop={6}
+                  style={styles.titleSuggestion}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("capture.titleSuggestionA11y", {
+                    title: titleSuggestion.suggestion,
+                  })}
+                >
+                  <Pill tone="brass">{titleSuggestion.suggestion}</Pill>
+                </Pressable>
+              )}
+            </View>
 
             <View>
               <ImagePickerField
@@ -330,6 +351,10 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodyMedium,
     fontSize: 13,
     color: colors.brass,
+  },
+  titleSuggestion: {
+    marginTop: spacing.sm,
+    alignSelf: "flex-start",
   },
   forSelfRow: {
     flexDirection: "row",

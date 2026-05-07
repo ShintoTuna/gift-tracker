@@ -30,6 +30,7 @@ import { confirmDestructive, notify } from "@/lib/alerts";
 import { describeMutationError } from "@/lib/convexErrors";
 import { pickCompressUpload, type PickSource } from "@/lib/imageUpload";
 import { useDefaultCurrency } from "@/lib/settings";
+import { useSourceTitleSuggestion } from "@/lib/useSourceTitleSuggestion";
 import { colors, fonts, spacing } from "@/theme/tokens";
 
 import { api } from "../../../../convex/_generated/api";
@@ -87,6 +88,7 @@ export default function EditIdeaScreen() {
   const [image, setImage] = useState<ImageState>({ kind: "unchanged" });
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const titleSuggestion = useSourceTitleSuggestion(sourceUrl);
 
   // Add-giving inline form state.
   const [addingGiving, setAddingGiving] = useState(false);
@@ -363,14 +365,32 @@ export default function EditIdeaScreen() {
                 </Pressable>
               )}
             </View>
-            <TextField
-              label={t("capture.ideaLabel")}
-              value={title}
-              onChangeText={setTitle}
-              autoCapitalize="sentences"
-              autoCorrect
-              returnKeyType="next"
-            />
+            <View>
+              <TextField
+                label={t("capture.ideaLabel")}
+                value={title}
+                onChangeText={setTitle}
+                autoCapitalize="sentences"
+                autoCorrect
+                returnKeyType="next"
+              />
+              {titleSuggestion.suggestion && (
+                <Pressable
+                  onPress={() => {
+                    setTitle(titleSuggestion.suggestion ?? "");
+                    titleSuggestion.dismiss();
+                  }}
+                  hitSlop={6}
+                  style={styles.titleSuggestion}
+                  accessibilityRole="button"
+                  accessibilityLabel={t("capture.titleSuggestionA11y", {
+                    title: titleSuggestion.suggestion,
+                  })}
+                >
+                  <Pill tone="brass">{titleSuggestion.suggestion}</Pill>
+                </Pressable>
+              )}
+            </View>
 
             <TextField
               label={t("capture.sourceLabel")}
@@ -803,5 +823,9 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bodyMedium,
     fontSize: 13,
     color: colors.brass,
+  },
+  titleSuggestion: {
+    marginTop: spacing.sm,
+    alignSelf: "flex-start",
   },
 });
